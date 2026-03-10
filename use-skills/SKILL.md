@@ -1,6 +1,6 @@
 ---
-name: using-superpowers
-description: Use when starting any conversation - establishes how to find and use skills, requiring Skill tool invocation before ANY response including clarifying questions
+name: use-skills
+description: Establishes how to find and use skills in any environment. Use at the start of any conversation or task to ensure proper skill invocation — skills must be called BEFORE any response, action, or clarifying question.
 ---
 
 <EXTREMELY-IMPORTANT>
@@ -15,7 +15,7 @@ This is not negotiable. This is not optional. You cannot rationalize your way ou
 
 **In Claude Code:** Use the `Skill` tool. When you invoke a skill, its content is loaded and presented to you—follow it directly. Never use the Read tool on skill files.
 
-**In other environments:** Check your platform's documentation for how skills are loaded.
+**In other environments:** Check your platform's documentation for how skills are loaded and invoked.
 
 # Using Skills
 
