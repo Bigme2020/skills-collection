@@ -2,9 +2,11 @@
 name: solid
 description: |
   Apply SOLID principles to write flexible, maintainable, and testable code.
-  Use when designing classes, interfaces, and module boundaries. Covers Single
-  Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, and
-  Dependency Inversion with practical TypeScript examples and detection heuristics.
+  Use when designing or writing production code, refactoring responsibility-heavy
+  code, reviewing architecture, improving testability, or defining classes,
+  functions, interfaces, and module boundaries. Covers Single Responsibility,
+  Open/Closed, Liskov Substitution, Interface Segregation, and Dependency
+  Inversion with practical TypeScript examples and detection heuristics.
 ---
 
 # SOLID Principles
@@ -17,6 +19,7 @@ maintain. They reduce coupling, increase cohesion, and make code testable.
 Reference these principles when:
 
 - Designing new classes, modules, or interfaces
+- Writing day-to-day production code that should strictly follow SOLID
 - Refactoring code with too many responsibilities
 - Reviewing PRs for architectural concerns
 - Breaking apart god objects or fat interfaces

@@ -3,13 +3,13 @@ name: brainstorming
 description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation."
 ---
 
-# Brainstorming Ideas Into Designs
+# Brainstorming Ideas
 
 ## Overview
 
-Help turn ideas into fully formed designs and specs through natural collaborative dialogue.
+Help turn vague ideas into clear, well-reasoned directions through natural collaborative dialogue.
 
-Start by understanding the current project context, then ask questions one at a time to refine the idea. Once you understand what you're building, present the design in small sections (200-300 words), checking after each section whether it looks right so far.
+Start by understanding the current project context, then ask questions one at a time to refine the idea. Once you understand what the user is trying to achieve, synthesize the direction in small sections (200-300 words), checking after each section whether it looks right so far.
 
 ## The Process
 
@@ -25,24 +25,12 @@ Start by understanding the current project context, then ask questions one at a 
 - Present options conversationally with your recommendation and reasoning
 - Lead with your recommended option and explain why
 
-**Presenting the design:**
-- Once you believe you understand what you're building, present the design
+**Synthesizing the direction:**
+- Once you believe you understand what you're building, present the direction
 - Break it into sections of 200-300 words
 - Ask after each section whether it looks right so far
 - Cover: architecture, components, data flow, error handling, testing
 - Be ready to go back and clarify if something doesn't make sense
-
-## After the Design
-
-**Documentation:**
-- Write the validated design to `docs/plans/YYYY-MM-DD-<topic>-design.md`
-- Use elements-of-style:writing-clearly-and-concisely skill if available
-- Commit the design document to git
-
-**Implementation (if continuing):**
-- Ask: "Ready to set up for implementation?"
-- Use superpowers:using-git-worktrees to create isolated workspace
-- Use superpowers:writing-plans to create detailed implementation plan
 
 ## Key Principles
 

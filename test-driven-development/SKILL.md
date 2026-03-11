@@ -1,6 +1,6 @@
 ---
 name: test-driven-development
-description: Strict test-first workflow for any feature, bugfix, refactor, or behavior change. Use before writing production code. Enforce internal RED->GREEN verification and require a Chinese test-case summary in implementation responses.
+description: Strict test-first workflow for any feature, bugfix, refactor, or behavior change. Use before writing production code, and actively consider it for every development task. Enforce internal RED->GREEN verification and require a Chinese test-case summary in implementation responses.
 ---
 
 # Test-Driven Development (TDD)
@@ -9,10 +9,12 @@ description: Strict test-first workflow for any feature, bugfix, refactor, or be
 
 All user-facing TDD content must be in Simplified Chinese unless the user explicitly requests another language.
 
-This includes (but is not limited to):
+At minimum, this includes:
 
 - Test-case summary blocks
 - Blocked/error notices related to TDD flow
+
+This does not require translating unrelated non-TDD parts of the response.
 
 Hard requirement:
 

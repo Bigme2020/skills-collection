@@ -1,6 +1,6 @@
 ---
 name: figma-rule
-description: Create or refine project-specific rules for Figma MCP integrations. Use when analyzing a codebase to write or update `CLAUDE.md`, Cursor rules, or similar always-apply instructions so Figma-driven implementation follows the repo's design system, component patterns, asset handling, and fidelity requirements.
+description: Create or refine project-specific rules for Figma MCP integrations. Use when analyzing a codebase to write or update `CLAUDE.md`, Cursor rules, or similar always-apply instructions, or whenever the user wants stronger repo rules for Figma-driven implementation so it follows the repo's design system, component patterns, asset handling, and fidelity requirements.
 ---
 
 # Figma Rule
