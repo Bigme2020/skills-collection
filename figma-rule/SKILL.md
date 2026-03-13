@@ -1,11 +1,20 @@
 ---
 name: figma-rule
-description: Create or refine project-specific rules for Figma MCP integrations. Use when analyzing a codebase to write or update `CLAUDE.md`, Cursor rules, or similar always-apply instructions, or whenever the user wants stronger repo rules for Figma-driven implementation so it follows the repo's design system, component patterns, asset handling, and fidelity requirements.
+description: Create or refine repo-specific rules for Figma MCP work. Use this skill whenever the user wants `CLAUDE.md`, Cursor rules, agent instructions, or another reusable rules document that makes future Figma-driven implementation follow the repo's design system, component paths, asset handling, and fidelity expectations. Also use it when the user says Figma output is drifting from the codebase, wants stronger Figma rules before implementation, or asks for a repo audit to improve future Figma results. Do not use this skill for directly building the UI from a Figma node; use `implement-design` for that, and use both when the user wants rules plus implementation.
 ---
 
 # Figma Rule
 
 Turn Figma's "Add custom rules and instructions" guidance into repo-specific agent rules. Use this skill to inspect the codebase, extract the project's real UI conventions, and write concise instructions that improve Figma MCP output without repetitive prompting.
+
+## When To Use This Skill
+
+This skill is for writing durable guidance that changes how future Figma tasks are executed in the repo.
+
+- Use `figma-rule` when the user wants to create or update persistent instructions such as `CLAUDE.md`, Cursor rules, repo prompts, or team guidance for Figma work.
+- Use `figma-rule` when the user says Figma-generated code keeps missing the repo's components, tokens, asset pipeline, file structure, or fidelity standards.
+- Use `implement-design` when the user wants a component, page, or screen implemented from a Figma URL or node.
+- Use both when the user wants to first lock in repo-specific Figma rules and then implement the design using those rules.
 
 ## Workflow
 

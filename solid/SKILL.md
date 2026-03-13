@@ -1,12 +1,19 @@
 ---
 name: solid
 description: |
-  Apply SOLID principles to write flexible, maintainable, and testable code.
-  Use when designing or writing production code, refactoring responsibility-heavy
-  code, reviewing architecture, improving testability, or defining classes,
-  functions, interfaces, and module boundaries. Covers Single Responsibility,
-  Open/Closed, Liskov Substitution, Interface Segregation, and Dependency
-  Inversion with practical TypeScript examples and detection heuristics.
+  Apply SOLID principles to design flexible, maintainable, and testable
+  production code. Use this skill whenever the work involves class, module,
+  interface, or service design; refactoring large or responsibility-heavy code;
+  improving testability; reducing coupling; or deciding boundaries and
+  dependencies. Reach for it early in the technical design phase, before writing
+  implementation code, when turning requirements into module boundaries,
+  abstractions, interfaces, and dependency direction. Reach for it even when the
+  user does not say "SOLID" but is asking for cleaner architecture, smaller
+  interfaces, better extensibility, or safer abstractions. This skill is for
+  code-structure design, not broad product ideation or debugging workflow.
+  Covers Single Responsibility, Open/Closed, Liskov Substitution, Interface
+  Segregation, and Dependency Inversion with practical TypeScript examples and
+  detection heuristics.
 ---
 
 # SOLID Principles
@@ -18,6 +25,8 @@ maintain. They reduce coupling, increase cohesion, and make code testable.
 
 Reference these principles when:
 
+- Before writing implementation code, when translating agreed requirements into
+  classes, modules, interfaces, and dependencies
 - Designing new classes, modules, or interfaces
 - Writing day-to-day production code that should strictly follow SOLID
 - Refactoring code with too many responsibilities
@@ -25,6 +34,19 @@ Reference these principles when:
 - Breaking apart god objects or fat interfaces
 - Deciding where to draw module boundaries
 - Making code more testable
+- Untangling concrete dependencies or hard-to-extend control flow
+- The user asks for cleaner architecture without naming a specific principle
+
+## Boundary
+
+- Use this skill for technical design of code structure once the problem is
+  understood
+- Do not use it as a replacement for open-ended product discovery or
+  brainstorming
+- Do not use it as the main debugging workflow when the task is to investigate a
+  failure first
+- Pair it with implementation-specific skills only after the structural design
+  direction is clear
 
 ## Quick Reference
 
