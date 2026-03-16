@@ -1,27 +1,49 @@
 ---
 name: "playwright-interactive"
-description: "Persistent browser and Electron interaction through `js_repl` for fast iterative UI debugging, local web app testing, Electron app debugging, and repeated visual or functional checks without restarting the session."
+description: "Persistent browser and Electron interaction through a JavaScript session for iterative UI debugging, Electron app testing, and comprehensive visual/functional QA with live Playwright handles across iterations. Use when the user needs repeated inspect-fix-verify cycles, Electron app debugging, mobile emulation QA, or sustained multi-pass testing. Do NOT use for one-off browser tasks like quick screenshots, web scraping, or simple form filling — use playwright-cli instead."
 ---
 
 # Playwright Interactive Skill
 
-Use a persistent `js_repl` Playwright session to debug local web or Electron apps, keep the same handles alive across iterations, and run functional plus visual QA without restarting the whole toolchain unless the process ownership changed.
+> **Scope**: This skill uses a persistent Playwright JavaScript session for iterative debugging, Electron app testing, and comprehensive QA workflows. Best for sustained inspect-fix-verify cycles where you keep browser handles alive across multiple interactions. If you only need one-off browser commands (quick screenshot, fill a form, scrape a page), use **playwright-cli** instead.
+
+Use a persistent Playwright JavaScript session to debug local web or Electron apps, keep the same handles alive across iterations, and run functional plus visual QA without restarting the whole toolchain unless the process ownership changed.
 
 ## Preconditions
 
-- `js_repl` must be enabled for this skill.
-- If `js_repl` is missing, enable it in `~/.codex/config.toml`:
+- A persistent JavaScript execution environment is required so that Playwright handles survive across multiple interaction steps.
+- Run setup from the same project directory you need to debug.
+- Treat REPL/kernel resets as a recovery tool, not routine cleanup. Resetting destroys your Playwright handles.
 
-```toml
-[features]
-js_repl = true
+### Platform compatibility
+
+| Platform | Execution method | Screenshot output | Notes |
+|----------|-----------------|-------------------|-------|
+| **Codex** | `js_repl` (enable in `~/.codex/config.toml` under `[features]`) | `codex.emitImage(...)` or save to file | May require `--sandbox danger-full-access` for browser launch |
+| **OpenCode** | Write `.mjs` scripts, run via Bash `node script.mjs` | Save to file | Use a shared script that launches browser once and accepts commands, or write sequential scripts that reconnect via CDP |
+| **Claude Code** | Bash tool with `node -e '...'` or run `.mjs` scripts | Save to file | Same as OpenCode |
+| **GitHub Copilot** | Terminal with `node` scripts | Save to file | Same as OpenCode |
+
+For non-REPL environments (OpenCode, Claude Code, Copilot), keep a browser alive across script runs by launching with a WebSocket endpoint and reconnecting:
+
+```javascript
+// launch.mjs — run once to start the browser
+import { chromium } from "playwright";
+const browser = await chromium.launch({ headless: false });
+const wsEndpoint = browser.wsEndpoint();
+console.log(`WS_ENDPOINT=${wsEndpoint}`);
+// Keep process alive; kill manually when done
+await new Promise(() => {});
 ```
 
-- You can also start a new session with `--enable js_repl` (equivalent to `-c features.js_repl=true`).
-- After enabling `js_repl`, start a new Codex session so the tool list refreshes.
-- For now, run this workflow with sandboxing disabled: start Codex with `--sandbox danger-full-access` (or the equivalent config for `sandbox_mode=danger-full-access`). This is a temporary requirement while `js_repl` + Playwright support inside the sandbox is still being completed.
-- Run setup from the same project directory you need to debug.
-- Treat `js_repl_reset` as a recovery tool, not routine cleanup. Resetting the kernel destroys your Playwright handles.
+```javascript
+// interact.mjs — run repeatedly to reuse the browser
+import { chromium } from "playwright";
+const browser = await chromium.connectOverCDP(process.env.WS_ENDPOINT);
+const context = browser.contexts()[0] || await browser.newContext();
+const page = context.pages()[0] || await context.newPage();
+// ... your interaction code here
+```
 
 ## One-time setup
 
@@ -76,14 +98,14 @@ try {
   console.log("Playwright loaded");
 } catch (error) {
   throw new Error(
-    `Could not load playwright from the current js_repl cwd. Run the setup commands from this workspace first. Original error: ${error}`
+    `Could not load playwright from the current working directory. Run the setup commands from this workspace first. Original error: ${error}`
   );
 }
 ```
 
 Binding rules:
 
-- Use `var` for the shared top-level Playwright handles because later `js_repl` cells reuse them.
+- Use `var` for the shared top-level Playwright handles because later REPL cells reuse them.
 - The setup cells below are intentionally short happy paths. If a handle looks stale, set that binding to `undefined` and rerun the cell instead of adding recovery logic everywhere.
 - Prefer one named handle per surface you care about (`page`, `mobilePage`, `appWindow`) over repeatedly rediscovering pages from the context.
 
@@ -222,7 +244,7 @@ appWindow ??= await electronApp.firstWindow();
 console.log("Loaded Electron window:", await appWindow.title());
 ```
 
-If `js_repl` is not already running from the Electron app workspace, pass `cwd` explicitly when launching.
+If the REPL is not already running from the Electron app workspace, pass `cwd` explicitly when launching.
 
 If the app process looks stale, set `electronApp = appWindow = undefined` and rerun the cell.
 
@@ -264,7 +286,7 @@ If your launch requires an explicit `cwd`, include the same `cwd` here.
 
 Default posture:
 
-- Keep each `js_repl` cell short and focused on one interaction burst.
+- Keep each REPL cell short and focused on one interaction burst.
 - Reuse the existing top-level bindings (`browser`, `context`, `page`, `electronApp`, `appWindow`) instead of redeclaring them.
 - If you need isolation, create a new page or a new context inside the same browser.
 - For Electron, use `electronApp.evaluate(...)` only for main-process inspection or purpose-built diagnostics.
@@ -274,7 +296,7 @@ Default posture:
 
 ### Session Loop
 
-- Bootstrap `js_repl` once, then keep the same Playwright handles alive across iterations.
+- Bootstrap the REPL session once, then keep the same Playwright handles alive across iterations.
 - Launch the target runtime from the current workspace.
 - Make the code change.
 - Reload or relaunch using the correct path for that change.
@@ -343,13 +365,13 @@ Default posture:
 
 ## Screenshot Examples
 
-If you plan to emit a screenshot through `codex.emitImage(...)`, use the CSS-normalized paths in the next section by default. Those are the canonical examples for screenshots that will be interpreted by the model or used for coordinate-based follow-up actions. Keep raw captures as an exception for fidelity-sensitive debugging only; the raw exception examples appear after the normalization guidance.
+If you plan to capture a screenshot for model interpretation or artifact output, use the CSS-normalized paths in the next section by default. Those are the canonical examples for screenshots that will be interpreted by the model or used for coordinate-based follow-up actions. Keep raw captures as an exception for fidelity-sensitive debugging only; the raw exception examples appear after the normalization guidance.
 
 ### Model-bound screenshots (default)
 
-If you will emit a screenshot with `codex.emitImage(...)` for model interpretation, normalize it to CSS pixels for the exact region you captured before emitting. This keeps returned coordinates aligned with Playwright CSS pixels if the reply is later used for clicking, and it also reduces image payload size and model token cost.
+If you will capture a screenshot for model interpretation, normalize it to CSS pixels for the exact region you captured before saving. This keeps returned coordinates aligned with Playwright CSS pixels if the reply is later used for clicking, and it also reduces image payload size and model token cost.
 
-Do not emit raw native-window screenshots by default. Skip normalization only when you explicitly need device-pixel fidelity, such as Retina or DPI artifact debugging, pixel-accurate rendering inspection, or another fidelity-sensitive case where raw pixels matter more than payload size. For local-only inspection that will not be emitted to the model, raw capture is fine.
+Do not save raw native-window screenshots by default. Skip normalization only when you explicitly need device-pixel fidelity, such as Retina or DPI artifact debugging, pixel-accurate rendering inspection, or another fidelity-sensitive case where raw pixels matter more than payload size. For local-only inspection that will not be sent to the model, raw capture is fine.
 
 Do not assume `page.screenshot({ scale: "css" })` is enough in native-window mode (`viewport: null`). In Chromium on macOS Retina displays, headed native-window screenshots can still come back at device-pixel size even when `scale: "css"` is requested. The same caveat applies to Electron windows launched through Playwright because Electron runs with `noDefaultViewport`, and `appWindow.screenshot({ scale: "css" })` may still return device-pixel output.
 
@@ -361,20 +383,24 @@ Use separate normalization paths for web pages and Electron windows:
 Shared helpers and conventions:
 
 ```javascript
-var emitJpeg = async function (bytes) {
-  await codex.emitImage({
-    bytes,
-    mimeType: "image/jpeg",
-  });
+var screenshotDir = "./screenshots";
+var fs = await import("node:fs");
+if (!fs.existsSync(screenshotDir)) fs.mkdirSync(screenshotDir, { recursive: true });
+
+var saveJpeg = async function (bytes, filename) {
+  const path = `${screenshotDir}/${filename || `screenshot-${Date.now()}.jpg`}`;
+  fs.writeFileSync(path, Buffer.from(bytes));
+  console.log(`Screenshot saved: ${path}`);
+  return path;
 };
 
-var emitWebJpeg = async function (surface, options = {}) {
-  await emitJpeg(await surface.screenshot({
+var saveWebJpeg = async function (surface, options = {}) {
+  return saveJpeg(await surface.screenshot({
     type: "jpeg",
     quality: 85,
     scale: "css",
     ...options,
-  }));
+  }), options.filename);
 };
 
 var clickCssPoint = async function ({ surface, x, y, clip }) {
@@ -403,13 +429,13 @@ var tapCssPoint = async function ({ page, x, y, clip }) {
 Preferred web path for explicit-viewport contexts, and often for web in general:
 
 ```javascript
-await emitWebJpeg(page);
+await saveWebJpeg(page);
 ```
 
 Mobile web uses the same path; substitute `mobilePage` for `page`:
 
 ```javascript
-await emitWebJpeg(mobilePage);
+await saveWebJpeg(mobilePage);
 ```
 
 If the model returns `{ x, y }`, click it directly:
@@ -426,8 +452,8 @@ await tapCssPoint({ page: mobilePage, x, y });
 
 For web `clip` screenshots or element screenshots in this normal path, `scale: "css"` usually works directly. Add the region origin back when clicking.
 
-- `await emitWebJpeg(page, { clip })`
-- `await emitWebJpeg(mobilePage, { clip })`
+- `await saveWebJpeg(page, { clip })`
+- `await saveWebJpeg(mobilePage, { clip })`
 - `await clickCssPoint({ surface: page, clip, x, y })`
 - `await tapCssPoint({ page: mobilePage, clip, x, y })`
 - `await clickCssPoint({ surface: page, clip: box, x, y })` after `const box = await locator.boundingBox()`
@@ -435,7 +461,7 @@ For web `clip` screenshots or element screenshots in this normal path, `scale: "
 Web native-window fallback when `scale: "css"` still comes back at device-pixel size:
 
 ```javascript
-var emitWebScreenshotCssScaled = async function ({ page, clip, quality = 0.85 } = {}) {
+var emitWebScreenshotCssScaled = async function ({ page, clip, quality = 0.85, filename } = {}) {
   var NodeBuffer = (await import("node:buffer")).Buffer;
   const target = clip
     ? { width: clip.width, height: clip.height }
@@ -477,7 +503,7 @@ var emitWebScreenshotCssScaled = async function ({ page, clip, quality = 0.85 } 
     }
   );
 
-  await emitJpeg(bytes);
+  await saveJpeg(bytes, filename);
 };
 ```
 
@@ -500,7 +526,7 @@ await clickCssPoint({ surface: page, clip, x, y });
 For Electron, normalize in the main process instead of opening a scratch Playwright page. The helper below returns CSS-scaled bytes for the full content area or for a clipped CSS-pixel region. Treat `clip` as content-area CSS pixels, for example values taken from `getBoundingClientRect()` in the renderer.
 
 ```javascript
-var emitElectronScreenshotCssScaled = async function ({ electronApp, clip, quality = 85 } = {}) {
+var emitElectronScreenshotCssScaled = async function ({ electronApp, clip, quality = 85, filename } = {}) {
   const bytes = await electronApp.evaluate(async ({ BrowserWindow }, { clip, quality }) => {
     const win = BrowserWindow.getAllWindows()[0];
     const image = clip ? await win.capturePage(clip) : await win.capturePage();
@@ -521,7 +547,7 @@ var emitElectronScreenshotCssScaled = async function ({ electronApp, clip, quali
     return resized.toJPEG(quality);
   }, { clip, quality });
 
-  await emitJpeg(bytes);
+  await saveJpeg(bytes, filename);
 };
 ```
 
@@ -553,31 +579,22 @@ await clickCssPoint({ surface: appWindow, clip, x, y });
 
 Use these only when raw pixels matter more than CSS-coordinate alignment, such as Retina or DPI artifact debugging, pixel-accurate rendering inspection, or other fidelity-sensitive review.
 
-Web desktop raw emit:
+Web desktop raw save:
 
 ```javascript
-await codex.emitImage({
-  bytes: await page.screenshot({ type: "jpeg", quality: 85 }),
-  mimeType: "image/jpeg",
-});
+await saveJpeg(await page.screenshot({ type: "jpeg", quality: 85 }), "raw-desktop.jpg");
 ```
 
-Electron raw emit:
+Electron raw save:
 
 ```javascript
-await codex.emitImage({
-  bytes: await appWindow.screenshot({ type: "jpeg", quality: 85 }),
-  mimeType: "image/jpeg",
-});
+await saveJpeg(await appWindow.screenshot({ type: "jpeg", quality: 85 }), "raw-electron.jpg");
 ```
 
-Mobile raw emit after the mobile web context is already running:
+Mobile raw save after the mobile web context is already running:
 
 ```javascript
-await codex.emitImage({
-  bytes: await mobilePage.screenshot({ type: "jpeg", quality: 85 }),
-  mimeType: "image/jpeg",
-});
+await saveJpeg(await mobilePage.screenshot({ type: "jpeg", quality: 85 }), "raw-mobile.jpg");
 ```
 
 ## Viewport Fit Checks (Required)
@@ -638,13 +655,13 @@ npm start
 
 Before `page.goto(...)`, verify the chosen port is listening and the app responds.
 
-For Electron debugging, launch the app from `js_repl` through `_electron.launch(...)` so the same session owns the process. If the Electron renderer depends on a separate dev server (for example Vite or Next), keep that server running in a persistent TTY session and then relaunch or reload the Electron app from `js_repl`.
+For Electron debugging, launch the app from the REPL through `_electron.launch(...)` so the same session owns the process. If the Electron renderer depends on a separate dev server (for example Vite or Next), keep that server running in a persistent TTY session and then relaunch or reload the Electron app from the REPL.
 
 ## Cleanup
 
 Only run cleanup when the task is actually finished:
 
-- This cleanup is manual. Exiting Codex, closing the terminal, or losing the `js_repl` session does not implicitly run `electronApp.close()`, `context.close()`, or `browser.close()`.
+- This cleanup is manual. Exiting the agent session, closing the terminal, or losing the REPL session does not implicitly run `electronApp.close()`, `context.close()`, or `browser.close()`.
 - For Electron specifically, assume the app may keep running if you leave the session without executing the cleanup cell first.
 
 ```javascript
@@ -675,15 +692,15 @@ appWindow = undefined;
 console.log("Playwright session closed");
 ```
 
-If you plan to exit Codex immediately after debugging, run the cleanup cell first and wait for the `"Playwright session closed"` log before quitting.
+If you plan to exit the session immediately after debugging, run the cleanup cell first and wait for the `"Playwright session closed"` log before quitting.
 
 ## Common Failure Modes
 
-- `Cannot find module 'playwright'`: run the one-time setup in the current workspace and verify the import before using `js_repl`.
+- `Cannot find module 'playwright'`: run the one-time setup in the current workspace and verify the import before running Playwright code.
 - Playwright package is installed but the browser executable is missing: run `npx playwright install chromium`.
 - `page.goto: net::ERR_CONNECTION_REFUSED`: make sure the dev server is still running in a persistent TTY session, recheck the port, and prefer `http://127.0.0.1:<port>`.
 - `electron.launch` hangs, times out, or exits immediately: verify the local `electron` dependency, confirm the `args` target, and make sure any renderer dev server is already running before launch.
-- `Identifier has already been declared`: reuse the existing top-level bindings, choose a new name, or wrap the code in `{ ... }`. Use `js_repl_reset` only when the kernel is genuinely stuck.
+- `Identifier has already been declared` (REPL environments): reuse the existing top-level bindings, choose a new name, or wrap the code in `{ ... }`. Reset the REPL only when the kernel is genuinely stuck.
 - `browserContext.newPage: Protocol error (Target.createTarget): Not supported` while working with Electron: do not use `appWindow.context().newPage()` or `electronApp.context().newPage()` as a scratch page; use the Electron-specific screenshot normalization flow in the model-bound screenshots section.
-- `js_repl` timed out or reset: rerun the bootstrap cell and recreate the session with shorter, more focused cells.
-- Browser launch or network operations fail immediately: confirm the session was started with `--sandbox danger-full-access` and restart that way if needed.
+- REPL timed out or reset: rerun the bootstrap cell and recreate the session with shorter, more focused cells.
+- Browser launch or network operations fail immediately: check that the agent environment allows spawning child processes and network access (e.g., Codex may require `--sandbox danger-full-access`).
