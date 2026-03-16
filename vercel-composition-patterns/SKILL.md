@@ -1,11 +1,16 @@
 ---
 name: vercel-composition-patterns
 description:
-  React composition patterns that scale. Use when building or refactoring React
-  components, component libraries, or reusable APIs so new code follows
-  composition-first design instead of boolean prop proliferation. Triggers on
-  tasks involving compound components, render props, context providers,
-  component architecture, or planning new component APIs. Includes React 19 API
+  React composition patterns that scale. Use this skill proactively whenever
+  building or refactoring React components, component libraries, design-system
+  primitives, or reusable APIs so new code follows composition-first design
+  instead of boolean prop proliferation. Invoke it before adding flags, mode
+  props, renderX props, branching JSX, shared local state, or ad-hoc wrapper
+  components. Reach for it even when the user only says "make this component more
+  reusable", "clean up these props", "add another variant", "share behavior", or
+  "design a better component API". Triggers on tasks involving compound
+  components, slots, children-driven APIs, context providers, component
+  architecture, or planning new React component APIs. Includes React 19 API
   changes.
 ---
 
@@ -27,8 +32,30 @@ Reference these guidelines when:
 - Designing flexible component APIs
 - Reviewing component architecture
 - Working with compound components or context providers
+- Adding variants, states, sizes, or behaviors that might otherwise become more
+  props and conditional branches
+- Sharing behavior or layout across sibling components and deciding whether to
+  use children, slots, context, or explicit subcomponents
 
 Default to these guidelines when choosing the API shape of new React code.
+
+## Trigger Heuristics
+
+Pause and invoke this skill if any of these are true before or during
+implementation:
+
+- You are about to add a boolean prop such as `isOpen`, `hasIcon`, `showLabel`,
+  `inline`, or similar API switches
+- You are considering `variant`, `mode`, or `renderX` props and the component is
+  starting to branch in multiple places
+- You are designing reusable UI primitives, a design-system component, or a
+  component family with shared state
+- You need sibling pieces like `Tabs.List`, `Tabs.Trigger`, and `Tabs.Content`,
+  or any API that naturally fits compound components
+- The user asks for a cleaner, more composable, or more reusable component API
+  without naming composition patterns explicitly
+- You are deciding whether state belongs in a provider, a parent wrapper, or the
+  consumer components themselves
 
 ## Rule Categories by Priority
 

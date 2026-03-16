@@ -2,18 +2,18 @@
 name: solid
 description: |
   Apply SOLID principles to design flexible, maintainable, and testable
-  production code. Use this skill whenever the work involves class, module,
-  interface, or service design; refactoring large or responsibility-heavy code;
-  improving testability; reducing coupling; or deciding boundaries and
-  dependencies. Reach for it early in the technical design phase, before writing
-  implementation code, when turning requirements into module boundaries,
-  abstractions, interfaces, and dependency direction. Reach for it even when the
-  user does not say "SOLID" but is asking for cleaner architecture, smaller
-  interfaces, better extensibility, or safer abstractions. This skill is for
-  code-structure design, not broad product ideation or debugging workflow.
-  Covers Single Responsibility, Open/Closed, Liskov Substitution, Interface
-  Segregation, and Dependency Inversion with practical TypeScript examples and
-  detection heuristics.
+  production code. Use this skill proactively whenever work involves class,
+  module, interface, service, hook, or business-logic boundary design;
+  refactoring responsibility-heavy code; improving testability; reducing
+  coupling; adding extension points; or deciding dependency direction. Invoke it
+  before implementation whenever you are choosing abstractions, splitting
+  responsibilities, wiring dependencies, or trying to avoid another round of
+  cleanup later. Reach for it even when the user does not say "SOLID" and only
+  asks to clean up architecture, make code easier to extend, break apart a large
+  file, introduce a new strategy/provider/repository, or make tests easier to
+  write. Prefer using this skill over diving straight into non-trivial structural
+  code changes. This skill is for code-structure design, not broad product
+  ideation or first-pass debugging.
 ---
 
 # SOLID Principles
@@ -28,6 +28,8 @@ Reference these principles when:
 - Before writing implementation code, when translating agreed requirements into
   classes, modules, interfaces, and dependencies
 - Designing new classes, modules, or interfaces
+- Designing or refactoring services, hooks, repositories, controllers, or other
+  business-logic units that need clear responsibilities
 - Writing day-to-day production code that should strictly follow SOLID
 - Refactoring code with too many responsibilities
 - Reviewing PRs for architectural concerns
@@ -35,7 +37,25 @@ Reference these principles when:
 - Deciding where to draw module boundaries
 - Making code more testable
 - Untangling concrete dependencies or hard-to-extend control flow
+- Adding a new variant, provider, strategy, adapter, or integration and wanting
+  to extend behavior without scattering edits across existing code
 - The user asks for cleaner architecture without naming a specific principle
+
+## Trigger Heuristics
+
+Pause and invoke this skill if any of these are true before or during
+implementation:
+
+- You are about to create or refactor a non-trivial module and are deciding
+  which responsibilities belong together
+- You see branching by type, provider, mode, or integration and expect more of
+  the same later
+- High-level logic directly constructs concrete infrastructure dependencies
+- A class, service, or module has become hard to test because setup is too coupled
+- The user asks to make code cleaner, more extensible, more reusable, or easier
+  to maintain, even without naming a pattern
+- You are introducing interfaces, dependency injection, or boundary layers and
+  need to choose where they actually help
 
 ## Boundary
 
