@@ -14,6 +14,22 @@ description: |
   write. Prefer using this skill over diving straight into non-trivial structural
   code changes. This skill is for code-structure design, not broad product
   ideation or first-pass debugging.
+
+  ALWAYS invoke this skill before writing any non-trivial implementation —
+  including whenever you are about to create a new class, service, hook,
+  module, or interface; add a new integration, provider, or adapter to an
+  existing system; wire dependencies between layers; or touch code that already
+  feels hard to extend or test. Do not start writing structural code first and
+  apply SOLID later; the earlier in the task this skill runs, the more useful
+  it is.
+
+  ALWAYS invoke this skill during any code review, PR review, or architecture
+  audit — including whenever the user says "review this", "check this PR",
+  "look at this code", "give me feedback on this implementation", "LGTM?",
+  "what do you think of this design", or pastes code and asks for an opinion.
+  Any request to evaluate, assess, critique, or approve existing code must go
+  through SOLID. Do not skip this skill during review even if the code looks
+  clean at first glance.
 ---
 
 # SOLID Principles
@@ -137,3 +153,55 @@ Ask these questions for every class and module:
 - Confuse SRP with "single method" — it's about reasons to change, not size
 - Force Liskov compliance on classes that shouldn't be in the same hierarchy
 - Over-segregate interfaces into single-method fragments when a cohesive group makes sense
+
+## Code Review Protocol
+
+When the task is a **code review, PR review, or architecture audit**, run through
+this protocol before giving feedback. Never skip it — even clean-looking code
+benefits from a structured pass.
+
+### Step 1 — Rapid Triage (per file / module)
+
+For each non-trivial module being reviewed, answer the five Detection Checklist
+questions above. Mark each as ✅ (no violation), ⚠️ (mild concern), or 🚨
+(clear violation).
+
+### Step 2 — Prioritize Findings
+
+| Severity | Meaning | Action |
+| -------- | ------- | ------ |
+| 🚨 Blocker | Will cause real pain at scale — coupling, untestable, or closed to extension | Request changes |
+| ⚠️ Suggestion | Moderate violation, acceptable now but will worsen | Comment with concrete fix |
+| ℹ️ Nit | Minor style or over-engineering risk | Optional note |
+
+### Step 3 — Write Actionable Feedback
+
+For every finding, provide:
+
+1. **Which principle** is involved (SRP / OCP / LSP / ISP / DIP)
+2. **What the concrete problem is** — e.g., "This service imports `PrismaClient`
+   directly, so the business logic layer cannot be unit-tested without a real DB"
+3. **A suggested fix** — even a one-sentence direction or a code snippet
+
+### Step 4 — Acknowledge What Works
+
+SOLID reviews are not just a red-pen pass. Call out correct abstractions,
+well-defined boundaries, and good dependency direction. This helps the author
+calibrate and keeps the review balanced.
+
+### Review Output Template
+
+```
+## SOLID Review
+
+### Violations
+- [🚨/⚠️/ℹ️] **[PRINCIPLE]** `path/to/file.ts:line`
+  Problem: <one sentence>
+  Fix: <concrete suggestion>
+
+### Strengths
+- <what the code gets right from a SOLID perspective>
+
+### Summary
+<1–2 sentence verdict on the overall structural health>
+```

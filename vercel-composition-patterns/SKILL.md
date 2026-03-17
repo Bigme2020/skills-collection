@@ -1,6 +1,6 @@
 ---
 name: vercel-composition-patterns
-description:
+description: |
   React composition patterns that scale. Use this skill proactively whenever
   building or refactoring React components, component libraries, design-system
   primitives, or reusable APIs so new code follows composition-first design
@@ -12,6 +12,15 @@ description:
   components, slots, children-driven APIs, context providers, component
   architecture, or planning new React component APIs. Includes React 19 API
   changes.
+
+  ALWAYS invoke this skill during any React component code review, PR review, or
+  frontend architecture audit — including whenever the user says "review this
+  component", "check this PR", "look at this React code", "give me feedback on
+  this component implementation", "LGTM?", "is this a good component API?",
+  "what do you think of this design", or pastes React/JSX/TSX code and asks for
+  an opinion. Any request to evaluate, critique, or approve React component code
+  must go through this skill. Do not skip this skill during review even if the
+  component looks clean at first glance.
 ---
 
 # React Composition Patterns
@@ -56,6 +65,8 @@ implementation:
   without naming composition patterns explicitly
 - You are deciding whether state belongs in a provider, a parent wrapper, or the
   consumer components themselves
+- A component's responsibilities feel tangled or hard to test — pair this skill
+  with the `solid` skill to also check SRP and DIP at the structural level
 
 ## Rule Categories by Priority
 
@@ -111,6 +122,72 @@ Each rule file contains:
 - Incorrect code example with explanation
 - Correct code example with explanation
 - Additional context and references
+
+## Code Review Protocol
+
+When the task is a **code review, PR review, or frontend architecture audit**,
+run through this protocol before giving feedback. Never skip it — even
+clean-looking component code benefits from a structured composition pass.
+
+### Step 1 — Rapid Triage (per component / file)
+
+For each non-trivial component being reviewed, check these signals:
+
+| Question | Anti-Pattern |
+| -------- | ------------ |
+| Does this component have boolean props that control behavior? | Boolean prop proliferation |
+| Does the component have branching JSX based on props or mode? | Hidden conditionals |
+| Are sibling components prop-drilling state that belongs in a provider? | Trapped state |
+| Are render props used where children composition would be cleaner? | renderX over-use |
+| Is state management coupled directly inside a UI component? | State/UI coupling |
+| Does the component expose a `forwardRef` that React 19 no longer needs? | Outdated API |
+
+Mark each as ✅ (no issue), ⚠️ (mild concern), or 🚨 (clear violation).
+
+> **Pair with `solid` skill:** Composition review covers the React-specific API
+> surface. If you spot violations that go deeper — a component with too many
+> unrelated responsibilities (SRP), business logic coupled to a concrete
+> dependency (DIP), or a class hierarchy that breaks substitutability (LSP) —
+> also invoke the `solid` skill for a full structural pass. The two reviews
+> complement each other and should both run on non-trivial React codebases.
+
+### Step 2 — Prioritize Findings
+
+| Severity | Meaning | Action |
+| -------- | ------- | ------ |
+| 🚨 Blocker | Boolean prop explosion, trapped state that will spread, or API shape that can't extend | Request changes |
+| ⚠️ Suggestion | Moderate prop proliferation, fixable in follow-up | Comment with concrete refactor direction |
+| ℹ️ Nit | Minor style, forwardRef in React 19 codebase | Optional note |
+
+### Step 3 — Write Actionable Feedback
+
+For every finding, provide:
+
+1. **Which pattern is violated** (e.g., boolean prop proliferation / trapped state / render props)
+2. **What the concrete problem is** — e.g., "This component has 5 boolean props; adding one more doubles the possible states"
+3. **A suggested fix** — even a one-sentence direction or a short code sketch pointing to the right composition pattern
+
+### Step 4 — Acknowledge What Works
+
+Call out correct compound component usage, well-lifted state, clean children
+APIs, and good context boundaries. This helps the author calibrate.
+
+### Review Output Template
+
+```
+## Composition Review
+
+### Violations
+- [🚨/⚠️/ℹ️] **[PATTERN]** `path/to/Component.tsx:line`
+  Problem: <one sentence>
+  Fix: <concrete suggestion>
+
+### Strengths
+- <what the component gets right from a composition perspective>
+
+### Summary
+<1–2 sentence verdict on the overall component API and composition health>
+```
 
 ## Full Compiled Document
 
