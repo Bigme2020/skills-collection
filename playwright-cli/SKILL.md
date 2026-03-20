@@ -1,6 +1,6 @@
 ---
 name: playwright-cli
-description: CLI-driven browser automation for quick tasks and multi-step workflows. Prefer this skill whenever the user needs browser interaction through terminal commands: navigating sites, filling forms, taking screenshots, scraping data, checking a local web app, or running repeatable QA/debugging steps while preserving session state.
+description: "CLI-driven browser automation for quick tasks and multi-step workflows. Prefer this skill whenever the user needs browser interaction through terminal commands: navigating sites, filling forms, taking screenshots, scraping data, checking a local web app, or running repeatable QA/debugging steps while preserving session state."
 allowed-tools: Bash(playwright-cli:*)
 ---
 

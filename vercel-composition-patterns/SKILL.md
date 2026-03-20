@@ -1,26 +1,14 @@
 ---
 name: vercel-composition-patterns
 description: |
-  React composition patterns that scale. Use this skill proactively whenever
-  building or refactoring React components, component libraries, design-system
-  primitives, or reusable APIs so new code follows composition-first design
-  instead of boolean prop proliferation. Invoke it before adding flags, mode
-  props, renderX props, branching JSX, shared local state, or ad-hoc wrapper
-  components. Reach for it even when the user only says "make this component more
-  reusable", "clean up these props", "add another variant", "share behavior", or
-  "design a better component API". Triggers on tasks involving compound
-  components, slots, children-driven APIs, context providers, component
-  architecture, or planning new React component APIs. Includes React 19 API
-  changes.
-
-  ALWAYS invoke this skill during any React component code review, PR review, or
-  frontend architecture audit — including whenever the user says "review this
-  component", "check this PR", "look at this React code", "give me feedback on
-  this component implementation", "LGTM?", "is this a good component API?",
-  "what do you think of this design", or pastes React/JSX/TSX code and asks for
-  an opinion. Any request to evaluate, critique, or approve React component code
-  must go through this skill. Do not skip this skill during review even if the
-  component looks clean at first glance.
+  React composition patterns that scale. Use this skill whenever building or
+  refactoring React components, component libraries, design-system primitives,
+  or reusable APIs so code stays composition-first instead of accumulating
+  boolean props and branching JSX. Invoke it before adding flags, mode/variant
+  props, render props, shared local state, providers, compound components, or
+  new component APIs, and during any React component code review, PR review, or
+  frontend architecture audit when the user asks to review a component, clean up
+  props, add variants, share behavior, or improve reusability.
 ---
 
 # React Composition Patterns

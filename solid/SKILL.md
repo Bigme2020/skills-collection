@@ -2,34 +2,14 @@
 name: solid
 description: |
   Apply SOLID principles to design flexible, maintainable, and testable
-  production code. Use this skill proactively whenever work involves class,
-  module, interface, service, hook, or business-logic boundary design;
-  refactoring responsibility-heavy code; improving testability; reducing
-  coupling; adding extension points; or deciding dependency direction. Invoke it
-  before implementation whenever you are choosing abstractions, splitting
-  responsibilities, wiring dependencies, or trying to avoid another round of
-  cleanup later. Reach for it even when the user does not say "SOLID" and only
-  asks to clean up architecture, make code easier to extend, break apart a large
-  file, introduce a new strategy/provider/repository, or make tests easier to
-  write. Prefer using this skill over diving straight into non-trivial structural
-  code changes. This skill is for code-structure design, not broad product
-  ideation or first-pass debugging.
-
-  ALWAYS invoke this skill before writing any non-trivial implementation —
-  including whenever you are about to create a new class, service, hook,
-  module, or interface; add a new integration, provider, or adapter to an
-  existing system; wire dependencies between layers; or touch code that already
-  feels hard to extend or test. Do not start writing structural code first and
-  apply SOLID later; the earlier in the task this skill runs, the more useful
-  it is.
-
-  ALWAYS invoke this skill during any code review, PR review, or architecture
-  audit — including whenever the user says "review this", "check this PR",
-  "look at this code", "give me feedback on this implementation", "LGTM?",
-  "what do you think of this design", or pastes code and asks for an opinion.
-  Any request to evaluate, assess, critique, or approve existing code must go
-  through SOLID. Do not skip this skill during review even if the code looks
-  clean at first glance.
+  production code. Use this skill whenever work involves class, module,
+  interface, service, hook, or business-logic boundary design; refactoring
+  responsibility-heavy code; improving testability; reducing coupling; adding
+  extension points; or choosing dependency direction. Invoke it before any
+  non-trivial structural implementation and during any code review, PR review,
+  or architecture audit involving abstractions, dependency wiring, large-file
+  splits, new strategies/providers/repositories, or requests to clean up
+  architecture and make code easier to extend.
 ---
 
 # SOLID Principles
