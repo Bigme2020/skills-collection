@@ -1,6 +1,6 @@
 interface:
   display_name: "Playwright Interactive"
-  short_description: "Persistent browser and Electron QA"
+  short_description: "Compatibility alias to playwright-cli"
   icon_small: "./assets/playwright-small.svg"
   icon_large: "./assets/playwright.png"
-  default_prompt: "Use $playwright-interactive to debug a local web or Electron app in a persistent Playwright session and capture the QA evidence."
+  default_prompt: "Use $playwright-cli to debug a local web app, inspect it step by step, and capture QA evidence with CLI browser commands."

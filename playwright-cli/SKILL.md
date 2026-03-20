@@ -1,12 +1,12 @@
 ---
 name: playwright-cli
-description: CLI-driven browser automation for one-off tasks like navigating websites, filling forms, taking screenshots, scraping data, and quick web testing. Use when the user needs sequential browser commands without a persistent JS session. Do NOT use for iterative UI debugging, Electron apps, or sustained QA workflows — use playwright-interactive instead.
+description: CLI-driven browser automation for quick tasks and multi-step workflows. Prefer this skill whenever the user needs browser interaction through terminal commands: navigating sites, filling forms, taking screenshots, scraping data, checking a local web app, or running repeatable QA/debugging steps while preserving session state.
 allowed-tools: Bash(playwright-cli:*)
 ---
 
 # Browser Automation with playwright-cli
 
-> **Scope**: This skill drives a browser via CLI commands (`playwright-cli open`, `playwright-cli click`, etc.). Best for one-off or sequential tasks: web scraping, form submission, quick screenshots, data extraction. If you need a persistent JavaScript session for iterative UI debugging, Electron app testing, or comprehensive visual/functional QA, use **playwright-interactive** instead.
+> **Scope**: This skill drives a browser via CLI commands (`playwright-cli open`, `playwright-cli click`, etc.). Use it for both quick tasks and iterative browser workflows: web scraping, form submission, screenshots, local web-app checks, and repeatable QA/debugging. When you need to keep state across steps, reuse a named session instead of switching to another skill.
 
 ## Quick start
 
