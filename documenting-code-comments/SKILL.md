@@ -1,9 +1,31 @@
 ---
 name: documenting-code-comments
-description: Standards for writing self-documenting code and best practices for when to write (and avoid) code comments. Use when auditing, cleaning up, or improving inline code documentation.
+description: Standards for writing self-documenting code and best practices for when to write, preserve, update, or remove code comments and docstrings. Use this whenever writing code, refactoring existing code, reviewing PRs, cleaning up comments, adding documentation, changing public APIs, or touching logic where comments can drift out of sync. Treat it as part of the implementation workflow, not a final polish step.
 ---
 
 # Code Comment Guidelines
+
+## Required Workflow
+
+When this skill is active, comment quality is part of the core task. Do not treat it as optional cleanup after the code change.
+
+For every file you touch, follow this sequence:
+
+1. **Inspect existing comments and docstrings first** so you understand the local context before editing code.
+2. **Refactor for clarity before adding comments** using naming, extraction, types, and structure.
+3. **Preserve useful existing comments during changes** and update them if the behavior or rationale changed.
+4. **Add comments only where future readers need hidden context** such as why, constraints, edge cases, workarounds, business rules, or external references.
+5. **Run a final comment audit before finishing**: every touched comment should still be accurate, useful, and aligned with the final code.
+
+Use these questions to keep the skill in your working memory while coding:
+
+- What comments or docstrings already exist in the code I am changing?
+- Will this edit make any surrounding comment stale or misleading?
+- Can I make the code self-documenting instead of adding explanation?
+- Is there any non-obvious why, constraint, gotcha, or external dependency that now needs a comment?
+- If I touched a public API, does its docstring or contract documentation still match reality?
+
+When reporting your work, briefly mention the documentation outcome for touched files when relevant: preserved comments, updated stale comments, added necessary rationale, or intentionally left comments unchanged because the code is self-documenting.
 
 ## Core Philosophy
 
