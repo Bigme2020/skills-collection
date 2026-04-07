@@ -1,0 +1,82 @@
+[
+  {
+    "query": "我把这个 Next.js 的结算页改完了，准备提 PR。请先帮我确认这次改动真的完成了，尤其是优惠码输入、按钮禁用态，还有页面上有没有报错。",
+    "should_trigger": true
+  },
+  {
+    "query": "这个 React 弹窗我已经修过焦点丢失的问题了，你帮我做最后验收，别只看测试，页面实际点一遍确认没问题再告诉我能不能结束。",
+    "should_trigger": true
+  },
+  {
+    "query": "我刚修了一个用户资料页白屏 bug，现在想 commit。请按正式验证流程过一遍，看看页面能不能正常渲染、console 里还有没有错误。",
+    "should_trigger": true
+  },
+  {
+    "query": "这个表单校验提示我改了文案和交互，功能上应该好了。你在我提交前帮我确认一下：提交按钮、错误提示、成功后的页面状态都是真的对。",
+    "should_trigger": true
+  },
+  {
+    "query": "管理后台的筛选抽屉我重写了一版，桌面和移动端样式都动了。现在不要直接说 done，先把该跑的验证都跑了，页面也实际检查一下。",
+    "should_trigger": true
+  },
+  {
+    "query": "我觉得这个前端修复差不多了，你作为最后一道 gate 帮我验一下。它涉及路由跳转和 loading state，最好确认真实浏览器里的表现，不要只看代码。",
+    "should_trigger": true
+  },
+  {
+    "query": "这个 bug 只在浏览器里能看到：点开详情抽屉后数据会闪一下再消失。我改完了，麻烦按收尾验证标准确认这个症状真的没了，再决定是否完成。",
+    "should_trigger": true
+  },
+  {
+    "query": "我要发版这个带页面的功能了，涉及卡片布局、hover 态和点击后的 toast。请在宣称完成前做完整验证，尤其确认 UI 和交互不是看起来像对而是真的对。",
+    "should_trigger": true
+  },
+  {
+    "query": "后端接口我刚重构完，帮我跑单测、lint 和 build，确认都过了就行，不需要看页面。",
+    "should_trigger": true
+  },
+  {
+    "query": "我准备 merge 这个 Node CLI 的改动，不是想做代码 review，而是想在合并前做最后验证。请检查命令行输出和退出码，确认这次改动真的可以算完成。",
+    "should_trigger": true
+  },
+  {
+    "query": "这个 Python 数据清洗脚本我准备交付了。请不要做泛泛的 code review，而是按完成前验证流程确认它是不是已经真的完成，重点看 CSV 输出字段和边界值。",
+    "should_trigger": true
+  },
+  {
+    "query": "这个修复只是给 API client 补了重试和超时，我要提交了。请验证测试和日志表现，但不用浏览器。",
+    "should_trigger": true
+  },
+  {
+    "query": "帮我打开本地站点看看首页长什么样，截个图给我，不需要你判断任务是否完成。",
+    "should_trigger": false
+  },
+  {
+    "query": "我想写一个新的 Playwright E2E 用例，覆盖登录后修改密码的流程。先帮我设计测试，不是在做最终完工验收。",
+    "should_trigger": false
+  },
+  {
+    "query": "这个 Tailwind 页面配色我还在尝试方案，先给我几个视觉方向，不用现在做最终验证。",
+    "should_trigger": false
+  },
+  {
+    "query": "数据库迁移脚本已经写好了，我只是想知道 SQL 语句会不会锁表，不需要 completion gate。",
+    "should_trigger": false
+  },
+  {
+    "query": "本地 dev server 起不来，浏览器还没打开就 500 了。先帮我定位启动错误，不是在收尾也不是在 claim 完成。",
+    "should_trigger": false
+  },
+  {
+    "query": "我需要你批量把 30 张产品图压缩后上传到 CDN，这个任务和页面验收没关系。",
+    "should_trigger": false
+  },
+  {
+    "query": "我在做一个新组件，但现在只是想讨论 API 怎么设计，variant 要不要拆，不用进入最后验证流程。",
+    "should_trigger": false
+  },
+  {
+    "query": "请用浏览器把这个 SaaS 后台跑一遍，把发现的问题列出来。我没有说已经修完，也不是让你确认可以结束。",
+    "should_trigger": false
+  }
+]

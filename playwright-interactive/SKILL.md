@@ -18,6 +18,7 @@ Use this skill to reduce drift between what the agent thinks is happening and wh
 - Use it when iterating on a local web app and validating each meaningful change.
 - Use it when writing or repairing E2E tests and you need to confirm the real flow, selectors, or expected states in the browser.
 - Use it when debugging flaky or browser-only behavior and you need evidence from snapshots, screenshots, tracing, console output, or network activity.
+- Use it as the required final validation path when `verification-before-completion` applies to browser-visible work.
 
 ## Core idea
 
@@ -30,6 +31,8 @@ Work in short verification loops:
 5. Continue only after the current step is grounded.
 
 Do not leave browser validation until the very end unless the task is genuinely trivial.
+
+When the task changes browser-visible behavior, this skill is not just a helpful debugging aid. It is the workflow that produces the final evidence needed to claim the work is complete.
 
 ## How to work
 
@@ -74,4 +77,5 @@ playwright-cli -s=debug close
 
 - This skill is about cadence and evidence, not about replacing a full test runner.
 - Use judgment: some tiny tasks do not need repeated browser checks, while risky or ambiguous tasks usually do.
+- If `verification-before-completion` requires browser evidence for the task, do not stop at one failed check. Keep the repair-and-reverify loop going until the page renders correctly, the console is clean enough for the task, and the key flow works.
 - Prefer `playwright-cli` directly only when the user simply needs a one-off browser action rather than an iterative validation loop.
