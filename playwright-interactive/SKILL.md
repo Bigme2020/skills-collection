@@ -53,6 +53,7 @@ When the task changes browser-visible behavior, this skill is not just a helpful
 
 - When writing or revising E2E tests, use `playwright-cli` to confirm the key user path when the flow or assertions are still unclear.
 - Turn verified observations into durable test code, but do not treat exploratory CLI steps as a complete test design.
+- If you run Playwright's test runner from the terminal, default to `--reporter=line` so the output stays stream-friendly for agents and does not hang on interactive or overly verbose reporters. Only use a different reporter when the user explicitly asks for it.
 - When a test fails, choose the fastest useful evidence source. That may be `playwright-cli`, or it may be trace output, screenshots, video, logs, or mocking.
 - Use browser exploration to separate product bugs, test bugs, selector issues, and environment issues.
 
@@ -78,4 +79,5 @@ playwright-cli -s=debug close
 - This skill is about cadence and evidence, not about replacing a full test runner.
 - Use judgment: some tiny tasks do not need repeated browser checks, while risky or ambiguous tasks usually do.
 - If `verification-before-completion` requires browser evidence for the task, do not stop at one failed check. Keep the repair-and-reverify loop going until the page renders correctly, the console is clean enough for the task, and the key flow works.
+- For any `playwright test` command you run while following this skill, prefer `playwright test --reporter=line` or the package-manager equivalent such as `npx playwright test --reporter=line`.
 - Prefer `playwright-cli` directly only when the user simply needs a one-off browser action rather than an iterative validation loop.

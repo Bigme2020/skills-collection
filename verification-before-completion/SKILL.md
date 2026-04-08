@@ -164,7 +164,7 @@ In this case, report the real status plainly:
 
 **Browser-visible work:**
 ```
-✅ [Run tests/build as relevant] + [Invoke playwright-interactive] + [Confirm rendering, console, and interaction evidence] "The page change passes verification"
+✅ [Run tests/build as relevant; if using Playwright test runner, use `--reporter=line`] + [Invoke playwright-interactive] + [Confirm rendering, console, and interaction evidence] "The page change passes verification"
 ❌ "Build passed so the page should be fine" / "Looks correct from the code"
 ```
 
@@ -207,6 +207,7 @@ From 24 failure memories:
 
 **ALWAYS additionally for browser-visible work:**
 - Invoke `playwright-interactive` as part of final verification
+- If running `playwright test`, use `--reporter=line` unless the user explicitly requests another reporter
 - Use browser evidence to validate rendering, console health, and the key interaction path
 - Stay in the fix-and-reverify loop until the visible behavior passes
 

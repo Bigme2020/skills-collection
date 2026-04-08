@@ -52,6 +52,16 @@ test('login flow', async ({ page }) => {
 
 ## Best Practices
 
+### 0. Use a line reporter for agent runs
+
+When validating generated tests with the Playwright test runner in an agent session, default to `--reporter=line`:
+
+```bash
+npx playwright test --reporter=line
+```
+
+This keeps output incremental and agent-friendly. Do not switch to another reporter unless the user explicitly asks for it.
+
 ### 1. Use Semantic Locators
 
 The generated code uses role-based locators when possible, which are more resilient:
