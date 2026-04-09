@@ -9,6 +9,8 @@ description: Standards for deciding when code should stay self-documenting and w
 
 When this skill is active, comment quality is part of the core task. Do not treat it as optional cleanup after the code change.
 
+Unless the local repository already has a strong conflicting convention, write newly added or updated comments and docstrings in Chinese. Match the repository's existing style only when the project clearly standardizes on another language.
+
 The goal is not to maximize comment count. The goal is to leave future readers with the context they cannot reliably recover from code alone. If that context exists, add or update the comment instead of silently hoping the code is obvious enough.
 
 This skill exists because models often over-index on "self-documenting code" and under-deliver on actual comments. Do not default to zero comments just because the code looks readable after refactoring. If you touched non-trivial behavior, you must actively check whether a docstring or a short why-comment is now required.
@@ -101,6 +103,8 @@ Do not misread this as "default to no comments." It means refactor obvious code 
 In practice, this skill should increase comment attention, not merely preserve the status quo.
 
 ### Writing Style Guidelines
+
+**Language:** Default to Chinese for newly added or updated comments, docstrings, and TODO notes unless the repository clearly requires another language for consistency.
 
 **Tone:** Be direct, practical, and clear. Write in a natural and relaxed tone. Be approachable and down-to-earth with some personality, but light on the slang and excessive casual terms.
 
@@ -277,8 +281,8 @@ if (orderTotal > 100 && customer.orderCount === 0) {
 ### Single-line Comments
 
 ```
-// Sentence case, no period for fragments
-// Full sentences get periods.
+// 句子简洁，优先说明原因
+// 如果是完整句子，可以正常使用句号。
 ```
 
 ### JSDoc/TSDoc for Public APIs
@@ -287,11 +291,11 @@ Use JSDoc or TSDoc for touched public APIs when behavior is not obvious from the
 
 ```typescript
 /**
-Validates email format and checks domain blacklist.
-  @throws {ValidationError} If format invalid or domain blacklisted
+校验邮箱格式，并检查域名是否在黑名单中。
+  @throws {ValidationError} 当格式非法或域名被封禁时抛出
   @example
-    validateEmail('user@example.com'); // OK
-    validateEmail('spam@blocked.com'); // throws
+    validateEmail('user@example.com'); // 正常通过
+    validateEmail('spam@blocked.com'); // 抛出异常
 */
 function validateEmail(email: string): void {}
 ```
@@ -300,10 +304,10 @@ function validateEmail(email: string): void {}
 
 ```
 // ✅ GOOD: Actionable with ticket
-// TODO(JIRA-567): Replace with batch API when available Q1 2025
+// TODO(JIRA-567): 2025 年 Q1 可用后替换为批量 API
 
 // ❌ BAD: No context
-// TODO: fix this later
+// TODO: 之后修一下
 ```
 
 ---
