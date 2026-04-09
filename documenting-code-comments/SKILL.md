@@ -11,14 +11,17 @@ When this skill is active, comment quality is part of the core task. Do not trea
 
 The goal is not to maximize comment count. The goal is to leave future readers with the context they cannot reliably recover from code alone. If that context exists, add or update the comment instead of silently hoping the code is obvious enough.
 
+This skill exists because models often over-index on "self-documenting code" and under-deliver on actual comments. Do not default to zero comments just because the code looks readable after refactoring. If you touched non-trivial behavior, you must actively check whether a docstring or a short why-comment is now required.
+
 For every file you touch, follow this sequence:
 
 1. **Inspect existing comments and docstrings first** so you understand the local context before editing code.
 2. **Refactor for clarity before adding comments** using naming, extraction, types, and structure.
 3. **Preserve useful existing comments during changes** and update them if the behavior or rationale changed.
-4. **Decide whether each touched function, module, or class needs documentation** based on whether the contract, constraints, or behavior are obvious from the signature and structure alone.
+4. **Decide whether each touched function, module, class, or complex block needs documentation** based on whether the contract, constraints, or behavior are obvious from the signature and structure alone.
 5. **Add comments where future readers need hidden context** such as why, constraints, edge cases, workarounds, business rules, external references, or non-obvious return semantics.
-6. **Run a final comment audit before finishing**: every touched comment should still be accurate, useful, and aligned with the final code.
+6. **Force a written decision for each touched file**: either add/update at least one useful comment or docstring, or consciously conclude that no hidden context remains after review.
+7. **Run a final comment audit before finishing**: every touched comment should still be accurate, useful, and aligned with the final code.
 
 Use these questions to keep the skill in your working memory while coding:
 
@@ -26,11 +29,26 @@ Use these questions to keep the skill in your working memory while coding:
 - Will this edit make any surrounding comment stale or misleading?
 - Did I touch any public API or exported symbol that now needs a docstring or contract note?
 - Did I add or modify a complex private function that would be hard to understand without a short why comment?
+- Did I add or modify any non-obvious block that deserves an inline comment even if the function itself stays undocumented?
 - Can I make the code self-documenting instead of adding explanation?
 - Is there any non-obvious why, constraint, gotcha, or external dependency that now needs a comment?
 - If I touched a public API, does its docstring or contract documentation still match reality?
 
-When reporting your work, briefly mention the documentation outcome for touched files: added or updated docstrings, refreshed stale comments, added rationale where needed, or intentionally left comments unchanged because the code is self-documenting.
+If you did not ask these questions while editing, you are probably not actually following the skill yet.
+
+When reporting your work, briefly mention the documentation outcome for touched files: added or updated docstrings, refreshed stale comments, added rationale where needed, or intentionally left comments unchanged because the code is self-documenting. This is mandatory whenever this skill was active.
+
+## Default Bias
+
+When you are unsure, prefer adding one short useful comment over adding none.
+
+Good default targets for that comment:
+
+- A touched exported/public function whose contract is not obvious from the signature
+- A touched private helper with branching, edge cases, or a hidden invariant
+- A touched code block that exists because of ordering, data shape quirks, migration constraints, or external API behavior
+
+Do not turn this into comment spam. The point is to defeat the common failure mode where the model writes zero comments after claiming it considered them.
 
 ## Minimum Documentation Expectations
 
@@ -47,7 +65,7 @@ It usually needs a docstring when at least one of these is true:
 - The function can throw, retries, short-circuits, caches, or has ordering, timing, or idempotency constraints
 - The function exists to enforce a business rule, policy, or external contract
 
-If none of those are true and the local project normally avoids docstrings for simple APIs, keep the code lean.
+If none of those are true and the local project normally avoids docstrings for simple APIs, keep the code lean. But do not stop at that sentence as an excuse: still check whether nearby logic, return semantics, or usage constraints need a short comment instead.
 
 ### Complex private functions
 
@@ -61,6 +79,8 @@ Add a short function-level note or nearby why comment when a private function:
 - Uses a performance tradeoff that would look strange without context
 
 Prefer a short rationale over a bulky docstring when that is enough.
+
+If you edited a private function with tricky branching and still left no docstring and no nearby why-comment, you should be able to explain exactly why hidden context was not needed.
 
 ### Modules, classes, and files with existing comments
 
@@ -77,6 +97,8 @@ Leave a comment when code exists because of a browser bug, API inconsistency, le
 Self-documenting code reduces maintenance burden and prevents comment drift. Studies show clear naming and structure can reduce onboarding time by up to 30%.
 
 Do not misread this as "default to no comments." It means refactor obvious code to be clearer first, then write the smallest useful comment or docstring for the context that still remains hidden.
+
+In practice, this skill should increase comment attention, not merely preserve the status quo.
 
 ### Writing Style Guidelines
 
@@ -339,6 +361,8 @@ Before you finish, explicitly verify:
 2. Existing comments near changed logic are still accurate
 3. Complex rules, workarounds, or gotchas now have enough rationale
 4. New comments explain why, constraints, or edge cases instead of restating the code
+5. I did not use "the code is readable" as a blanket reason to avoid all documentation work
+6. For each touched file, I can point to either a comment/docstring change or a conscious decision that no hidden context remained
 
 In your final handoff, briefly state which of these happened:
 
@@ -346,3 +370,5 @@ In your final handoff, briefly state which of these happened:
 - Updated stale comments after changing behavior
 - Added rationale comments for tricky logic or constraints
 - Intentionally left comments unchanged because the code is clear and no hidden context remained
+
+If the final handoff does not mention the documentation outcome, treat that as a workflow miss and fix it before finishing.

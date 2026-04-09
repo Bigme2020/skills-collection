@@ -93,3 +93,15 @@ The skill itself tells you which.
 ## User Instructions
 
 Instructions say WHAT, not HOW. "Add X" or "Fix Y" doesn't mean skip workflows.
+
+## Cross-Skill Completion Rules
+
+Some skills impose output requirements that must still be visible in the final response. Do not treat those as optional just because the implementation work is done.
+
+In particular:
+
+- If `documenting-code-comments` was active for the task, the final response must mention the documentation outcome for touched files.
+- That outcome can be one or more of: added or updated docstrings, refreshed stale comments, added rationale comments, or consciously left comments unchanged because no hidden context remained.
+- If the final response omits that documentation outcome, treat the task as not fully completed yet.
+
+This rule exists to prevent a common workflow failure: the agent invokes `documenting-code-comments`, performs code changes, and then gives a final handoff that says nothing about comment or docstring decisions.
