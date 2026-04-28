@@ -158,11 +158,14 @@ Allowed content:
 
 If any mismatch exists, edit the generated OpenSpec artifacts directly.
 
+For a change that is still in development, treat the latest approved plan as the current truth. OpenSpec documents should not read like an append-only patch log: do not preserve outdated decisions, contradicted alternatives, or historical conflict notes just because they appeared in an earlier draft. Overwrite the affected proposal, design, spec, and task content so each document states the current decision directly and coherently.
+
 Required fixes:
 
 - add back missing plan items
 - remove extra scope
 - reword speculative statements into faithful plan language
+- replace stale or conflicting historical decisions with the current approved decision
 - convert unsupported assumptions into explicit open questions, if needed
 - keep proposal, design, and tasks mutually consistent after each edit
 
