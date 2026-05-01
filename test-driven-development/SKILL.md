@@ -1,9 +1,9 @@
 ---
 name: test-driven-development
-description: Strict test-first workflow for any feature, bugfix, refactor, or behavior change. Use before writing production code, and actively consider it for every development task. Enforce internal RED->GREEN verification and require a Chinese test-case summary in implementation responses.
+description: Strict test-first workflow for feature work, bug fixes, behavior-changing refactors, regression tests, interface design, and mock/test-utility decisions. Use before writing production code when the user asks for TDD, test-first development, red-green-refactor, behavior tests, integration-style tests, or regression coverage. Actively consider this skill for every implementation task. Requires failing-test evidence before production code, RED->GREEN verification, and a Chinese test-case summary in implementation responses.
 ---
 
-# Test-Driven Development (TDD)
+# Test-Driven Development
 
 ## Output Language Requirement
 
@@ -13,43 +13,68 @@ At minimum, this includes:
 
 - Test-case summary blocks
 - Blocked/error notices related to TDD flow
+- Test-case descriptions
 
 This does not require translating unrelated non-TDD parts of the response.
 
-Hard requirement:
+## Core Principle
 
-- All test-case descriptions must be written in Simplified Chinese.
-- Do not output English-only test-case descriptions in user-facing responses.
+```text
+NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST.
+```
 
-## Execution Contract (Non-Negotiable)
+Tests should verify behavior through public interfaces, not implementation details. Code can change entirely; tests should still pass if behavior stays the same.
+
+Good tests are integration-style: they exercise real code paths through public APIs. They describe what the system does, not how it does it. A good test reads like a specification: `user can checkout with valid cart` tells you exactly what capability exists.
+
+Bad tests are coupled to implementation. They mock internal collaborators, test private methods, assert call counts, or verify through external means instead of the product interface. Warning sign: a refactor breaks the test even though behavior did not change.
+
+See `tests.md` for examples and `mocking.md` for mocking guidance. Before heavy use of mocks or test utilities, also read `testing-anti-patterns.md`.
+
+## When to Use
+
+Use this skill for:
+
+- New feature implementation
+- Bug fixes after the root cause is understood
+- Behavior-changing refactors
+- Regression tests
+- Public interface design where testability matters
+- Mock or test-utility design
+- Requests mentioning TDD, test-first, RED/GREEN, red-green-refactor, behavior tests, integration-style tests, or regression coverage
+
+Actively consider this skill before every implementation task. If the user explicitly approves non-TDD, follow the Exception Protocol.
+
+## Execution Contract
 
 Follow this contract for every implementation task:
 
-1. Do not write production code before a failing test exists.
-2. Verify RED first (test fails for the expected reason).
+1. Write one failing test for one behavior before production code.
+2. Verify RED first: the test fails for the expected behavior reason, not setup/runtime noise.
 3. Write the smallest production change to reach GREEN.
-4. Verify GREEN (targeted tests pass).
-5. Include a Chinese test-case summary and verification evidence in your response.
+4. Verify GREEN with targeted tests.
+5. Refactor only after GREEN, then verify tests stay GREEN.
+6. Include a Chinese test-case summary and verification evidence in the final response.
 
 If any step is missing, stop and report:
 
 `阻塞：缺少测试用例验证证据。`
 
-## Allowed State Machine (Internal Only)
+## Internal State Machine
 
 Only these transitions are valid:
 
 `INIT -> RED_VERIFIED -> GREEN_VERIFIED -> REFACTOR -> DONE`
 
-Invalid transitions (violations):
+Invalid transitions:
 
 - `INIT -> GREEN_VERIFIED`
 - `INIT -> DONE`
 - `RED_VERIFIED -> DONE`
 
-Do not expose this state machine or stage labels in user-facing output unless the user explicitly asks for it.
+Do not expose state labels in user-facing output unless the user explicitly asks.
 
-## Required User-Facing Block (Every Implementation Response)
+## Required User-Facing Block
 
 When you write or modify production code, include this section in the response:
 
@@ -64,78 +89,162 @@ When you write or modify production code, include this section in the response:
 - 准确性结论: <这些用例为何能准确覆盖本次变更>
 ```
 
-Constraints for this block:
+Constraints:
 
 - Use Simplified Chinese for every line and every test-case description.
-- Do not include `Stage` / `RED_VERIFIED` / `GREEN_VERIFIED` labels unless explicitly requested by the user.
+- Do not include `Stage`, `RED_VERIFIED`, or `GREEN_VERIFIED` unless explicitly requested.
 
-## Core Rule
+## Context and Language Alignment
+
+When exploring the codebase, use existing project vocabulary so test names, interface names, and behavior descriptions match the domain.
+
+Relevant sources include:
+
+- Existing production code and tests
+- Project documentation and requirements
+- OpenSpec specs such as `openspec/specs/**/spec.md` and `openspec/**/specs.md`
+- Applicable `AGENTS.md` files, including repository, subdirectory, and user-level instructions
+
+Do not make documentation lookup a default blocker. Read these sources when they affect naming, public interface shape, behavior boundaries, or test commands.
+
+## Anti-Pattern: Horizontal Slices
+
+Do not write all tests first, then all implementation. That is horizontal slicing.
+
+Horizontal slicing produces weak tests:
+
+- Tests written in bulk test imagined behavior, not actual behavior
+- Tests drift toward data shape or function signatures instead of user-visible behavior
+- Tests become insensitive to real changes
+- Test structure gets locked in before the implementation teaches you what matters
+
+Correct approach: vertical slices through tracer bullets. One test -> one implementation -> repeat.
 
 ```text
-NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST.
+WRONG:
+  RED:   test1, test2, test3, test4
+  GREEN: impl1, impl2, impl3, impl4
+
+RIGHT:
+  RED->GREEN: test1->impl1
+  RED->GREEN: test2->impl2
+  RED->GREEN: test3->impl3
 ```
 
-If you accidentally wrote production code first:
+## Workflow
 
-1. Delete or ignore that implementation as source of truth.
-2. Write failing tests first.
-3. Re-implement from tests.
+### 1. Clarify Only What Is Unclear
 
-## TDD Workflow
+Before writing code, inspect relevant code and tests. Ask the user only when interface changes, behavior priority, or test scope cannot be inferred.
 
-### 1) RED - Write a Failing Test
+Clarify these when needed:
+
+- What public interface should change?
+- Which behaviors are most important to test?
+- Which edge cases matter for this task?
+
+You cannot test everything. Focus on critical paths and complex logic, not every possible edge case.
+
+### 2. RED: Tracer Bullet
 
 Write one minimal test for one behavior.
 
 Requirements:
 
-- Clear behavior-focused test name.
-- One behavior per test.
-- Prefer real behavior checks over mock-behavior checks.
+- Behavior-focused test name
+- One behavior per test
+- Public interface only
+- Prefer real behavior checks over mock-behavior checks
+- Test would survive internal refactor
 
-Run targeted test command (examples):
+Run a targeted test command, for example:
 
 ```bash
 pnpm test path/to/file.test.ts
-# or
 npm test path/to/file.test.ts
 ```
 
 RED acceptance criteria:
 
-- Test fails (not runtime/setup error).
-- Failure reason matches missing behavior.
+- Test fails
+- Failure is not a runtime/setup error
+- Failure reason matches missing behavior
 
-If test passes immediately, test is invalid for this change. Rewrite the test.
+If the test passes immediately, it is invalid for this change. Rewrite it.
 
-### 2) GREEN - Minimal Implementation
+### 3. GREEN: Minimal Implementation
 
-Write the smallest possible production code to satisfy RED.
+Write the smallest production code needed to satisfy the failing test.
 
 Constraints:
 
-- No speculative abstractions.
-- No bundling unrelated refactors.
-- No hidden feature expansion.
+- No speculative abstractions
+- No unrelated refactors
+- No hidden feature expansion
+- No extra behavior for future imagined tests
 
 Run the same targeted test command again.
 
 GREEN acceptance criteria:
 
-- Targeted tests pass.
-- No newly introduced failures in related scope.
+- Targeted tests pass
+- No newly introduced failures in the related scope
 
-### 3) REFACTOR - Keep Behavior Stable
+### 4. Repeat Incrementally
 
-Refactor only after GREEN.
+For each remaining behavior:
+
+```text
+RED:   Write next behavior test -> verify expected failure
+GREEN: Minimal implementation -> verify pass
+```
+
+Rules:
+
+- One test at a time
+- Only enough code for the current test
+- Do not anticipate future tests
+- Keep assertions on observable behavior
+
+### 5. Refactor After GREEN
+
+Refactor only after all targeted tests are GREEN.
 
 Allowed refactors:
 
-- Rename for clarity.
-- Remove duplication.
-- Extract helpers without behavior change.
+- Rename for clarity
+- Remove duplication
+- Extract helpers without behavior change
+- Improve names, seams, or helper boundaries exposed by the tests
 
-Run tests again and remain GREEN.
+If refactoring or interface design raises non-trivial responsibility, dependency-direction, module-boundary, abstraction, or deep-module questions, invoke the `solid` skill. Keep TDD order intact: no production code before RED, and structural refactors happen only after GREEN unless you are designing the public seam needed for the first failing test.
+
+See `refactoring.md` and `interface-design.md` for TDD-local guidance. Use the `solid` skill for structural design beyond that.
+
+Run tests after each refactor step and stay GREEN.
+
+## Mocking Rules
+
+Mock at system boundaries only:
+
+- External APIs
+- Databases when a test DB is impractical
+- Time/randomness
+- File system when real filesystem tests are too slow or brittle
+
+Do not mock:
+
+- Your own modules/classes
+- Internal collaborators
+- The method whose side effect is part of the assertion
+
+Before any mock, answer:
+
+1. What real side effects does this dependency produce?
+2. Which side effects does this test rely on?
+3. Why is this mock level the narrowest safe level?
+
+If any answer is unknown, inspect real behavior first.
 
 ## Exception Protocol
 
@@ -159,23 +268,31 @@ Treat these statements as violations:
 
 When one appears, stop and return to RED.
 
+## Checklist Per Cycle
+
+```text
+[ ] Test describes behavior, not implementation
+[ ] Test uses public interface only
+[ ] Test would survive internal refactor
+[ ] RED failure reason was verified
+[ ] Code is minimal for this test
+[ ] No speculative features added
+[ ] GREEN was verified with targeted tests
+```
+
 ## Completion Checklist
 
 Before claiming completion, all must be true:
 
-- [ ] New/changed behavior has failing test evidence first.
+- [ ] New/changed behavior has failing-test evidence first.
 - [ ] RED failure reason is correct and recorded.
 - [ ] Minimal implementation added.
 - [ ] GREEN pass evidence is recorded.
-- [ ] Refactor (if any) stayed GREEN.
-- [ ] Final response includes `[测试用例摘要]` block.
-- [ ] All test-case descriptions in the final response are Simplified Chinese.
+- [ ] Refactor, if any, stayed GREEN.
+- [ ] Final response includes `[测试用例摘要]` block when production code changed.
+- [ ] All final test-case descriptions are Simplified Chinese.
 
 If any box is unchecked, work is not complete.
-
-## Testing Anti-Patterns
-
-Before heavy use of mocks/test utilities, read `@testing-anti-patterns.md`.
 
 ## Final Rule
 

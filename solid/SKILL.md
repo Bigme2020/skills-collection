@@ -5,11 +5,12 @@ description: |
   production code. Use this skill whenever work involves class, module,
   interface, service, hook, or business-logic boundary design; refactoring
   responsibility-heavy code; improving testability; reducing coupling; adding
-  extension points; or choosing dependency direction. Invoke it before any
-  non-trivial structural implementation and during any code review, PR review,
-  or architecture audit involving abstractions, dependency wiring, large-file
-  splits, new strategies/providers/repositories, or requests to clean up
-  architecture and make code easier to extend.
+  extension points; choosing dependency direction; or deepening shallow modules
+  by shrinking public interfaces and hiding implementation complexity. Invoke
+  it before any non-trivial structural implementation and during any code
+  review, PR review, or architecture audit involving abstractions, dependency
+  wiring, large-file splits, new strategies/providers/repositories, or requests
+  to clean up architecture and make code easier to extend.
 ---
 
 # SOLID Principles
@@ -31,6 +32,8 @@ Reference these principles when:
 - Reviewing PRs for architectural concerns
 - Breaking apart god objects or fat interfaces
 - Deciding where to draw module boundaries
+- Deepening shallow modules: reducing public surface area while hiding
+  implementation complexity behind cohesive interfaces
 - Making code more testable
 - Untangling concrete dependencies or hard-to-extend control flow
 - Adding a new variant, provider, strategy, adapter, or integration and wanting
@@ -52,6 +55,8 @@ implementation:
   to maintain, even without naming a pattern
 - You are introducing interfaces, dependency injection, or boundary layers and
   need to choose where they actually help
+- A module has many methods or complex parameters while doing little work, and
+  may need to become a deeper module with a smaller interface
 
 ## Boundary
 
@@ -73,8 +78,10 @@ implementation:
 | **L**SP | Subtypes are substitutable | Type-checking or special-casing in calling code |
 | **I**SP | Small, focused interfaces | Empty method implementations or `throw new Error("Not implemented")` |
 | **D**IP | Depend on abstractions | `new ConcreteClass()` inside business logic |
+| Deep Modules | Small interface, deep implementation | Large public surface with thin pass-through logic |
 
 See `references/PRINCIPLES.md` for detailed explanations and TypeScript examples.
+See `references/deep-modules.md` for deeper guidance on shallow vs deep modules.
 
 ## Detection Checklist
 
@@ -124,6 +131,8 @@ Ask these questions for every class and module:
 - Let violations emerge from real problems, then fix them
 - Prefer composition over inheritance for extending behavior
 - Keep interfaces small and role-specific
+- Prefer deep modules: small, stable public interfaces with substantial
+  implementation hidden behind them
 - Inject dependencies through constructors
 
 ### DON'T
