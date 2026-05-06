@@ -3,29 +3,31 @@ name: plan-to-openspec
 description: >
   Turn an already-agreed plan, requirement list, or conversation context into
   OpenSpec change artifacts, then review and correct them until they match the
-  approved scope exactly. Use this skill whenever the user wants to generate a
-  proposal, OpenSpec proposal, change, spec, design doc, tasks doc, change docs,
-  or "formalize /整理 /落成文档 /沉淀" an agreed plan into OpenSpec artifacts,
-  even if they do not explicitly say "OpenSpec" and instead say things like
-  "根据上面的需求出 proposal", "把这段计划整理成变更文档", "把当前上下文转成 spec/tasks",
-  or "把已经讨论好的内容落到 proposal 里". Do not use it for generic
-  brainstorming, requests that only ask to discuss or refine a plan, or
-  implementation-only work with no request to produce OpenSpec artifacts.
+  approved scope exactly. Use this skill whenever the user wants to generate
+  OpenSpec artifacts or formal change docs from agreed scope: an OpenSpec
+  proposal, OpenSpec change, spec, design doc, tasks doc, change docs, or
+  "formalize /整理 /落成文档 /沉淀" an agreed plan into OpenSpec artifacts, even if
+  they do not explicitly say "OpenSpec" and instead say things like "根据上面的需求出
+  change proposal", "把这段计划整理成变更文档", "把当前上下文转成 spec/tasks", or
+  "把已经讨论好的内容落到 proposal 里". Do not use it for generic brainstorming,
+  ordinary business/product proposals, requests that only ask to discuss or refine
+  a plan, or implementation-only work with no request to produce OpenSpec or
+  formal change artifacts.
 compatibility: Requires openspec CLI and access to the `openspec-propose` skill or equivalent workflow.
 ---
 
 # Plan To OpenSpec
 
-Use this skill when the user is asking to generate a proposal or OpenSpec artifacts from a plan or agreed context.
+Use this skill when the user is asking to generate OpenSpec artifacts or formal change documents from a plan or agreed context.
 
 Trigger aggressively when the user intent is "take agreed content and turn it into formal OpenSpec change docs", even if the request is phrased indirectly.
 
-If the user is not asking to generate a proposal, propose an OpenSpec change, or create OpenSpec documents/specs, stop and do not use it.
+If the user is not asking to generate an OpenSpec proposal/change, create OpenSpec documents/specs, or formalize agreed scope into change artifacts, stop and do not use it.
 
 Examples that should trigger this skill:
 
 - `生成 openspec proposal`
-- `生成 proposal`
+- `把已确认需求生成 openspec change proposal`
 - `帮我 propose 一个 openspec`
 - `根据上面的 plan 出 openspec 文档`
 - `把这个需求整理成 openspec change`
@@ -37,6 +39,7 @@ Examples that should trigger this skill:
 Examples that should not trigger this skill:
 
 - generic brainstorming with no request to create OpenSpec artifacts
+- ordinary business/product/implementation proposals with no OpenSpec or formal change-doc intent
 - implementation-only requests
 - requests to review existing code without creating OpenSpec change docs
 
@@ -111,6 +114,10 @@ Provide it with:
 - the explicit change name, if one was provided
 - a strict scope instruction: `Do not add new product scope that is not present in this plan. Do not introduce new user-visible requirements, features, constraints, or non-goals. Minimal implementation detail needed to produce standard OpenSpec artifacts is allowed only when it stays strictly inside the approved product scope.`
 - an ambiguity instruction: `If the plan contains a real ambiguity that would affect scope, naming, design conclusions, or task content, do not guess. Ask one minimal clarification question instead.`
+
+These instructions override any downstream `openspec-propose` or `/opsx-propose` guidance that encourages reasonable default decisions or momentum. Do not use reasonable decisions to fill scope gaps. If ambiguity affects approved product scope, naming, design conclusions, task content, or user-visible behavior, ask one minimal clarification question before generation or preserve it as an explicit open question in the artifacts.
+
+Generated proposal, design, and task wording must distinguish approved plan facts from implementation mechanics. Do not promote inferred implementation choices, rollout assumptions, risks, or defaults into approved product scope.
 
 Let it generate the OpenSpec change directory and the normal proposal artifacts.
 
