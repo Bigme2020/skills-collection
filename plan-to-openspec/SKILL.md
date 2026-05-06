@@ -63,7 +63,18 @@ When deriving from conversation context, use only:
 
 Do not invent missing requirements.
 
-If the current context contains conflicting plans, conflicting constraints, or too little information to write faithful OpenSpec artifacts, ask one targeted clarification question before proceeding.
+When later user messages add or revise requirements, treat them as incremental updates to the existing approved context, not as a full replacement of everything said earlier.
+
+Merge rule:
+
+- Keep existing approved facts, requirements, constraints, non-goals, and assumptions that the later message does not mention or contradict.
+- If a later approved message directly conflicts with an earlier approved item, the later message wins for that specific conflicted item only.
+- Do not delete or rewrite unrelated existing facts because a newer requirement arrived.
+- Do not preserve stale alternatives, historical notes, or superseded wording for the conflicted item itself; state only the current winning decision.
+
+Conflict means both statements cannot be true at the same time for the same subject, field, behavior, constraint, or decision. A newer message that only adds more detail is not a conflict; merge the detail with the existing item.
+
+If the current context contains unclear conflicts, conflicting constraints without an obvious newer winner, or too little information to write faithful OpenSpec artifacts, ask one targeted clarification question before proceeding.
 
 ## Normalize The Plan
 
@@ -158,14 +169,15 @@ Allowed content:
 
 If any mismatch exists, edit the generated OpenSpec artifacts directly.
 
-For a change that is still in development, treat the latest approved plan as the current truth. OpenSpec documents should not read like an append-only patch log: do not preserve outdated decisions, contradicted alternatives, or historical conflict notes just because they appeared in an earlier draft. Overwrite the affected proposal, design, spec, and task content so each document states the current decision directly and coherently.
+For a change that is still in development, treat the merged approved plan as the current truth. OpenSpec documents should not read like an append-only patch log: keep all still-valid earlier facts, but do not preserve outdated decisions, contradicted alternatives, or historical conflict notes for items that a later approved message superseded. Overwrite only the affected proposal, design, spec, and task content so each document states the current decision directly and coherently.
 
 Required fixes:
 
 - add back missing plan items
 - remove extra scope
 - reword speculative statements into faithful plan language
-- replace stale or conflicting historical decisions with the current approved decision
+- preserve unrelated existing approved facts that remain valid
+- replace only stale or conflicting historical decisions with the current approved decision
 - convert unsupported assumptions into explicit open questions, if needed
 - keep proposal, design, and tasks mutually consistent after each edit
 
