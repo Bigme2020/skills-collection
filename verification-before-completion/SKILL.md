@@ -1,6 +1,6 @@
 ---
 name: verification-before-completion
-description: Use when about to claim work is complete, fixed, or passing, before committing, or before creating a PR. Requires fresh verification evidence for every success claim, not assumptions. For browser-visible work such as pages, components, interactions, visual states, or UI bug fixes, this skill must also trigger `playwright-interactive` as part of final verification so rendering, console health, and key user flows are confirmed before any completion claim.
+description: Use when about to claim work is complete, fixed, or passing, before committing, or before creating a PR. Requires fresh verification evidence for every success claim, not assumptions. For browser-visible work such as pages, components, interactions, visual states, or UI bug fixes, require relevant fresh verification evidence; invoke `playwright-interactive` only when the user explicitly asks for browser-interactive verification or browser evidence is necessary to prove the claim.
 ---
 
 # Verification Before Completion
@@ -30,10 +30,10 @@ BEFORE claiming any status or expressing satisfaction:
 2. CHECK SCOPE: Does the work affect anything a user sees or does in the browser?
 3. RUN:
    - If NO: execute the full verification commands
-   - If YES: execute the full verification commands AND invoke `playwright-interactive`
+   - If YES: execute the relevant verification commands; invoke `playwright-interactive` only when explicitly requested or necessary to prove the claim
 4. READ:
    - command output, exit codes, failures
-   - browser evidence: rendering, console, interactions, visible states
+   - browser evidence, if collected: rendering, console, interactions, visible states
 5. VERIFY: Does the evidence confirm the claim?
    - If NO: State actual status with evidence
    - If YES: State claim WITH evidence
@@ -42,9 +42,9 @@ BEFORE claiming any status or expressing satisfaction:
 Skip any step = lying, not verifying
 ```
 
-## Browser-Visible Work Requires Browser Evidence
+## Browser-Visible Work Verification
 
-If the work changes anything a user can see or do in the browser, terminal-only verification is insufficient.
+If the work changes anything a user can see or do in the browser, terminal-only verification may be insufficient. Choose evidence that actually proves the claim without defaulting to expensive browser automation.
 
 Treat all of the following as browser-visible work:
 
@@ -54,11 +54,11 @@ Treat all of the following as browser-visible work:
 - Client-side data fetching, loading states, validation, or error states
 - Any bug fix where the symptom is observed in the page rather than only in logs or tests
 
-For this class of work, you must invoke `playwright-interactive` before claiming completion. Do not wait for the very end and then skip it because the task looks small.
+For this class of work, run the most relevant fresh verification available: component tests, E2E tests, build/typecheck, lint, targeted package scripts, or browser checks. Invoke `playwright-interactive` only when the user explicitly requests it, asks for browser evidence, or the visible behavior cannot be proven by existing verification.
 
-## Required Browser Evidence
+## When Browser Evidence Is Used
 
-For browser-visible work, collect fresh evidence that the relevant page or flow actually works:
+When browser evidence is explicitly requested or necessary, collect fresh evidence that the relevant page or flow actually works:
 
 - The page opens and renders the expected content
 - There is no white screen, missing content, or obviously broken layout
@@ -66,24 +66,24 @@ For browser-visible work, collect fresh evidence that the relevant page or flow 
 - The targeted interaction or user path works end to end
 - The visible result matches the requirement after the interaction completes
 
-If the task is about a specific fix, verify the original symptom is gone in the browser, not just that tests or builds pass.
+If the task is about a specific browser-only fix, verify the original symptom is gone in the browser, not just that tests or builds pass.
 
 ## Failure Loop For UI Work
 
-If `playwright-interactive` finds a rendering issue, console error, interaction failure, or wrong visible result, the task is not complete.
+If verification finds a rendering issue, console error, interaction failure, or wrong visible result, the task is not complete.
 
 Stay in the fix-and-reverify loop:
 
 1. Fix the specific issue the browser evidence exposed.
 2. Re-run the relevant verification commands.
-3. Re-run `playwright-interactive` on the affected page or flow.
+3. Re-run `playwright-interactive` on the affected page or flow only if it was explicitly requested or necessary for the evidence path.
 4. Continue until the browser evidence passes.
 
-Do not treat build success, test success, or code inspection as a substitute for browser validation when the requirement is visible in the page.
+Do not treat build success, test success, or code inspection as a substitute for browser validation when browser validation is the only evidence that proves the visible requirement.
 
 ## When Browser Verification Cannot Run
 
-If browser-visible work requires `playwright-interactive` but you cannot run it yet, do not claim completion.
+If browser-visible work explicitly requires `playwright-interactive` or browser evidence but you cannot run it yet, do not claim completion.
 
 Examples of valid blockers:
 
@@ -109,7 +109,7 @@ In this case, report the real status plainly:
 | Build succeeds | Build command: exit 0 | Linter passing, logs look good |
 | Bug fixed | Test original symptom: passes | Code changed, assumed fixed |
 | Regression test works | Red-green cycle verified | Test passes once |
-| UI works / page fixed | Fresh `playwright-interactive` browser evidence plus relevant test/build output | Build passes, code inspection, old screenshots, "looks correct" |
+| UI works / page fixed | Fresh relevant verification evidence; `playwright-interactive` evidence when explicitly requested or necessary | Code inspection, old screenshots, "looks correct" |
 | Agent completed | VCS diff shows changes | Agent reports "success" |
 | Requirements met | Line-by-line checklist | Tests passing |
 
@@ -118,10 +118,10 @@ In this case, report the real status plainly:
 - Using "should", "probably", "seems to"
 - Expressing satisfaction before verification ("Great!", "Perfect!", "Done!", etc.)
 - About to commit/push/PR without verification
-- About to claim a UI change is complete without browser verification
+- About to claim a UI change is complete without relevant fresh verification
 - Trusting agent success reports
 - Relying on partial verification
-- Treating build or test success as proof that the page renders correctly
+- Treating build or test success as proof that the page renders correctly when browser evidence was required
 - Seeing browser errors or broken rendering and still trying to conclude the task
 - Thinking "just this once"
 - Tired and wanting work over
@@ -136,7 +136,7 @@ In this case, report the real status plainly:
 | "Just this once" | No exceptions |
 | "Linter passed" | Linter ≠ compiler |
 | "Agent said success" | Verify independently |
-| "The page change was small" | Small UI changes still need browser evidence |
+| "The page change was small" | Small UI changes still need relevant fresh verification |
 | "The build passed so the UI is fine" | Passing build ≠ correct rendering or interaction |
 | "I'm tired" | Exhaustion ≠ excuse |
 | "Partial check is enough" | Partial proves nothing |
@@ -164,13 +164,13 @@ In this case, report the real status plainly:
 
 **Browser-visible work:**
 ```
-✅ [Run tests/build as relevant; if using Playwright test runner, use `--reporter=line`] + [Invoke playwright-interactive] + [Confirm rendering, console, and interaction evidence] "The page change passes verification"
+✅ [Run tests/build as relevant; if using Playwright test runner, use `--reporter=line`; invoke playwright-interactive only when requested or necessary] + [Confirm evidence matches claim] "The page change passes verification"
 ❌ "Build passed so the page should be fine" / "Looks correct from the code"
 ```
 
 **Browser-visible work with blocker:**
 ```
-✅ [Try to run the app or target flow] + [Identify the blocker] + [State that browser evidence is still missing] "Blocked pending browser verification because <specific reason>"
+✅ [Try the required verification path] + [Identify the blocker] + [State what evidence is still missing] "Blocked pending verification because <specific reason>"
 ❌ "Everything else passed so this is basically done"
 ```
 
@@ -205,11 +205,11 @@ From 24 failure memories:
 - Moving to next task
 - Delegating to agents
 
-**ALWAYS additionally for browser-visible work:**
-- Invoke `playwright-interactive` as part of final verification
+**For browser-visible work:**
+- Invoke `playwright-interactive` only when explicitly requested, when the user asks for browser evidence, or when browser evidence is necessary to prove the claim
 - If running `playwright test`, use `--reporter=line` unless the user explicitly requests another reporter
-- Use browser evidence to validate rendering, console health, and the key interaction path
-- Stay in the fix-and-reverify loop until the visible behavior passes
+- Use the selected verification evidence to validate rendering, console health, and the key interaction path when those are part of the claim
+- Stay in the fix-and-reverify loop until the selected evidence proves the visible behavior passes
 
 **Rule applies to:**
 - Exact phrases

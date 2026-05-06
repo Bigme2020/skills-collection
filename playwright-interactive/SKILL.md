@@ -1,6 +1,6 @@
 ---
 name: "playwright-interactive"
-description: "Evidence-driven browser workflow built on playwright-cli. Use this whenever the user is implementing, debugging, or testing browser-facing behavior and wants to stay aligned with the real page through frequent verification. Especially relevant for UI work, interaction flows, local web-app checks, E2E test authoring, reproducing browser-only issues, and iterative QA/debugging."
+description: "Manual, evidence-driven browser workflow built on playwright-cli. Use when the user explicitly asks for playwright-interactive, browser-interactive validation, screenshots, snapshots, console/network evidence, or real-page verification. Also use when a browser-only issue cannot be diagnosed otherwise. Do not auto-trigger for every browser-facing code change."
 allowed-tools: Bash(playwright-cli:*)
 ---
 
@@ -10,15 +10,16 @@ allowed-tools: Bash(playwright-cli:*)
 
 It uses `playwright-cli` as a continuous source of browser evidence so development and testing stay grounded in the real page instead of drifting on assumptions.
 
-Use this skill to reduce drift between what the agent thinks is happening and what the page is actually doing.
+Use this skill to reduce drift between what the agent thinks is happening and what the page is actually doing when browser evidence is requested or necessary.
 
 ## When to use it
 
 - Use it for UI and interaction work that benefits from frequent browser checks.
+- Use it when the user explicitly requests this skill, browser-interactive validation, screenshots, snapshots, console checks, network checks, or real-page verification.
 - Use it when iterating on a local web app and validating each meaningful change.
 - Use it when writing or repairing E2E tests and you need to confirm the real flow, selectors, or expected states in the browser.
 - Use it when debugging flaky or browser-only behavior and you need evidence from snapshots, screenshots, tracing, console output, or network activity.
-- Use it as the required final validation path when `verification-before-completion` applies to browser-visible work.
+- Do not use it automatically for every browser-visible code change; prefer lighter project verification unless browser evidence was requested or is necessary.
 
 ## Core idea
 
@@ -30,9 +31,9 @@ Work in short verification loops:
 4. Adjust from evidence.
 5. Continue only after the current step is grounded.
 
-Do not leave browser validation until the very end unless the task is genuinely trivial.
+Do not enter this loop by default for every UI task. Use lighter verification first unless the user asked for browser-interactive evidence or the bug cannot be proven without the browser.
 
-When the task changes browser-visible behavior, this skill is not just a helpful debugging aid. It is the workflow that produces the final evidence needed to claim the work is complete.
+When browser evidence is requested or necessary, this skill is the workflow that produces evidence needed to make browser-specific claims.
 
 ## How to work
 
@@ -78,6 +79,6 @@ playwright-cli -s=debug close
 
 - This skill is about cadence and evidence, not about replacing a full test runner.
 - Use judgment: some tiny tasks do not need repeated browser checks, while risky or ambiguous tasks usually do.
-- If `verification-before-completion` requires browser evidence for the task, do not stop at one failed check. Keep the repair-and-reverify loop going until the page renders correctly, the console is clean enough for the task, and the key flow works.
+- If the user requested browser evidence or the task requires browser evidence, do not stop at one failed check. Keep the repair-and-reverify loop going until the page renders correctly, the console is clean enough for the task, and the key flow works.
 - For any `playwright test` command you run while following this skill, prefer `playwright test --reporter=line` or the package-manager equivalent such as `npx playwright test --reporter=line`.
 - Prefer `playwright-cli` directly only when the user simply needs a one-off browser action rather than an iterative validation loop.
