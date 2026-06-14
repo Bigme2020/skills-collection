@@ -1,6 +1,6 @@
 ---
 name: to-code
-description: 根据当前工作区 `to-task` 生成的任务文档自动实现代码。仅当用户明确写出 `$to-code`、`to-code`、`使用 to-code`、`调用 to-code`、`用 to-code 实现任务`，或明确要求“根据 tasks/progress.md 自动实现代码”时使用。使用正文能力前必须确认工作区，并读取 `./doc/[当前工作区]/design.md`、可选的 `plan.md`、`./doc/[当前工作区]/tasks/progress.md` 以及 tasks 目录下所有模块任务文件；触发 `to-code` 即表示授权主 Agent 使用当前环境可用的 sub-agent / multi-agent 功能，由主 Agent 跟踪整体进度并生成真实模块级子 Agent，子 Agent 按任务实现功能并补齐测试；如果当前环境没有 sub-agent 能力或未授权使用，必须停止并提示启用能力后再执行。整个实现过程默认不等待人工参与，只有遇到无法从文档或代码中消解的阻塞疑问时才按 `grill-me` 一次一问对齐。
+description: 根据当前工作区 `to-task` 生成的任务文档自动实现代码。仅当用户明确写出 `$to-code`、`to-code`、`使用 to-code`、`调用 to-code`、`用 to-code 实现任务`，或明确要求“根据 tasks/progress.md 自动实现代码”时使用。使用正文能力前必须确认工作区，并读取 `./docs/[当前工作区]/design.md`、可选的 `plan.md`、`./docs/[当前工作区]/tasks/progress.md` 以及 tasks 目录下所有模块任务文件；触发 `to-code` 即表示授权主 Agent 使用当前环境可用的 sub-agent / multi-agent 功能，由主 Agent 跟踪整体进度并生成真实模块级子 Agent，子 Agent 按任务实现功能并补齐测试；如果当前环境没有 sub-agent 能力或未授权使用，必须停止并提示启用能力后再执行。整个实现过程默认不等待人工参与，只有遇到无法从文档或代码中消解的阻塞疑问时才按 `grill-me` 一次一问对齐。
 ---
 
 # to-code
@@ -20,7 +20,7 @@ description: 根据当前工作区 `to-task` 生成的任务文档自动实现�
 - `使用 to-code`
 - `调用 to-code`
 - `用 to-code 实现任务`
-- `根据 doc/<工作区>/tasks 自动把代码写完`
+- `根据 docs/<工作区>/tasks 自动把代码写完`
 
 不要因为用户泛泛说“实现一下”“继续开发”“把任务做掉”就自动使用；这些请求可能需要普通编码流程或其他 skill。
 
@@ -40,19 +40,19 @@ description: 根据当前工作区 `to-task` 生成的任务文档自动实现�
 
 确认方式：
 
-1. 如果用户在 prompt 中明确指定 `./doc/[工作区]/` 或工作区名称，直接使用该工作区。
-2. 如果用户没有指定，根据当前 prompt 在调用方工作目录的 `./doc/` 下寻找相关工作区；找到候选后让用户确认。
+1. 如果用户在 prompt 中明确指定 `./docs/[工作区]/` 或工作区名称，直接使用该工作区。
+2. 如果用户没有指定，根据当前 prompt 在调用方工作目录的 `./docs/` 下寻找相关工作区；找到候选后让用户确认。
 3. 如果没有找到可信候选，先告知缺少可执行工作区，并建议先完成 `to-plan -> to-design -> to-task`。
 
 确认工作区后，必须读取：
 
-- `./doc/[当前工作区]/design.md`
-- `./doc/[当前工作区]/tasks/progress.md`
-- `./doc/[当前工作区]/tasks/` 下除 `progress.md` 外的所有模块任务文件
+- `./docs/[当前工作区]/design.md`
+- `./docs/[当前工作区]/tasks/progress.md`
+- `./docs/[当前工作区]/tasks/` 下除 `progress.md` 外的所有模块任务文件
 
 如果存在，则同时读取：
 
-- `./doc/[当前工作区]/plan.md`
+- `./docs/[当前工作区]/plan.md`
 
 缺失处理：
 
@@ -120,11 +120,11 @@ description: 根据当前工作区 `to-task` 生成的任务文档自动实现�
 
 ## 工作区
 
-- 工作区路径：`./doc/[当前工作区]/`
-- 计划文档：`./doc/[当前工作区]/plan.md`（如存在）
-- 设计文档：`./doc/[当前工作区]/design.md`
-- 总体进度：`./doc/[当前工作区]/tasks/progress.md`
-- 当前模块任务：`./doc/[当前工作区]/tasks/[module].md`
+- 工作区路径：`./docs/[当前工作区]/`
+- 计划文档：`./docs/[当前工作区]/plan.md`（如存在）
+- 设计文档：`./docs/[当前工作区]/design.md`
+- 总体进度：`./docs/[当前工作区]/tasks/progress.md`
+- 当前模块任务：`./docs/[当前工作区]/tasks/[module].md`
 
 ## 当前模块
 
@@ -265,12 +265,12 @@ description: 根据当前工作区 `to-task` 生成的任务文档自动实现�
 完成后使用简短回复：
 
 ```markdown
-已执行 `to-code`，基于 `./doc/[当前工作区]/tasks/` 完成代码实现。
+已执行 `to-code`，基于 `./docs/[当前工作区]/tasks/` 完成代码实现。
 
 核心结果：
 - 已完成模块：[模块列表]
 - 未完成模块：[模块列表；没有则写“无”]
-- 进度文件：`./doc/[当前工作区]/tasks/progress.md`
+- 进度文件：`./docs/[当前工作区]/tasks/progress.md`
 - 主要修改：[文件或目录摘要]
 - 验证：[命令和结果]
 ```

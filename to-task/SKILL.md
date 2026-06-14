@@ -1,6 +1,6 @@
 ---
 name: to-task
-description: 从当前工作区的 `design.md` 生成面向 vibe coding 的最小可执行任务。当用户明确写出 `$to-task`、`to-task`、`使用 to-task`、`调用 to-task`、`用 to-task`，或要求把模块设计拆成任务、生成模块任务清单、生成 vibe coding 任务时使用。使用正文能力前必须先确认当前工作区；必须读取 `./doc/[当前工作区]/design.md` 作为主输入，如果 `plan.md` 存在则作为背景解释补充读取，并输出到 `./doc/[当前工作区]/tasks/`。不允许脱离工作区单独输出。
+description: 从当前工作区的 `design.md` 生成面向 vibe coding 的最小可执行任务。当用户明确写出 `$to-task`、`to-task`、`使用 to-task`、`调用 to-task`、`用 to-task`，或要求把模块设计拆成任务、生成模块任务清单、生成 vibe coding 任务时使用。使用正文能力前必须先确认当前工作区；必须读取 `./docs/[当前工作区]/design.md` 作为主输入，如果 `plan.md` 存在则作为背景解释补充读取，并输出到 `./docs/[当前工作区]/tasks/`。不允许脱离工作区单独输出。
 ---
 
 # to-task
@@ -35,24 +35,24 @@ description: 从当前工作区的 `design.md` 生成面向 vibe coding 的最�
 
 确认方式：
 
-1. 如果用户在 prompt 中明确指定 `./doc/[工作区]/` 或工作区名称，直接使用该工作区。
-2. 如果用户没有指定，根据当前 prompt 在调用方工作目录的 `./doc/` 下寻找相关工作区；找到候选后让用户确认。
+1. 如果用户在 prompt 中明确指定 `./docs/[工作区]/` 或工作区名称，直接使用该工作区。
+2. 如果用户没有指定，根据当前 prompt 在调用方工作目录的 `./docs/` 下寻找相关工作区；找到候选后让用户确认。
 3. 如果没有找到可信候选，或用户确认不复用已有工作区，停止生成任务，并提示用户先通过 `to-design` 建立包含 `design.md` 的工作区。
 
 工作区规则：
 
-- 工作区路径固定为调用方工作目录下的 `./doc/[当前工作区]/`。
-- 如果用户没有指定工作区，先检查 `./doc/` 下已有子目录，优先根据需求关键词、功能名、ticket 名、已有 `plan.md` / `design.md` 内容判断候选工作区；找到候选后让用户确认具体使用哪一个。
+- 工作区路径固定为调用方工作目录下的 `./docs/[当前工作区]/`。
+- 如果用户没有指定工作区，先检查 `./docs/` 下已有子目录，优先根据需求关键词、功能名、ticket 名、已有 `plan.md` / `design.md` 内容判断候选工作区；找到候选后让用户确认具体使用哪一个。
 - `to-task` 不创建新工作区；它只能在已有工作区的 `design.md` 基础上生成 `tasks/`。
 - 工作区只负责组织 `to-plan -> to-design -> to-task` 这类连续产物，不改变 `to-task` 最小可执行任务拆分的定位。
 
 确认工作区后：
 
-- 必须读取 `./doc/[当前工作区]/design.md`。
-- 如果 `./doc/[当前工作区]/plan.md` 存在，将它作为背景解释补充读取。
+- 必须读取 `./docs/[当前工作区]/design.md`。
+- 如果 `./docs/[当前工作区]/plan.md` 存在，将它作为背景解释补充读取。
 - 如果缺少 `design.md`，先告知用户缺少设计文件，并建议先补齐 `to-design`；不要凭空生成任务。
 - 如果缺少 `plan.md`，不阻塞 `to-task`，直接基于 `design.md` 拆分任务。
-- 如果 `./doc/[当前工作区]/tasks/` 已存在，先读取已有 `progress.md` 和模块任务文件，判断本次是覆盖、修订还是补充；如果会覆盖已有勾选状态，先和用户确认。
+- 如果 `./docs/[当前工作区]/tasks/` 已存在，先读取已有 `progress.md` 和模块任务文件，判断本次是覆盖、修订还是补充；如果会覆盖已有勾选状态，先和用户确认。
 
 ## 输入处理
 
@@ -83,13 +83,13 @@ description: 从当前工作区的 `design.md` 生成面向 vibe coding 的最�
 最终产物必须写入：
 
 ```text
-./doc/[当前工作区]/tasks/<module-name>.md
-./doc/[当前工作区]/tasks/progress.md
+./docs/[当前工作区]/tasks/<module-name>.md
+./docs/[当前工作区]/tasks/progress.md
 ```
 
 写入规则：
 
-- 如果 `./doc/[当前工作区]/tasks/` 不存在，先创建它。
+- 如果 `./docs/[当前工作区]/tasks/` 不存在，先创建它。
 - 每个 `design.md` 中的具体模块都必须对应一个 `<module-name>.md`。
 - `<module-name>` 使用模块名生成稳定文件名：英文优先小写 kebab-case；中文模块名可以使用简洁中文，或转成稳定拼音 / 英文短名；同一工作区内不得重名。
 - `progress.md` 用于管理总体模块进度，每个模块一条 checklist。
@@ -146,9 +146,9 @@ description: 从当前工作区的 `design.md` 生成面向 vibe coding 的最�
 
 ## 工作区
 
-- 当前工作区：`./doc/[当前工作区]/`
-- 输入计划：`./doc/[当前工作区]/plan.md`（如存在）
-- 输入设计：`./doc/[当前工作区]/design.md`
+- 当前工作区：`./docs/[当前工作区]/`
+- 输入计划：`./docs/[当前工作区]/plan.md`（如存在）
+- 输入设计：`./docs/[当前工作区]/design.md`
 
 ## 模块进度
 
@@ -186,10 +186,10 @@ description: 从当前工作区的 `design.md` 生成面向 vibe coding 的最�
 完成后使用简短回复：
 
 ```markdown
-已生成 `to-task` 任务文档并保存到 `./doc/[当前工作区]/tasks/`。
+已生成 `to-task` 任务文档并保存到 `./docs/[当前工作区]/tasks/`。
 
 核心内容：
-- 总体进度：`./doc/[当前工作区]/tasks/progress.md`
+- 总体进度：`./docs/[当前工作区]/tasks/progress.md`
 - 模块任务：[列出主要模块任务文件]
 - 输入来源：`design.md`，以及可选背景 `plan.md`
 ```
