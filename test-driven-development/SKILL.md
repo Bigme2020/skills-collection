@@ -1,21 +1,13 @@
 ---
 name: test-driven-development
-description: Strict test-first workflow for feature work, bug fixes, behavior-changing refactors, regression tests, interface design, and mock/test-utility decisions. Use before writing production code when the user asks for TDD, test-first development, red-green-refactor, behavior tests, integration-style tests, or regression coverage. Actively consider this skill for every implementation task. Requires failing-test evidence before production code, RED->GREEN verification, and a Chinese test-case summary in implementation responses.
+description: Strict test-first workflow for feature work, bug fixes, behavior-changing refactors, regression tests, interface design, and mock/test-utility decisions. Use before writing production code when the user asks for TDD, test-first development, red-green-refactor, behavior tests, integration-style tests, or regression coverage. Actively consider this skill for every implementation task. Requires failing-test evidence before production code and RED->GREEN verification.
 ---
 
 # Test-Driven Development
 
-## Output Language Requirement
+## User-Facing Language
 
-All user-facing TDD content must be in Simplified Chinese unless the user explicitly requests another language.
-
-At minimum, this includes:
-
-- Test-case summary blocks
-- Blocked/error notices related to TDD flow
-- Test-case descriptions
-
-This does not require translating unrelated non-TDD parts of the response.
+Follow the user's language and any active response-style instructions. This skill controls the development workflow, not the output style.
 
 ## Core Principle
 
@@ -54,11 +46,9 @@ Follow this contract for every implementation task:
 3. Write the smallest production change to reach GREEN.
 4. Verify GREEN with targeted tests.
 5. Refactor only after GREEN, then verify tests stay GREEN.
-6. Include a Chinese test-case summary and verification evidence in the final response.
+6. Keep enough internal notes or working context to support the RED->GREEN claim if the user asks.
 
-If any step is missing, stop and report:
-
-`阻塞：缺少测试用例验证证据。`
+If any required TDD step is missing, stop and briefly report the blocker in the user's preferred language.
 
 ## Internal State Machine
 
@@ -74,25 +64,11 @@ Invalid transitions:
 
 Do not expose state labels in user-facing output unless the user explicitly asks.
 
-## Required User-Facing Block
+## User-Facing Output
 
-When you write or modify production code, include this section in the response:
+Do not add test summaries, verification blocks, RED/GREEN notes, or TDD-specific language to the final response unless the user asks, a command failed, or that information is needed to explain a blocker or risk.
 
-```md
-[测试用例摘要]
-- 目标行为: <本次变更要验证的用户/业务行为>
-- 用例清单:
-  - <用例 1：场景 + 预期结果>
-  - <用例 2：场景 + 预期结果>
-- 执行命令: <精确命令>
-- 结果摘要: <通过/失败数量；若失败给出关键原因>
-- 准确性结论: <这些用例为何能准确覆盖本次变更>
-```
-
-Constraints:
-
-- Use Simplified Chinese for every line and every test-case description.
-- Do not include `Stage`, `RED_VERIFIED`, or `GREEN_VERIFIED` unless explicitly requested.
+Do not include `Stage`, `RED_VERIFIED`, or `GREEN_VERIFIED` unless explicitly requested.
 
 ## Context and Language Alignment
 
@@ -289,8 +265,6 @@ Before claiming completion, all must be true:
 - [ ] Minimal implementation added.
 - [ ] GREEN pass evidence is recorded.
 - [ ] Refactor, if any, stayed GREEN.
-- [ ] Final response includes `[测试用例摘要]` block when production code changed.
-- [ ] All final test-case descriptions are Simplified Chinese.
 
 If any box is unchecked, work is not complete.
 
