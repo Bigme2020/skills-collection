@@ -1,6 +1,6 @@
 ---
 name: test-driven-development
-description: Strict test-first workflow for feature work, bug fixes, behavior-changing refactors, regression tests, interface design, and mock/test-utility decisions. Use before writing production code when the user asks for TDD, test-first development, red-green-refactor, behavior tests, integration-style tests, or regression coverage. Actively consider this skill for every implementation task. Requires failing-test evidence before production code and RED->GREEN verification.
+description: Strict test-first workflow for feature work, bug fixes, behavior-changing refactors, regression tests, interface design, and mock/test-utility decisions. Use before writing behavior-bearing production code when the user asks for TDD, test-first development, red-green-refactor, behavior tests, integration-style tests, or regression coverage. Actively consider this skill for every implementation task. Requires failing-test evidence before behavior-bearing production code and RED->GREEN verification; purely visual styling is exempt.
 ---
 
 # Test-Driven Development
@@ -12,7 +12,7 @@ Follow the user's language and any active response-style instructions. This skil
 ## Core Principle
 
 ```text
-NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST.
+NO BEHAVIOR-BEARING PRODUCTION CODE WITHOUT A FAILING TEST FIRST.
 ```
 
 Tests should verify behavior through public interfaces, not implementation details. Code can change entirely; tests should still pass if behavior stays the same.
@@ -20,6 +20,16 @@ Tests should verify behavior through public interfaces, not implementation detai
 Good tests are integration-style: they exercise real code paths through public APIs. They describe what the system does, not how it does it. A good test reads like a specification: `user can checkout with valid cart` tells you exactly what capability exists.
 
 Bad tests are coupled to implementation. They mock internal collaborators, test private methods, assert call counts, or verify through external means instead of the product interface. Warning sign: a refactor breaks the test even though behavior did not change.
+
+## Behavior and Visual Styling Boundary
+
+Apply TDD to stable, observable product contracts, including domain logic, interaction behavior, and accessibility behavior. Do not require a failing test for a purely visual styling change when user capabilities, semantics, and accessibility remain unchanged.
+
+Purely visual changes include colors, typography, spacing, shadows, decorative animation, and CSS or class-name refactors that do not change observable behavior. Do not assert CSS class names, raw style values, pixel coordinates, or broad snapshots merely to force these changes through RED.
+
+Styling becomes behavior-bearing when it affects what a user can perceive or do. Test the resulting capability rather than the CSS mechanism. Examples include whether content is available, whether controls can be operated at supported viewport sizes, whether interaction state is conveyed accessibly, and whether focus and keyboard behavior work.
+
+Use visual regression testing separately when an explicitly agreed, stable visual contract must be protected. Visual regression is not a default TDD gate for ordinary styling work.
 
 See `tests.md` for examples and `mocking.md` for mocking guidance. Before heavy use of mocks or test utilities, also read `testing-anti-patterns.md`.
 
@@ -32,14 +42,17 @@ Use this skill for:
 - Behavior-changing refactors
 - Regression tests
 - Public interface design where testability matters
+- UI changes that affect interaction, semantics, accessibility, or user capability
 - Mock or test-utility design
 - Requests mentioning TDD, test-first, RED/GREEN, red-green-refactor, behavior tests, integration-style tests, or regression coverage
 
 Actively consider this skill before every implementation task. If the user explicitly approves non-TDD, follow the Exception Protocol.
 
+Purely visual styling work, as defined above, is outside the failing-test requirement and does not need Exception Protocol approval.
+
 ## Execution Contract
 
-Follow this contract for every implementation task:
+Follow this contract for every behavior-bearing implementation task:
 
 1. Write one failing test for one behavior before production code.
 2. Verify RED first: the test fails for the expected behavior reason, not setup/runtime noise.
@@ -132,6 +145,7 @@ Requirements:
 - Public interface only
 - Prefer real behavior checks over mock-behavior checks
 - Test would survive internal refactor
+- For UI work, assert capability, semantics, or accessibility rather than visual implementation
 
 Run a targeted test command, for example:
 
@@ -226,6 +240,8 @@ If any answer is unknown, inspect real behavior first.
 
 Default is strict TDD. Non-TDD is allowed only with explicit user approval.
 
+This protocol applies when skipping tests for changed behavior. Purely visual styling work is already outside the failing-test requirement and is not an exception.
+
 Required approval format:
 
 `Approve non-TDD for this task: <reason>`
@@ -250,6 +266,7 @@ When one appears, stop and return to RED.
 [ ] Test describes behavior, not implementation
 [ ] Test uses public interface only
 [ ] Test would survive internal refactor
+[ ] UI assertions protect capability, semantics, or accessibility, not incidental styling
 [ ] RED failure reason was verified
 [ ] Code is minimal for this test
 [ ] No speculative features added
@@ -258,7 +275,7 @@ When one appears, stop and return to RED.
 
 ## Completion Checklist
 
-Before claiming completion, all must be true:
+Before claiming completion for changed behavior, all must be true:
 
 - [ ] New/changed behavior has failing-test evidence first.
 - [ ] RED failure reason is correct and recorded.
@@ -271,6 +288,7 @@ If any box is unchecked, work is not complete.
 ## Final Rule
 
 ```text
-Production code is valid only if test existed and failed first.
+Behavior-bearing production code is valid only if a relevant test existed and failed first.
+Purely visual styling changes do not require a failing test.
 Otherwise: not TDD.
 ```

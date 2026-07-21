@@ -22,6 +22,29 @@ Characteristics:
 - Describes what, not how
 - Keeps one logical behavior per test
 
+## UI Behavior vs. Styling
+
+Test stable user capabilities, semantics, and accessibility. Do not couple ordinary behavior tests to the visual implementation.
+
+```typescript
+// BAD: Couples the test to incidental styling
+test("active tab is blue", () => {
+  render(<Tabs />);
+  expect(screen.getByRole("tab", { selected: true })).toHaveStyle({
+    color: "blue",
+  });
+});
+
+// GOOD: Tests the interaction contract
+test("selecting a tab reveals its panel", async () => {
+  render(<Tabs />);
+  await userEvent.click(screen.getByRole("tab", { name: "Billing" }));
+  expect(screen.getByRole("tabpanel", { name: "Billing" })).toBeVisible();
+});
+```
+
+Changing color, typography, spacing, shadows, or other decorative styling does not require a failing behavior test. If the product has an explicitly agreed visual contract, protect it with a separate, narrowly scoped visual regression test.
+
 ## Bad Tests
 
 Bad tests couple to internal structure.
