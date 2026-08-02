@@ -1,9 +1,12 @@
 ---
 name: to-task
-description: 从当前工作区的 `design.md` 生成面向 vibe coding 的最小可执行任务。当用户明确写出 `$to-task`、`to-task`、`使用 to-task`、`调用 to-task`、`用 to-task`，或要求把模块设计拆成任务、生成模块任务清单、生成 vibe coding 任务时使用。任务必须消费 design 已确认的架构轴、业务轴和映射关系，为每个任务标明架构归属与业务归属，并从接口生产消费、数据所有权和运行前置条件推导依赖图；不预设固定端、目录或开发顺序。使用正文能力前必须先确认当前工作区；必须读取 `./docs/[当前工作区]/design.md` 作为主输入，如果 `plan.md` 存在则作为背景解释补充读取，并输出到 `./docs/[当前工作区]/tasks/`。不允许脱离工作区单独输出。
+description: Deprecated / 已废弃（提示性）：新工作流请使用 `to-tickets` 生成垂直交付 tickets；本 skill 仅为迁移与回退保留，显式调用时仍可执行原能力。从当前工作区的 `design.md` 生成面向 vibe coding 的最小可执行任务。当用户明确写出 `$to-task`、`to-task`、`使用 to-task`、`调用 to-task`、`用 to-task`，或要求把模块设计拆成任务、生成模块任务清单、生成 vibe coding 任务时使用。任务必须消费 design 已确认的架构轴、业务轴和映射关系，为每个任务标明架构归属与业务归属，并从接口生产消费、数据所有权和运行前置条件推导依赖图；不预设固定端、目录或开发顺序。使用正文能力前必须先确认当前工作区；必须读取 `./docs/[当前工作区]/design.md` 作为主输入，如果 `plan.md` 存在则作为背景解释补充读取，并输出到 `./docs/[当前工作区]/tasks/`。不允许脱离工作区单独输出。
 ---
 
 # to-task
+
+> [!WARNING]
+> **Deprecated / 已废弃（提示性）**：新工作流请使用 `to-tickets`，以垂直交付 ticket 承载细粒度 checklist、依赖与验证。本 skill 仅用于迁移期回退；用户显式调用时仍按下述原契约执行。
 
 ## 定位
 

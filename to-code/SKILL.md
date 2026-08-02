@@ -1,9 +1,12 @@
 ---
 name: to-code
-description: 根据当前工作区 `to-task` 生成的任务文档自动实现代码。仅当用户明确写出 `$to-code`、`to-code`、`使用 to-code`、`调用 to-code`、`用 to-code 实现任务`，或明确要求“根据 tasks/progress.md 自动实现代码”时使用。使用正文能力前必须确认工作区，并读取 `./docs/[当前工作区]/design.md`、可选的 `plan.md`、`./docs/[当前工作区]/tasks/progress.md` 以及 tasks 目录下所有任务文件；执行时必须消费任务的架构归属、业务归属和依赖图，以双重归属和写入边界划分真实子 Agent，不预设固定前后端顺序。触发 `to-code` 即表示授权主 Agent 使用当前环境可用的 sub-agent / multi-agent 功能，由主 Agent 跟踪整体进度并生成真实任务级子 Agent，子 Agent 按任务实现功能并补齐测试；如果当前环境没有 sub-agent 能力或未授权使用，必须停止并提示启用能力后再执行。整个实现过程默认不等待人工参与，只有遇到无法从文档或代码中消解的阻塞疑问时才按 `grill-me` 一次一问对齐。
+description: Deprecated / 已废弃（提示性）：新工作流请使用 `implement` 执行单 ticket 或调度 ticket 集合；本 skill 仅为迁移与回退保留，显式调用时仍可执行原能力。根据当前工作区 `to-task` 生成的任务文档自动实现代码。仅当用户明确写出 `$to-code`、`to-code`、`使用 to-code`、`调用 to-code`、`用 to-code 实现任务`，或明确要求“根据 tasks/progress.md 自动实现代码”时使用。使用正文能力前必须确认工作区，并读取 `./docs/[当前工作区]/design.md`、可选的 `plan.md`、`./docs/[当前工作区]/tasks/progress.md` 以及 tasks 目录下所有任务文件；执行时必须消费任务的架构归属、业务归属和依赖图，以双重归属和写入边界划分真实子 Agent，不预设固定前后端顺序。触发 `to-code` 即表示授权主 Agent 使用当前环境可用的 sub-agent / multi-agent 功能，由主 Agent 跟踪整体进度并生成真实任务级子 Agent，子 Agent 按任务实现功能并补齐测试；如果当前环境没有 sub-agent 能力或未授权使用，必须停止并提示启用能力后再执行。整个实现过程默认不等待人工参与，只有遇到无法从文档或代码中消解的阻塞疑问时才按 `grill-me` 一次一问对齐。
 ---
 
 # to-code
+
+> [!WARNING]
+> **Deprecated / 已废弃（提示性）**：新工作流请使用 `implement`，由它读取既有 tickets、按依赖调度 sub-agent、完成 review/修复/本地 commit，并禁止 push。本 skill 仅用于迁移期回退；用户显式调用时仍按下述原契约执行。
 
 ## 定位
 
