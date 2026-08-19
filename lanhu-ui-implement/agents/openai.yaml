@@ -1,0 +1,6 @@
+interface:
+  display_name: "Lanhu UI Implement"
+  short_description: "Implement Lanhu designs through a Playwright visual convergence loop"
+  icon_small: "./assets/playwright-small.svg"
+  icon_large: "./assets/playwright.png"
+  default_prompt: "Use $lanhu-ui-implement to implement the selected Lanhu artboard in the current web project and iterate against fixed-viewport Playwright screenshots until the page visually converges."

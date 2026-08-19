@@ -1,0 +1,23 @@
+{
+  "skill_name": "grill-technical-design-with-docs",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "The product behavior for a React checkout drawer is agreed. Before writing the spec, grill me on the technical design. The current component has several boolean mode props, mobile and desktop variants, shared cart state, and an analytics dependency. Keep the discussion at architecture level.",
+      "expected_output": "The interview focuses on component interfaces, state ownership, seams, observable failures, and cross-ticket contracts; it leaves JSX, helper functions, and ordinary edge branches as implementer latitude.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Business has approved adding idempotent payment retries. Help me align the technical design before to-spec. The codebase has an API handler, payment gateway adapter, Postgres tables, and a job worker. I do not want pseudocode yet.",
+      "expected_output": "The interview resolves idempotency contracts, ownership, persistence and failure semantics, migration constraints, and ticket edges without prescribing private algorithms.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Use the technical-design grilling phase for a small refactor that renames a private helper and simplifies one internal conditional without changing behavior or public types.",
+      "expected_output": "The skill identifies that no contract decision exists, records the work as local implementation latitude, and reaches the readiness gate without manufacturing architecture questions.",
+      "files": []
+    }
+  ]
+}

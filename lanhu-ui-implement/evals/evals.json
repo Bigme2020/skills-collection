@@ -1,0 +1,23 @@
+{
+  "skill_name": "lanhu-ui-implement",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "根据这个蓝湖设计稿实现当前 React 项目的活动页：https://lanhuapp.com/web/#/item/project/stage?tid=demo&pid=desktop 。目标画板是“活动首页-桌面端”，本地页面是 http://127.0.0.1:3000/activity。切图请直接放进项目现有 assets 目录。实现后按设计稿尺寸反复截图对比，直到视觉差异足够小。",
+      "expected_output": "Uses lanhu-mcp before implementation, follows the user's local-asset instruction, preserves the React project's conventions, switches the real desktop mode, reloads, and iterates with fixed-viewport Playwright screenshots until the visual completion gate passes.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "把蓝湖里的“个人主页-Web”和“个人主页-Mobile”都还原到这个 Vue 项目，地址：https://lanhuapp.com/web/#/item/project/stage?tid=demo&pid=responsive 。项目里有自己的 PC/H5 切换按钮，不要只改 viewport。两个端都要给我最终截图。",
+      "expected_output": "Detects and follows the Vue project's conventions, treats the two artboards as independent targets, uses the project's PC/H5 switch plus exact viewport resize and reload, and produces separate converged evidence for both targets.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "参考这个蓝湖稿把当前本地商品详情页做出来：https://lanhuapp.com/web/#/item/project/stage?tid=demo&pid=product 。我没指定切图怎么处理，你自己按流程完成。页面原来的下单交互和数据逻辑不能变。",
+      "expected_output": "Uses lanhu-mcp to gather the design evidence, attempts duitang-image-upload because no asset policy was supplied, keeps Lanhu temporary URLs out of production code, preserves business behavior, and runs the Playwright visual convergence loop before reporting completion.",
+      "files": []
+    }
+  ]
+}
