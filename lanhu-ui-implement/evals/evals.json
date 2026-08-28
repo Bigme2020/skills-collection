@@ -18,6 +18,18 @@
       "prompt": "参考这个蓝湖稿把当前本地商品详情页做出来：https://lanhuapp.com/web/#/item/project/stage?tid=demo&pid=product 。我没指定切图怎么处理，你自己按流程完成。页面原来的下单交互和数据逻辑不能变。",
       "expected_output": "Uses lanhu-mcp to gather the design evidence, attempts duitang-image-upload because no asset policy was supplied, keeps Lanhu temporary URLs out of production code, preserves business behavior, and runs the Playwright visual convergence loop before reporting completion.",
       "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "用蓝湖设计稿校准 hasaki-douyin-exchange 的站外兑换页。项目按 750/rem 开发，蓝湖给的是默认 375 宽稿。只做视觉验证，不要改生产 UI；固定接口数据后页面必须恢复校准前的 Git 状态。",
+      "expected_output": "Reads the project rule before converting the design to the 750 capture contract, validates a complete design manifest, uses a fixed full-height browser capture, prefers browser-level request interception, and restores the recorded Git state after preserving final evidence.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "页面的倒计时数值会变化，但其卡片位置、背景和圆角必须和蓝湖一致。请持续修复视觉差异；如果同一区域两次修复没有改善，停止盲调。",
+      "expected_output": "Masks only the countdown value through a selector while comparing its wrapper, starts from a full-page diff, focuses on the largest changed regions, and escalates after two non-improving repairs to DOM, computed-style, font, image, and state diagnosis rather than claiming completion.",
+      "files": []
     }
   ]
 }
