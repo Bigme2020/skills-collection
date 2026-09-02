@@ -11,9 +11,6 @@ Instead of one component with many boolean props, create explicit variant
 components. Each variant composes the pieces it needs. The code documents
 itself.
 
-Choose variant components during initial API design so modes stay explicit from
-day one.
-
 **Incorrect (one component, many modes):**
 
 ```tsx

@@ -11,8 +11,6 @@ Use `children` for composition instead of `renderX` props. Children are more
 readable, compose naturally, and don't require understanding callback
 signatures.
 
-Default to children-first APIs when building new extensible components.
-
 **Incorrect (render props):**
 
 ```tsx

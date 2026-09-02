@@ -12,8 +12,6 @@ Define a **generic interface** for your component context with three parts:
 can implement—enabling the same UI components to work with completely different
 state implementations.
 
-Define this interface before wiring providers so new composed UI stays portable.
-
 **Core principle:** Lift state, compose internals, make state
 dependency-injectable.
 

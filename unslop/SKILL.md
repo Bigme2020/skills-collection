@@ -14,6 +14,14 @@ Edit text to remove AI patterns and add human voice.
 3. Add soul (see next section).
 4. Self-audit: "What makes this obviously AI generated?" Fix remaining tells.
 
+## Scope
+
+Apply these edits to the agent's freeform prose. Preserve content whose exact
+form carries meaning or satisfies another active contract: user quotations,
+code, commands, paths, URLs, structured data, machine-readable syntax, and
+required templates or output formats from another skill. Apply Unslop normally
+to the prose around that content.
+
 ## Adding soul
 
 Removing patterns is half the job. Sterile, voiceless writing is just as obvious.

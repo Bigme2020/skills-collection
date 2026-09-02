@@ -1,23 +1,19 @@
 ---
 name: duitang-image-upload
-description: Upload local images, videos, or audio files to Duitang CDN with a manifest-driven CLI. Use for stable Duitang URLs, batch upload, validation, cache reuse, or resuming an unfinished confirmation.
+description: Upload local images, videos, or audio files to Duitang CDN. Use for stable Duitang URLs, ordered batch upload, cache reuse, or resuming an unfinished confirmation.
 ---
 
 # 堆糖文件上传
 
-使用 skill 自带的公司通用 CLI。它只接收已经落盘的本地文件，只输出稳定堆糖 CDN URL，不下载来源文件，也不修改业务代码。
+使用 skill 自带的公司通用 CLI。它接收已经落盘的本地文件，stdout 只输出稳定堆糖 CDN URL，不下载来源文件，也不修改业务代码。
 
 ## 执行
 
-先读 [manifest.md](references/manifest.md)，然后运行：
-
 ```bash
-node <skill-dir>/scripts/duitang-upload.mjs \
-  --manifest /absolute/path/assets.json \
-  --out /absolute/path/result.json
+node <skill-dir>/scripts/duitang-upload.mjs /absolute/path/a.png /absolute/path/b.mp4
 ```
 
-普通命令默认上传。只检查 manifest、文件、认证和缓存时增加 `--validate`。默认并发数是 4，默认缓存目录是 `~/.duitang-upload-cli/cache`；仅在任务需要隔离时使用 `--concurrency` 或 `--cache-dir` 覆盖。
+可传一个或多个绝对或相对文件路径；目录和 URL 不可作为输入，glob 由 shell 展开。默认并发数是 4，默认缓存目录是 `~/.duitang-upload-cli/cache`；仅在任务需要隔离时使用 `--concurrency` 或 `--cache-dir` 覆盖。
 
 ## 认证
 
@@ -27,7 +23,7 @@ node <skill-dir>/scripts/duitang-upload.mjs \
 
 ## 完成
 
-- 读取 result JSON，而不是从终端文本猜测 URL。
-- `failed` 或 `pending_confirm` 会让进程非零退出，但其他文件继续处理。
-- 再次运行同一 manifest 会复用成功缓存；`pending_confirm` 只重试 confirm，不重复 PUT。
-- 只有获准上传的本地文件才能进入 manifest。真实上传目标未获批准时只运行 `--validate`。
+- 从 stdout 逐行读取 CDN URL；顺序与输入参数一致，同一文件重复传入会重复输出。
+- stderr 只承载失败文件和错误；任一文件失败或等待 confirm 时进程非零退出，其他文件继续处理。
+- 再次上传同一文件会复用成功缓存；`pending_confirm` 只重试 confirm，不重复 PUT。
+- 只有获准上传的本地文件才能作为参数。未获准真实上传时不要执行 CLI。

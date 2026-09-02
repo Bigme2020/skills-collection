@@ -11,9 +11,6 @@ The provider component should be the only place that knows how state is managed.
 UI components consume the context interface—they don't know if state comes from
 useState, Zustand, or a server sync.
 
-Separate UI from state management in the first implementation; don't wait until
-state needs to be swapped.
-
 **Incorrect (UI coupled to state implementation):**
 
 ```tsx

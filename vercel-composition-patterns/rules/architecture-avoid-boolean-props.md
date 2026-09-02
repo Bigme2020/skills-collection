@@ -11,8 +11,6 @@ Don't add boolean props like `isThread`, `isEditing`, `isDMThread` to customize
 component behavior. Each boolean doubles possible states and creates
 unmaintainable conditional logic. Use composition instead.
 
-Make this decision when designing a new component API, before boolean flags ship.
-
 **Incorrect (boolean props create exponential complexity):**
 
 ```tsx

@@ -11,9 +11,6 @@ Move state management into dedicated provider components. This allows sibling
 components outside the main UI to access and modify state without prop drilling
 or awkward refs.
 
-If related UI and actions need the same state, lift it into a provider during
-the initial design.
-
 **Incorrect (state trapped inside component):**
 
 ```tsx

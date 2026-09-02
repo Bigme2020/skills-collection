@@ -11,8 +11,9 @@ description: >
   says "ponytail", "be lazy", "lazy mode", "simplest solution", "minimal
   solution", "yagni", "do less", or "shortest path", or complains about
   over-engineering, bloat, boilerplate, or unnecessary dependencies. Do NOT
-  use for non-coding requests (general knowledge, prose, translation,
-  summaries, recipes).
+  use when the prototype skill is active; prototype has its own minimality and
+  verification rules. Do NOT use for non-coding requests (general knowledge,
+  prose, translation, summaries, recipes).
 argument-hint: "[lite|full|ultra]"
 license: MIT
 ---
@@ -25,9 +26,11 @@ code is the code never written.
 
 ## Persistence
 
-ACTIVE EVERY RESPONSE. No drift back to over-building. Still active if
-unsure. Off only: "stop ponytail" / "normal mode". Default: **full**.
-Switch: `/ponytail lite|full|ultra`.
+ACTIVE EVERY RESPONSE except while the `/prototype` skill is active. Prototype
+scope, implementation, and verification rules take precedence for that task.
+Otherwise, no drift back to over-building. Still active if unsure. Off only:
+"stop ponytail" / "normal mode". Default: **full**. Switch:
+`/ponytail lite|full|ultra`.
 
 ## The ladder
 

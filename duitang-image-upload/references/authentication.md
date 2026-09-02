@@ -13,8 +13,7 @@ export DUITANG_UPLOAD_HOST='operate.duitang.com'
 
 ```bash
 node <skill-dir>/scripts/duitang-upload.mjs \
-  --manifest assets.json \
-  --out result.json \
+  /absolute/path/image.png \
   --config /absolute/path/upload-config.json
 ```
 

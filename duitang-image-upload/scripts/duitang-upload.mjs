@@ -2,7 +2,6 @@
 import { createHash, createDecipheriv, pbkdf2Sync } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import {
-  access,
   mkdir,
   readFile,
   readdir,
@@ -11,7 +10,7 @@ import {
   writeFile,
 } from 'node:fs/promises';
 import { homedir } from 'node:os';
-import { basename, dirname, extname, isAbsolute, join, normalize, resolve } from 'node:path';
+import { basename, dirname, extname, join, resolve } from 'node:path';
 import process from 'node:process';
 
 const DEFAULT_HOST = 'operate.duitang.com';
@@ -21,26 +20,26 @@ const DEFAULT_CONCURRENCY = 4;
 const MAX_ATTEMPTS = 3;
 
 const usage = () => `Usage:
-  duitang-upload --manifest <assets.json> --out <result.json>
-    [--validate] [--config <config.json>] [--cache-dir <path>]
+  duitang-upload <file...>
+    [--config <config.json>] [--cache-dir <path>]
     [--concurrency <number>]
 
-Ordinary execution uploads. --validate checks files, authentication, and cache state
-without calling the upload API.`;
+Prints one stable CDN URL per input file, in input order.`;
 
 const parseArgs = (argv) => {
-  const args = {};
+  const args = { files: [] };
+  const options = new Set(['--config', '--cache-dir', '--concurrency']);
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     if (arg === '--help' || arg === '-h') {
       args.help = true;
       continue;
     }
-    if (arg === '--validate') {
-      args.validate = true;
+    if (!arg.startsWith('--')) {
+      args.files.push(arg);
       continue;
     }
-    if (!arg.startsWith('--')) throw new Error(`Unexpected argument: ${arg}`);
+    if (!options.has(arg)) throw new Error(`Unknown option: ${arg}`);
     const value = argv[index + 1];
     if (!value || value.startsWith('--')) throw new Error(`Missing value for ${arg}`);
     args[arg.slice(2)] = value;
@@ -88,30 +87,6 @@ const normalizeHost = (host) => {
 };
 
 const hostNameOf = (host) => new URL(normalizeHost(host)).hostname;
-
-const isSafeManifestPath = (value) =>
-  typeof value === 'string' &&
-  value.trim() &&
-  !isAbsolute(value) &&
-  !value.includes('\\') &&
-  !normalize(value).startsWith('..');
-
-const validateManifest = (manifest) => {
-  assert(manifest && typeof manifest === 'object' && !Array.isArray(manifest), 'Manifest must be an object.');
-  assert(manifest.schemaVersion === 1, 'Manifest schemaVersion must be 1.');
-  assert(Array.isArray(manifest.files) && manifest.files.length > 0, 'Manifest files must be a non-empty array.');
-  const ids = new Set();
-  for (const [index, file] of manifest.files.entries()) {
-    assert(file && typeof file === 'object' && !Array.isArray(file), `files[${index}] must be an object.`);
-    assert(typeof file.id === 'string' && file.id.trim(), `files[${index}].id is required.`);
-    assert(!ids.has(file.id), `files[${index}].id must be unique: ${file.id}`);
-    ids.add(file.id);
-    assert(isSafeManifestPath(file.path), `files[${index}].path must be relative to the manifest without '..'.`);
-    assert(file.kind === undefined || ['image', 'video', 'audio'].includes(file.kind), `files[${index}].kind is unsupported.`);
-    assert(file.encrypted !== true, `files[${index}] requests encrypted upload, which is unsupported.`, 'UNSUPPORTED_ENCRYPTED_UPLOAD');
-  }
-  return manifest;
-};
 
 const readPng = (buffer) =>
   buffer.length >= 24 && buffer.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))
@@ -208,16 +183,26 @@ const detectFile = (buffer, filePath, kindOverride) => {
   return detected;
 };
 
-const inspectFile = async (entry, manifestDir) => {
-  const absolutePath = resolve(manifestDir, entry.path);
+const inspectFile = async (inputPath) => {
+  assert(!/^https?:\/\//i.test(inputPath), `Remote URLs are unsupported: ${inputPath}`);
+  const absolutePath = resolve(inputPath);
+  let details;
+  try {
+    details = await stat(absolutePath);
+  } catch {
+    const error = new Error(`Cannot read local file: ${inputPath}`);
+    error.code = 'FILE_NOT_FOUND';
+    throw error;
+  }
+  assert(details.isFile(), `Input is not a file: ${inputPath}`, 'NOT_A_FILE');
   const buffer = await readFile(absolutePath).catch(() => {
-    const error = new Error(`Cannot read local file: ${entry.path}`);
+    const error = new Error(`Cannot read local file: ${inputPath}`);
     error.code = 'FILE_NOT_FOUND';
     throw error;
   });
-  const detected = detectFile(buffer, absolutePath, entry.kind);
+  const detected = detectFile(buffer, absolutePath);
   return {
-    entry,
+    inputPath,
     absolutePath,
     buffer,
     sha256: sha256(buffer),
@@ -494,21 +479,8 @@ const loadCache = async (cacheDir) => {
   }
 };
 
-const resultItem = (file, status, extra = {}) => ({
-  id: file.entry.id,
-  path: file.entry.path,
-  sha256: file.sha256,
-  status,
-  mimeType: file.mimeType,
-  kind: file.kind,
-  ...(file.width ? { width: file.width } : {}),
-  ...(file.height ? { height: file.height } : {}),
-  ...extra,
-});
-
-const errorItem = (entry, error) => ({
-  id: entry.id,
-  path: entry.path,
+const errorItem = (inputPath, error) => ({
+  path: inputPath,
   status: 'failed',
   error: {
     code: error?.code || 'UPLOAD_FAILED',
@@ -530,32 +502,20 @@ const mapConcurrent = async (items, concurrency, handler) => {
   return results;
 };
 
-const statusOf = (items) => {
-  const failures = items.filter((item) => ['failed', 'pending_confirm'].includes(item.status)).length;
-  if (failures === 0) return 'success';
-  return failures === items.length ? 'failure' : 'partial_failure';
-};
-
 const main = async () => {
   const args = parseArgs(process.argv.slice(2));
   if (args.help) {
     process.stdout.write(`${usage()}\n`);
     return;
   }
-  assert(args.manifest, '--manifest is required.');
-  assert(args.out, '--out is required.');
-  const manifestPath = resolve(args.manifest);
-  const outputPath = resolve(args.out);
+  assert(args.files.length > 0, 'At least one local file is required.');
   const cacheDir = resolve(args['cache-dir'] || join(homedir(), '.duitang-upload-cli/cache'));
   const concurrency = Number(args.concurrency || DEFAULT_CONCURRENCY);
   assert(Number.isInteger(concurrency) && concurrency > 0 && concurrency <= 32, '--concurrency must be an integer from 1 to 32.');
 
-  let entries = [];
   try {
-    const manifest = validateManifest(await readJson(manifestPath, 'manifest'));
     const auth = await loadAuth(args);
     const cache = await loadCache(cacheDir);
-    const manifestDir = dirname(manifestPath);
     const inFlight = new Map();
     let cacheWrite = Promise.resolve();
     const saveCache = () => {
@@ -563,17 +523,14 @@ const main = async () => {
       return cacheWrite;
     };
 
-    entries = await mapConcurrent(manifest.files, concurrency, async (entry) => {
+    const entries = await mapConcurrent(args.files, concurrency, async (inputPath) => {
       let file;
       try {
-        file = await inspectFile(entry, manifestDir);
+        file = await inspectFile(inputPath);
         const key = cacheKey(file, auth);
         const cached = cache.entries[key];
-        if (args.validate) {
-          return resultItem(file, 'validated', { cacheStatus: cached?.status || 'miss' });
-        }
         if (cached?.status === 'success' && cached.url) {
-          return resultItem(file, 'cached', { url: cached.url });
+          return { path: inputPath, status: 'cached', url: cached.url };
         }
         const shared = inFlight.has(key);
         if (!shared) {
@@ -610,33 +567,28 @@ const main = async () => {
 
         const uploaded = await inFlight.get(key);
         if (uploaded.status === 'pending_confirm') {
-          return resultItem(file, 'pending_confirm', {
+          return {
+            path: inputPath,
+            status: 'pending_confirm',
             url: uploaded.url,
             error: { code: uploaded.error?.code || 'CONFIRM_FAILED', message: safeMessage(uploaded.error) },
-          });
+          };
         }
-        return resultItem(file, shared ? 'cached' : 'success', {
-          url: uploaded.url,
-          ...(uploaded.resumedConfirm ? { resumedConfirm: true } : {}),
-        });
+        return { path: inputPath, status: shared ? 'cached' : 'success', url: uploaded.url };
       } catch (error) {
-        return file ? { ...resultItem(file, 'failed'), error: { code: error.code || 'UPLOAD_FAILED', message: safeMessage(error) } } : errorItem(entry, error);
+        return errorItem(inputPath, error);
       }
     });
 
-    const result = { schemaVersion: 1, status: statusOf(entries), items: entries };
-    await writeJson(outputPath, result);
-    process.stdout.write(`${JSON.stringify({ output: outputPath, status: result.status, succeeded: entries.filter((item) => ['success', 'cached', 'validated'].includes(item.status)).length, failed: entries.filter((item) => ['failed', 'pending_confirm'].includes(item.status)).length })}\n`);
-    if (result.status !== 'success') process.exitCode = 1;
+    const urls = entries.filter((item) => ['success', 'cached'].includes(item.status)).map((item) => item.url);
+    if (urls.length > 0) process.stdout.write(`${urls.join('\n')}\n`);
+    const failures = entries.filter((item) => ['failed', 'pending_confirm'].includes(item.status));
+    for (const item of failures) {
+      process.stderr.write(`${item.path}: ${item.error.code}: ${item.error.message}\n`);
+    }
+    if (failures.length > 0) process.exitCode = 1;
   } catch (error) {
-    const result = {
-      schemaVersion: 1,
-      status: 'failure',
-      items: entries,
-      error: { code: error.code || 'CLI_FAILED', message: safeMessage(error) },
-    };
-    if (args.out) await writeJson(resolve(args.out), result);
-    process.stderr.write(`${result.error.message}\n`);
+    process.stderr.write(`${error.code || 'CLI_FAILED'}: ${safeMessage(error)}\n`);
     process.exitCode = 1;
   }
 };

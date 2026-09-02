@@ -23,16 +23,11 @@ const makeWorkspace = async () => {
   const root = await mkdtemp(join(tmpdir(), 'duitang-upload-test-'));
   temporaryRoots.push(root);
   await writeFile(join(root, 'pixel.png'), PNG);
-  await writeFile(
-    join(root, 'manifest.json'),
-    JSON.stringify({ schemaVersion: 1, files: [{ id: 'pixel', path: './pixel.png' }] }),
-  );
   return root;
 };
 
-const runCli = (root, args, env = {}) => {
-  const output = join(root, args.includes('--out') ? args[args.indexOf('--out') + 1] : 'result.json');
-  const result = spawn(process.execPath, [CLI, '--manifest', join(root, 'manifest.json'), '--out', output, ...args], {
+const runCli = (root, files = [], args = [], env = {}) => {
+  const child = spawn(process.execPath, [CLI, ...files, ...args], {
     cwd: root,
     env: { ...process.env, ...env },
     stdio: ['ignore', 'pipe', 'pipe'],
@@ -40,9 +35,9 @@ const runCli = (root, args, env = {}) => {
   return new Promise((resolvePromise) => {
     let stdout = '';
     let stderr = '';
-    result.stdout.on('data', (chunk) => (stdout += chunk));
-    result.stderr.on('data', (chunk) => (stderr += chunk));
-    result.on('close', (code) => resolvePromise({ code, stdout, stderr, output }));
+    child.stdout.on('data', (chunk) => (stdout += chunk));
+    child.stderr.on('data', (chunk) => (stderr += chunk));
+    child.on('close', (code) => resolvePromise({ code, stdout, stderr }));
   });
 };
 
@@ -56,52 +51,37 @@ const createCertificate = async (root) => {
   return { key: await readFile(key), cert: await readFile(cert) };
 };
 
-test('validate checks local files without uploading', async () => {
+test('requires local file arguments and rejects removed JSON workflow options', async () => {
   const root = await makeWorkspace();
-  const config = join(root, 'config.json');
-  await writeFile(config, JSON.stringify({ host: 'operate.duitang.com', cookie: 'dt_auth=fixture' }));
+  const empty = await runCli(root);
+  assert.equal(empty.code, 1);
+  assert.match(empty.stderr, /At least one local file is required/);
 
-  const execution = await runCli(root, ['--out', 'validated.json', '--config', config, '--validate']);
-  assert.equal(execution.code, 0, execution.stderr);
-  const result = JSON.parse(await readFile(execution.output, 'utf8'));
-  assert.equal(result.status, 'success');
-  assert.equal(result.items[0].status, 'validated');
-  assert.equal(result.items[0].mimeType, 'image/png');
-  assert.equal(result.items[0].width, 1);
-  assert.equal(result.items[0].height, 1);
-  assert.equal(JSON.stringify(result).includes('dt_auth=fixture'), false);
+  for (const option of ['--manifest', '--out', '--validate']) {
+    const execution = await runCli(root, ['pixel.png'], [option, 'unused.json']);
+    assert.equal(execution.code, 1);
+    assert.match(execution.stderr, new RegExp(`Unknown option: ${option}`));
+  }
 });
 
-test('validation reports a missing file without hiding valid items', async () => {
+test('reports missing files on stderr without producing stdout', async () => {
   const root = await makeWorkspace();
-  await writeFile(
-    join(root, 'manifest.json'),
-    JSON.stringify({
-      schemaVersion: 1,
-      files: [
-        { id: 'valid', path: './pixel.png' },
-        { id: 'missing', path: './missing.png' },
-      ],
-    }),
-  );
   const config = join(root, 'config.json');
   await writeFile(config, JSON.stringify({ host: 'operate.duitang.com', cookie: 'dt_auth=fixture' }));
 
-  const execution = await runCli(root, ['--out', 'partial.json', '--config', config, '--validate']);
+  const execution = await runCli(root, ['./missing.png'], ['--config', config]);
   assert.equal(execution.code, 1);
-  const result = JSON.parse(await readFile(execution.output, 'utf8'));
-  assert.equal(result.status, 'partial_failure');
-  assert.deepEqual(result.items.map((item) => item.status), ['validated', 'failed']);
-  assert.equal(result.items[1].error.code, 'FILE_NOT_FOUND');
+  assert.equal(execution.stdout, '');
+  assert.match(execution.stderr, /^\.\/missing\.png: FILE_NOT_FOUND:/);
+  assert.equal(execution.stderr.includes('dt_auth=fixture'), false);
 });
 
-test('ordinary execution uploads by default and keeps cookie off signed PUT', async () => {
+test('uploads by default, prints only the URL, and keeps cookie off signed PUT', async () => {
   const root = await makeWorkspace();
   const { key, cert } = await createCertificate(root);
   const calls = [];
   const server = createServer({ key, cert }, async (request, response) => {
-    const chunks = [];
-    for await (const chunk of request) chunks.push(chunk);
+    for await (const _chunk of request) {}
     calls.push({ method: request.method, path: request.url, cookie: request.headers.cookie || null });
     response.setHeader('content-type', 'application/json');
     if (request.url?.includes('generate_token_by_custom_filename')) {
@@ -122,20 +102,21 @@ test('ordinary execution uploads by default and keeps cookie off signed PUT', as
 
   try {
     const config = join(root, 'config.json');
+    const cache = join(root, 'cache');
     await writeFile(config, JSON.stringify({
       host: `https://127.0.0.1:${server.address().port}`,
-      cookie: 'dt_auth=fixture; locale=希',
+      cookie: 'dt_auth=fixture; locale=ignored',
       bucket: 'dt-img',
     }));
     const execution = await runCli(
       root,
-      ['--out', 'uploaded.json', '--config', config, '--cache-dir', join(root, 'cache')],
-      { NODE_TLS_REJECT_UNAUTHORIZED: '0' },
+      ['./pixel.png'],
+      ['--config', config, '--cache-dir', cache],
+      { NODE_TLS_REJECT_UNAUTHORIZED: '0', NODE_NO_WARNINGS: '1' },
     );
     assert.equal(execution.code, 0, execution.stderr);
-    const result = JSON.parse(await readFile(execution.output, 'utf8'));
-    assert.equal(result.items[0].status, 'success');
-    assert.equal(result.items[0].url, 'https://cdn.test.invalid/pixel.png');
+    assert.equal(execution.stdout, 'https://cdn.test.invalid/pixel.png\n');
+    assert.equal(execution.stderr, '');
     assert.deepEqual(calls.map(({ method, path }) => ({ method, path })), [
       { method: 'POST', path: '/operator/upload/file/generate_token_by_custom_filename/' },
       { method: 'PUT', path: '/signed-put' },
@@ -146,15 +127,14 @@ test('ordinary execution uploads by default and keeps cookie off signed PUT', as
     assert.equal(calls[2].cookie, 'dt_auth=fixture');
 
     calls.length = 0;
-    const cachedExecution = await runCli(
+    const cached = await runCli(
       root,
-      ['--out', 'cached.json', '--config', config, '--cache-dir', join(root, 'cache')],
-      { NODE_TLS_REJECT_UNAUTHORIZED: '0' },
+      [join(root, 'pixel.png')],
+      ['--config', config, '--cache-dir', cache],
+      { NODE_TLS_REJECT_UNAUTHORIZED: '0', NODE_NO_WARNINGS: '1' },
     );
-    assert.equal(cachedExecution.code, 0, cachedExecution.stderr);
-    const cachedResult = JSON.parse(await readFile(cachedExecution.output, 'utf8'));
-    assert.equal(cachedResult.items[0].status, 'cached');
-    assert.equal(cachedResult.items[0].url, 'https://cdn.test.invalid/pixel.png');
+    assert.equal(cached.code, 0, cached.stderr);
+    assert.equal(cached.stdout, 'https://cdn.test.invalid/pixel.png\n');
     assert.equal(calls.length, 0);
   } finally {
     await new Promise((resolvePromise) => server.close(resolvePromise));
@@ -195,47 +175,36 @@ test('pending confirm resumes without requesting another token or PUT', async ()
     await writeFile(config, JSON.stringify({
       host: `https://127.0.0.1:${server.address().port}`,
       cookie: 'dt_auth=fixture',
-      bucket: 'dt-img',
     }));
     const first = await runCli(
       root,
-      ['--out', 'pending.json', '--config', config, '--cache-dir', cache],
-      { NODE_TLS_REJECT_UNAUTHORIZED: '0' },
+      ['pixel.png'],
+      ['--config', config, '--cache-dir', cache],
+      { NODE_TLS_REJECT_UNAUTHORIZED: '0', NODE_NO_WARNINGS: '1' },
     );
     assert.equal(first.code, 1);
-    const pending = JSON.parse(await readFile(first.output, 'utf8'));
-    assert.equal(pending.items[0].status, 'pending_confirm');
+    assert.equal(first.stdout, '');
+    assert.match(first.stderr, /^pixel\.png: UPLOAD_HTTP_503:/);
     assert.deepEqual(calls.map(({ method }) => method), ['POST', 'PUT', 'POST', 'POST', 'POST']);
 
     rejectConfirm = false;
     calls.length = 0;
     const resumed = await runCli(
       root,
-      ['--out', 'resumed.json', '--config', config, '--cache-dir', cache],
-      { NODE_TLS_REJECT_UNAUTHORIZED: '0' },
+      ['pixel.png'],
+      ['--config', config, '--cache-dir', cache],
+      { NODE_TLS_REJECT_UNAUTHORIZED: '0', NODE_NO_WARNINGS: '1' },
     );
     assert.equal(resumed.code, 0, resumed.stderr);
-    const resumedResult = JSON.parse(await readFile(resumed.output, 'utf8'));
-    assert.equal(resumedResult.items[0].status, 'success');
-    assert.equal(resumedResult.items[0].resumedConfirm, true);
+    assert.equal(resumed.stdout, 'https://cdn.test.invalid/pending.png\n');
     assert.deepEqual(calls, [{ method: 'POST', path: '/operator/upload/file/photo/confirm/' }]);
   } finally {
     await new Promise((resolvePromise) => server.close(resolvePromise));
   }
 });
 
-test('concurrent items with identical bytes upload once', async () => {
+test('duplicate input paths produce duplicate ordered URLs but upload once', async () => {
   const root = await makeWorkspace();
-  await writeFile(
-    join(root, 'manifest.json'),
-    JSON.stringify({
-      schemaVersion: 1,
-      files: [
-        { id: 'first-use', path: './pixel.png' },
-        { id: 'second-use', path: './pixel.png' },
-      ],
-    }),
-  );
   const { key, cert } = await createCertificate(root);
   const calls = [];
   const server = createServer({ key, cert }, async (request, response) => {
@@ -266,35 +235,26 @@ test('concurrent items with identical bytes upload once', async () => {
     }));
     const execution = await runCli(
       root,
-      ['--out', 'deduped.json', '--config', config, '--cache-dir', join(root, 'cache')],
-      { NODE_TLS_REJECT_UNAUTHORIZED: '0' },
+      ['./pixel.png', './pixel.png'],
+      ['--config', config, '--cache-dir', join(root, 'cache')],
+      { NODE_TLS_REJECT_UNAUTHORIZED: '0', NODE_NO_WARNINGS: '1' },
     );
     assert.equal(execution.code, 0, execution.stderr);
-    const result = JSON.parse(await readFile(execution.output, 'utf8'));
-    assert.deepEqual(result.items.map((item) => item.url), [
+    assert.equal(execution.stdout, [
       'https://cdn.test.invalid/shared.png',
       'https://cdn.test.invalid/shared.png',
-    ]);
+      '',
+    ].join('\n'));
     assert.deepEqual(calls.map(({ method }) => method), ['POST', 'PUT', 'POST']);
   } finally {
     await new Promise((resolvePromise) => server.close(resolvePromise));
   }
 });
 
-test('audio and video use their distinct backend routes', async () => {
+test('audio and video keep input order while using distinct backend routes', async () => {
   const root = await makeWorkspace();
   await writeFile(join(root, 'sound.mp3'), Buffer.from('ID3mock-audio'));
   await writeFile(join(root, 'clip.mp4'), Buffer.from([0, 0, 0, 24, 0x66, 0x74, 0x79, 0x70, ...Buffer.from('mock-video')]));
-  await writeFile(
-    join(root, 'manifest.json'),
-    JSON.stringify({
-      schemaVersion: 1,
-      files: [
-        { id: 'sound', path: './sound.mp3' },
-        { id: 'clip', path: './clip.mp4' },
-      ],
-    }),
-  );
   const { key, cert } = await createCertificate(root);
   const calls = [];
   const server = createServer({ key, cert }, async (request, response) => {
@@ -332,15 +292,16 @@ test('audio and video use their distinct backend routes', async () => {
     }));
     const execution = await runCli(
       root,
-      ['--out', 'media.json', '--config', config, '--cache-dir', join(root, 'cache')],
-      { NODE_TLS_REJECT_UNAUTHORIZED: '0' },
+      ['./sound.mp3', join(root, 'clip.mp4')],
+      ['--config', config, '--cache-dir', join(root, 'cache')],
+      { NODE_TLS_REJECT_UNAUTHORIZED: '0', NODE_NO_WARNINGS: '1' },
     );
     assert.equal(execution.code, 0, execution.stderr);
-    const result = JSON.parse(await readFile(execution.output, 'utf8'));
-    assert.deepEqual(result.items.map((item) => item.url).sort(), [
-      'https://cdn.test.invalid/clip.mp4',
+    assert.equal(execution.stdout, [
       'https://cdn.test.invalid/sound.mp3',
-    ]);
+      'https://cdn.test.invalid/clip.mp4',
+      '',
+    ].join('\n'));
     const audioToken = calls.find((call) => call.path.includes('generate_token/audio'));
     const videoToken = calls.find((call) => call.path.includes('generate_token_by_custom_filename'));
     assert.equal(JSON.parse(audioToken.body).type, 'ops_audio');
@@ -349,4 +310,16 @@ test('audio and video use their distinct backend routes', async () => {
   } finally {
     await new Promise((resolvePromise) => server.close(resolvePromise));
   }
+});
+
+test('rejects directories and remote URLs', async () => {
+  const root = await makeWorkspace();
+  const config = join(root, 'config.json');
+  await writeFile(config, JSON.stringify({ host: 'operate.duitang.com', cookie: 'dt_auth=fixture' }));
+
+  const execution = await runCli(root, ['.', 'https://example.com/a.png'], ['--config', config]);
+  assert.equal(execution.code, 1);
+  assert.equal(execution.stdout, '');
+  assert.match(execution.stderr, /^\.: NOT_A_FILE:/m);
+  assert.match(execution.stderr, /^https:\/\/example\.com\/a\.png: INVALID_INPUT:/m);
 });

@@ -11,9 +11,6 @@ Structure complex components as compound components with a shared context. Each
 subcomponent accesses shared state via context, not props. Consumers compose the
 pieces they need.
 
-Reach for this structure when introducing a new multi-part component, not only
-when decomposing an existing one.
-
 **Incorrect (monolithic component with render props):**
 
 ```tsx

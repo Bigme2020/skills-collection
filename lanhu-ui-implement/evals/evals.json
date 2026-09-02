@@ -3,32 +3,128 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "根据这个蓝湖设计稿实现当前 React 项目的活动页：https://lanhuapp.com/web/#/item/project/stage?tid=demo&pid=desktop 。目标画板是“活动首页-桌面端”，本地页面是 http://127.0.0.1:3000/activity。切图请直接放进项目现有 assets 目录。实现后按设计稿尺寸反复截图对比，直到视觉差异足够小。",
-      "expected_output": "Uses lanhu-mcp before implementation, follows the user's local-asset instruction, preserves the React project's conventions, switches the real desktop mode, reloads, and iterates with fixed-viewport Playwright screenshots until the visual completion gate passes.",
+      "prompt": "根据这个蓝湖设计稿实现当前 React 项目的活动页：https://lanhuapp.com/web/#/item/project/stage?tid=demo&pid=desktop 。目标画板是‘活动首页-桌面端’，本地页面是 http://127.0.0.1:3000/activity。切图请直接放进项目现有 assets 目录。实现后持续截图对比，直到视觉收敛。",
+      "expected_output": "Uses the current Lanhu MCP result directly, follows the local-asset instruction and React project conventions, proves the capture contract before semantic comparison, and completes the model visual loop without a manifest, pixel threshold, or heatmap.",
       "files": []
     },
     {
       "id": 2,
-      "prompt": "把蓝湖里的“个人主页-Web”和“个人主页-Mobile”都还原到这个 Vue 项目，地址：https://lanhuapp.com/web/#/item/project/stage?tid=demo&pid=responsive 。项目里有自己的 PC/H5 切换按钮，不要只改 viewport。两个端都要给我最终截图。",
-      "expected_output": "Detects and follows the Vue project's conventions, treats the two artboards as independent targets, uses the project's PC/H5 switch plus exact viewport resize and reload, and produces separate converged evidence for both targets.",
+      "prompt": "把蓝湖里的‘个人主页-Web’和‘个人主页-Mobile’作为同一页面的两个变体还原到这个 Vue 项目，地址：https://lanhuapp.com/web/#/item/project/stage?tid=demo&pid=responsive 。项目里有自己的 PC/H5 切换按钮，不要只改 viewport。两个端都要给我最终截图。",
+      "expected_output": "Treats both artboards as one page implementation boundary with a shared page entry; uses the project's existing PC/H5 switch to give each artboard an independent reproducible variant state, device mode, capture contract, temporary checkpoint, semantic region lifecycle, and final visual conclusion; does not invent one route per artboard and rechecks both after shared changes.",
       "files": []
     },
     {
       "id": 3,
       "prompt": "参考这个蓝湖稿把当前本地商品详情页做出来：https://lanhuapp.com/web/#/item/project/stage?tid=demo&pid=product 。我没指定切图怎么处理，你自己按流程完成。页面原来的下单交互和数据逻辑不能变。",
-      "expected_output": "Uses lanhu-mcp to gather the design evidence, attempts duitang-image-upload because no asset policy was supplied, keeps Lanhu temporary URLs out of production code, preserves business behavior, and runs the Playwright visual convergence loop before reporting completion.",
+      "expected_output": "Uses the project's existing asset convention before considering an approved Duitang CDN flow, keeps temporary Lanhu URLs out of production code, preserves business behavior, and runs semantic visual comparison for the selected page variants.",
       "files": []
     },
     {
       "id": 4,
-      "prompt": "用蓝湖设计稿校准 hasaki-douyin-exchange 的站外兑换页。项目按 750/rem 开发，蓝湖给的是默认 375 宽稿。只做视觉验证，不要改生产 UI；固定接口数据后页面必须恢复校准前的 Git 状态。",
-      "expected_output": "Reads the project rule before converting the design to the 750 capture contract, validates a complete design manifest, uses a fixed full-height browser capture, prefers browser-level request interception, and restores the recorded Git state after preserving final evidence.",
+      "prompt": "用蓝湖设计稿校准 hasaki-douyin-exchange 的站外兑换页。项目按 750/rem 开发，设计图为 750x1624，浏览器截图为 375x812。需求明确说明设计稿顶部的 WebView 壳属于外部容器，不需要页面实现。只做视觉验证，不要改生产 UI；固定数据验证后恢复所有临时改动。",
+      "expected_output": "Reads the applicable repository instructions and page-contract reference before implementation, records the target-specific WebView-shell exclusion, crops the excluded design pixels, rebases the remaining design content to page origin with no shell element or blank 88px placeholder, proves the comparable page ranges, and restores validation-only changes without a manifest or pixel diff.",
       "files": []
     },
     {
       "id": 5,
       "prompt": "页面的倒计时数值会变化，但其卡片位置、背景和圆角必须和蓝湖一致。请持续修复视觉差异；如果同一区域两次修复没有改善，停止盲调。",
-      "expected_output": "Masks only the countdown value through a selector while comparing its wrapper, starts from a full-page diff, focuses on the largest changed regions, and escalates after two non-improving repairs to DOM, computed-style, font, image, and state diagnosis rather than claiming completion.",
+      "expected_output": "Fixes the value when possible; otherwise records its selector and reason, ignores only the content value, checks the wrapper, tracks improved/unchanged/regressed and active/completed separately, and diagnoses DOM, styles, fonts, assets, or page state after two non-improving rounds.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "设计图是 750x1600，本地截图是 390x844，但我不知道页面是否被裁过，也无法确认横纵缩放是否相同。先帮我做视觉比较。",
+      "expected_output": "Stops before visual comparison because crop, page range, and uniform scale are unproved; reports the capture-contract error and the exact recapture evidence needed instead of guessing alignment or proposing UI changes.",
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "这个移动端设计顶部有 iOS 的时间、信号和电量，底部有 Home Indicator，中间还有一块看起来像 WebView 标题栏的区域。需求没有要求实现设备模型，也没有说明 WebView 标题栏归谁。",
+      "expected_output": "Treats the unmistakable iOS status row and Home Indicator as external device chrome, renders no elements or spacing for them, crops and rebases the comparison, but keeps the WebView title region in scope or requests an ownership decision because it is not operating-system chrome.",
+      "files": []
+    },
+    {
+      "id": 8,
+      "prompt": "继续上次中断的视觉修复。临时目录里有 design.png、previous.png、current.png 和 visual-loop-state.json，但 current.png 的哈希和状态文件记录不一致。",
+      "expected_output": "Stops with a checkpoint error, preserves the last recoverable evidence, reports the hash mismatch, and does not guess the active region, reset counters, or continue repairs until the checkpoint is rebuilt.",
+      "files": []
+    },
+    {
+      "id": 9,
+      "prompt": "这个页面之前已经做过视觉验收。请按当前蓝湖稿和固定页面状态重新独立检查一次；如果当前截图没有可见、可修复差异，不要为了产生修改而调整业务 UI。",
+      "expected_output": "Ignores the historical acceptance conclusion, validates the current capture contract, performs a fresh full-page semantic scan and cold final scan against the current Lanhu result, leaves no region active when no visible fixable difference exists, and records the final checkpoint without forcing a change.",
+      "files": []
+    },
+    {
+      "id": 10,
+      "prompt": "实现这个蓝湖页面。仓库根目录和页面目录各有一份 AGENTS.md，但我没有把里面的规则复制到需求里。",
+      "expected_output": "Reads both applicable instruction files before implementation, extracts only page-relevant project rules, follows them for units, layout, images, component placement, exports and browser verification, and stops if a required instruction file cannot be read.",
+      "files": []
+    },
+    {
+      "id": 11,
+      "prompt": "同一兑换页有站外和站内两个画板。站外顶部 WebView 壳由容器提供；Home Indicator 属于设备模拟。站内需要用户信息区，站外禁止出现用户信息区。请还原并分别验收。",
+      "expected_output": "Reads the page-contract reference before implementation and creates compact per-artboard required, forbidden and excluded contracts; removes external chrome without space and rebases comparison ranges; verifies required and forbidden regions with DOM or geometry evidence; and rechecks both artboards after shared changes.",
+      "files": []
+    },
+    {
+      "id": 12,
+      "prompt": "继续视觉收敛。状态文件写着 activeRegion=null、targetStatus=completed、latestRound=improved，但 finalScan 的哈希不是 current.png，且 forbidden 的 Home Indicator 仍然 observedCount=1。",
+      "expected_output": "Stops with a contradictory-checkpoint error because improved is not completion, the final scan does not cover the current image, and a forbidden assertion fails; preserves evidence and does not normalize the state or claim completion.",
+      "files": []
+    },
+    {
+      "id": 13,
+      "prompt": "请按当前蓝湖稿重新实现页面。memory、旧任务目录和另一个分支里都有这个页面以前的截图和验收结论，可以直接复用来节省时间。",
+      "expected_output": "Uses only the current Lanhu MCP result, current checkout and live page, and evidence created in this task; does not search or reuse memory, Git history, other branches, old task directories, historical screenshots or prior acceptance conclusions.",
+      "files": []
+    },
+    {
+      "id": 14,
+      "prompt": "页面视觉已经和蓝湖一致，agent 也读过 AGENTS.md。项目要求兼容较旧浏览器、使用现有图片抽象、只用具名导出，并执行页面范围的 lint；但新增代码使用了旧浏览器不支持的 CSS、原生 img 和默认导出，agent 只口头说 lint 通过，没有提供命令退出状态。可以直接交付了吗？",
+      "expected_output": "Keeps the visual verdict separate, fails the implementation gate, and has the current agent check every touched file against the recorded project assertions and configured browser floor without requiring an independent reviewer for this ordinary task. It runs the narrowest applicable project checks with exact commands and exit status, reopens implementation for confirmed failures, and stops for direction if a framework requirement genuinely conflicts with a project rule.",
+      "files": []
+    },
+    {
+      "id": 15,
+      "prompt": "独立代码审查把页面重复出现的两条说明文案判成 duplicated code，还说站内返回控件多余；但当前蓝湖稿确实重复展示这些文案，站内画板合同也把返回控件列为 required。",
+      "expected_output": "Gives the reviewer the artboard contract and dynamic ignores, checks visible-content findings against the current Lanhu evidence, rejects both unsupported findings, preserves design-required repetition and the required control, and applies only confirmed project-rule violations.",
+      "files": []
+    },
+    {
+      "id": 16,
+      "prompt": "最终截图里规则区和头像都存在，agent 因此把这两个区域写成 accepted。但多条规则的纵向节奏逐行压缩，头像 bitmap 虽允许变化，圆形 wrapper 相对昵称也有偏移。现在能把画板标为 completed 吗？",
+      "expected_output": "Keeps the target active, runs a cold scan that explicitly checks each repeated multiline group's visible bounds and spacing plus the value-ignored avatar wrapper's geometry against adjacent fixed landmarks, reopens both affected regions, and rejects presence-only or region-level accepted summaries as completion evidence.",
+      "files": []
+    },
+    {
+      "id": 17,
+      "prompt": "最终扫描已经逐项通过了动态头像和多行规则，但页面中间的兑换次数行比设计更宽、字号更大，底部按钮也随之上移。其余区域都写成 accepted，可以完成了吗？",
+      "expected_output": "Keeps the target active because the cold scan must cover every required region in page order, gives the exchange row and action area explicit geometry and typography verdicts against adjacent landmarks, and reopens the affected regions instead of relying on selective special-case checks or accepted summaries.",
+      "files": []
+    },
+    {
+      "id": 18,
+      "prompt": "独立检查说规则文字比设计下移 8px。上一轮的坐标来自裁掉状态栏后的设计图，但当前 DOM 日志使用完整页面坐标。请按反馈直接把规则再下移 8px，然后标成 improved。",
+      "expected_output": "Treats the reported delta as a hypothesis, reconciles the design crop and coordinate spaces with current DOM bounds before editing, applies only a confirmed directional repair, then records design, before and after landmark positions; it marks movement away from the target as regressed rather than improved.",
+      "files": []
+    },
+    {
+      "id": 19,
+      "prompt": "套餐区域的外层卡片已经和设计对齐，里面两张并列权益卡也都存在，所以套餐区域可以标 completed。不过右侧权益卡比设计向右偏，左右卡间距也更大。",
+      "expected_output": "Keeps the package region active, gives each repeated sibling card its own geometry and typography verdict, checks their pairwise spacing and outer-edge relationship, and rejects the aligned shared container as completion evidence for misaligned child instances.",
+      "files": []
+    },
+    {
+      "id": 20,
+      "prompt": "一个移动页面有两个画板。设计稿顶部都包含需要移除且不占空间的外部状态栏，其中一个画板的底部操作区覆盖在说明文字上，另一个画板的底部操作区跟在说明文字之后并靠近页面底部。我没有说明这些区块之间应保持什么关系，请先按 skill 处理，再开始实现。",
+      "expected_output": "Inspects the current design evidence, then asks one grouped plain-language question proposing the layout-critical relationships before implementation. It proceeds only after user confirmation or explicit authorization to infer; records the source separately per artboard; does not apply the removed top region's offset to every region; and later verifies that nearby content leaves no space for the first overlaid bottom operation area while the second follows the content and stays at the page bottom. It validates visible relationships rather than requiring a specific CSS positioning technique and avoids unexplained abbreviations.",
+      "files": []
+    },
+    {
+      "id": 21,
+      "prompt": "移动页底部的“立即兑换”按钮在生成的 CSS 中使用 absolute，并放在一个固定高度的规则容器里。设计图中最后一条规则明显结束在按钮上方，中间有稳定空白，按钮没有盖住文字。另一个变体的底部按钮则明显覆盖了后段说明文字。请判断两个变体的区块关系。",
+      "expected_output": "Treats the generated HTML/CSS as design reference rather than final code or complete layout truth, and treats absolute positioning as a clue rather than proof of overlap. It uses the screenshot to check the preceding text's visible boundary and whether the container reserves a bottom area, records the first variant as a non-overlapping page-bottom region with reserved space, and records the second independently as an overlay with no reserved space. It preserves supported local values after confirming the represented relationship, does not copy one relationship across variants, and does not require a specific CSS implementation technique.",
       "files": []
     }
   ]
