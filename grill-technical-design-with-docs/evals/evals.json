@@ -3,20 +3,26 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "The product behavior for a React checkout drawer is agreed. Before writing the spec, grill me on the technical design. The current component has several boolean mode props, mobile and desktop variants, shared cart state, and an analytics dependency. Keep the discussion at architecture level.",
-      "expected_output": "The interview focuses on component interfaces, state ownership, seams, observable failures, and cross-ticket contracts; it leaves JSX, helper functions, and ordinary edge branches as implementer latitude.",
+      "prompt": "The product behavior for a React checkout drawer is agreed. Before writing the spec, grill me on the technical design. The current page coordinates several boolean modes, shared cart state, analytics, and separate mobile and desktop branches. I want to decide how this should be encapsulated, not revisit the UX.",
+      "expected_output": "The interview first traces the current caller-to-result path, then asks the user to choose the owning module, its smallest useful interface, seam placement, state and side-effect ownership, test surface, and migration. It applies the deletion test and treats private JSX and helper structure as implementer latitude without reopening settled UX behavior.",
       "files": []
     },
     {
       "id": 2,
-      "prompt": "Business has approved adding idempotent payment retries. Help me align the technical design before to-spec. The codebase has an API handler, payment gateway adapter, Postgres tables, and a job worker. I do not want pseudocode yet.",
-      "expected_output": "The interview resolves idempotency contracts, ownership, persistence and failure semantics, migration constraints, and ticket edges without prescribing private algorithms.",
+      "prompt": "Business has approved idempotent payment retries. Before to-spec, help me design the implementation architecture. The handler currently coordinates the payment gateway, Postgres writes, and a job worker. Focus on what one deep module should hide and how it should be tested; do not ask me to restate retry policy.",
+      "expected_output": "The interview examines whether one payment-retry module should own orchestration, persistence transitions, gateway failures, and worker handoff; proposes alternative interfaces when warranted; classifies dependencies using the deepening guidance; avoids hypothetical seams; and establishes tests through the chosen interface while preserving the approved retry policy.",
       "files": []
     },
     {
       "id": 3,
-      "prompt": "Use the technical-design grilling phase for a small refactor that renames a private helper and simplifies one internal conditional without changing behavior or public types.",
-      "expected_output": "The skill identifies that no contract decision exists, records the work as local implementation latitude, and reaches the readiness gate without manufacturing architecture questions.",
+      "prompt": "Use the technical-design grilling phase for a behavior-preserving change that renames a private helper and simplifies one conditional. There are no new callers, dependencies, state transitions, or test seams.",
+      "expected_output": "The skill inspects the affected path, finds no architecture choice or deepening opportunity created by the change, records the work as private mechanics, and reaches the architecture-ready gate without manufacturing module or business questions.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "The feature behavior is settled, but the existing page fetches, normalizes, caches, and reports analytics inline. Grill the technical design before the spec. I specifically want the new code to avoid needing a later improve-codebase-architecture pass.",
+      "expected_output": "The interview treats encapsulation as a current design decision even if the work fits in one ticket. It compares a deep feature module against shallow helper extraction, locates the seam, decides which complexity stays behind the interface, establishes dependency and side-effect ownership, and chooses a caller-facing test surface before to-spec.",
       "files": []
     }
   ]

@@ -1,13 +1,13 @@
 # Code-review execution
 
-You are the isolated `review_lead`. Execute this workflow for the request passed by the calling agent. If a required user choice is unavailable, return the exact concise question to the calling agent; it will obtain the answer. Do not invoke `code-review` again.
+本流程由主代理执行：准备证据，直接创建 Standards 和 Spec 两个独立 reviewer，再汇总它们的报告。需要用户补充的信息由主代理直接询问。
 
 Two-axis review of the diff between `HEAD` and a fixed point the user supplies:
 
 - **Standards** — does the code conform to this repo's documented coding standards?
 - **Spec** — does the code faithfully implement the originating issue / spec?
 
-Both axes run as fresh parallel sub-agents so they don't pollute each other's context, then you aggregate their findings.
+两个轴在独立上下文中并行评审，避免彼此影响；主代理负责派发和汇总。
 
 The issue tracker should have been provided to you — run `/setup-matt-pocock-skills` if `docs/agents/issue-tracker.md` is missing.
 
@@ -15,7 +15,7 @@ The issue tracker should have been provided to you — run `/setup-matt-pocock-s
 
 ### 1. Pin the fixed point
 
-Whatever the user said is the fixed point — a commit SHA, branch name, tag, `main`, `HEAD~5`, etc. If they didn't specify one, return a request for it to the calling agent.
+Whatever the user said is the fixed point — a commit SHA, branch name, tag, `main`, `HEAD~5`, etc. If they didn't specify one, ask the user for it.
 
 Capture the diff command once: `git diff <fixed-point>...HEAD` (three-dot, so the comparison is against the merge-base). Also note the list of commits via `git log <fixed-point>..HEAD --oneline`.
 
@@ -28,7 +28,7 @@ Look for the originating spec, in this order:
 1. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.) — fetch via the workflow in `docs/agents/issue-tracker.md`.
 2. A path the user passed as an argument.
 3. A spec file under `docs/`, `specs/`, or `.scratch/` matching the branch name or feature.
-4. If nothing is found, return a request for the spec source to the calling agent. If the user says there isn't one, the **Spec** sub-agent will skip and report "no spec available".
+4. If nothing is found, ask the user for the spec source. If the user confirms there is no spec, omit the Spec review packet and record "no spec available" for aggregation.
 
 ### 3. Identify the standards sources
 
@@ -54,9 +54,19 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 - **Middle Man** — a class or function that mostly just delegates onward. → cut it, call the real target direct.
 - **Refused Bequest** — a subclass or implementer that ignores or overrides most of what it inherits. → drop the inheritance, use composition.
 
-### 4. Spawn both sub-agents in parallel
+### 4. 并行创建两个独立 reviewer
 
-Call `spawn_agent` to create fresh `standards_reviewer` and `spec_reviewer` subagents in parallel. Each must use `fork_turns="none"`; pass it only the review packet below, and let it inspect the workspace itself. The two agents must exist before you begin aggregation.
+主代理使用当前 harness 实际提供的 subagent/agent-dispatch 能力，创建全新的 `standards_reviewer` 和 `spec_reviewer`。尽可能在同一次派发中并行启动两个 reviewer，并为每个 reviewer 提供独立上下文、工作目录和下面对应轴的自包含评审包，让 reviewer 自行检查工作区证据。
+
+启动评审代理前，先使用当前运行环境提供的原生能力发现机制。
+
+如果运行环境支持显式指定模型或推理强度，为所有评审代理设置相同的值，不依赖继承的默认配置；如果不支持，则保持该运行环境原有的默认行为。
+
+在 Pi 中，优先使用已加载的 `subagent` extension tool，以并行 `tasks` 派发两个 reviewer；可用的 agent 配置或工具集应限制 reviewer 为只读。其他 harness 使用其等价的 agent-dispatch 机制。不要假定存在特定的工具名、`fork_turns`、`reasoning_effort` 或其他 harness 私有参数。
+
+每个评审包须明确 reviewer 只执行指定轴，独立读取工作区证据并返回报告，不调用 `code-review`、不执行本文件的派发与汇总步骤、不创建下级代理。
+
+工具判断以当前环境实际声明和调用结果为准。若没有可用的 subagent/agent-dispatch 能力，或派发失败，报告具体缺失能力或原始错误及未完成阶段；不要把主代理的内联分析伪装成独立 reviewer。并发容量不足时先等待已有 reviewer 完成，再派发剩余 reviewer，保留独立上下文。
 
 **Standards review packet** — include:
 
@@ -70,9 +80,11 @@ Call `spawn_agent` to create fresh `standards_reviewer` and `spec_reviewer` suba
 - The path or fetched contents of the spec.
 - The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong. Quote the spec line for each finding. Under 400 words."
 
-If the spec is missing, skip the Spec sub-agent and note this in the final report.
+仅当用户已确认没有 spec 时，省略 Spec 评审包并记录跳过原因；尚未找到 spec 时仍按第 2 步向用户请求来源。
 
 ### 5. Aggregate
+
+主代理等待所有必需 reviewer 完成或明确失败，收齐报告或失败原因后汇总。缺失或失败的轴标记为未完成；经用户确认省略的 Spec 轴标记为跳过。不能将派发成功或某一个轴完成当作整个评审通过。
 
 Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. Do **not** merge or rerank findings — the two axes are deliberately separate (see _Why two axes_).
 

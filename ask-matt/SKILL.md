@@ -15,7 +15,7 @@ A **flow** is a path through the skills. Most paths run along one **main flow**,
 The route most work travels. You have an idea and want it built.
 
 1. **`/grill-with-docs`** — sharpen the idea by interview. Start here whenever you are **working in a working directory**: it's stateful, retaining what it learns in `CONTEXT.md` and ADRs. (No working directory? Use `/grill-me` — see Standalone. Both run the same `/grilling` primitive; `grill-with-docs` is the one that leaves a paper trail, which makes it the better of the two whenever a repo is there to leave it in.)
-2. **`/grill-technical-design-with-docs`** — once business boundaries are settled, align only the technical contracts that callers, modules, and tickets share. It uses `/codebase-design`, records durable decisions, and leaves reversible ticket-local choices to `/implement` and `/tdd`.
+2. **`/grill-technical-design-with-docs`.** Once business boundaries are settled, design how this feature should be encapsulated before the spec freezes the code shape. It applies `/codebase-design` and the deepening discipline from `/improve-codebase-architecture` to the affected path: module responsibility, interface, seam placement, ownership, dependencies, test surface, and migration. Private mechanics remain with `/implement` and `/tdd`.
 3. **Branch — can you settle every question in conversation?** If a question needs a runnable answer (state, business logic, a UI you have to see), detour through a prototype, bridged by **`/handoff`** in both directions (a prototype lives in its own directory, which is exactly what `/handoff` is for — see Phase boundaries):
    - **`/handoff`** out, then open a fresh session against that file,
    - **`/prototype`** to answer the question with throwaway code,
@@ -50,7 +50,7 @@ A starting situation that generates work, then merges onto the main flow.
 
 Not feature work — upkeep.
 
-- **`/improve-codebase-architecture`** — run whenever you have a spare moment to keep the codebase good for agents to operate in. It surfaces **deepening opportunities**; picking one _generates an idea_ you can take into the main flow at `/grill-with-docs`. It's the survey that finds the candidates; **`/codebase-design`** (below) is the bench you design the chosen one on.
+- **`/improve-codebase-architecture`.** Run it whenever you have a spare moment to keep the codebase good for agents to operate in. It surveys the codebase for **deepening opportunities**; picking one _generates an idea_ you can take into the main flow at `/grill-with-docs`. For feature work already in the main flow, `/grill-technical-design-with-docs` applies the same deepening discipline to the affected path before implementation begins. **`/codebase-design`** below supplies the shared vocabulary.
 
 ## Vocabulary underneath
 

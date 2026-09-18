@@ -27,19 +27,23 @@ The model interprets these sources together and adapts the result to the project
 
 ## Main loop
 
+For any tool operation, stop repeating it after two consecutive failures under unchanged conditions. Retry only after a concrete corrective action or verified condition change; otherwise preserve relevant evidence and report the blocker. This applies to design retrieval, browser capture, and project commands.
+
+Keep tool output scoped to the decision. Read required skills, references, and project instructions completely; for ordinary source or configuration inspection, locate the relevant symbols or settings before reading their surrounding code. Run documented tools from their usage instructions; inspect their implementation only for a failure, unclear interface, or required adaptation. Keep parallel results individually bounded. If display truncation hides part of an available result, retrieve only the unread portion from that result rather than repeating the request or already-read content. Preserve direct design evidence; these output controls do not authorize a replacement design summary.
+
 ### 1. Draft the page contract
 
 Read every applicable repository instruction file, including root and target-scoped `AGENTS.md` or `CLAUDE.md`, before inspecting or changing implementation files. Extract only the rules that affect this page: framework, design units, layout, image handling, component placement, exports, compatibility floor, required checks, development command, browser URL, and device switch. Turn each rule into a checkable implementation assertion. Stop if a required instruction file is unavailable.
 
-Select only the artboards that represent the requested page and its variants. Map the page implementation to its local entry, then give each artboard exact design dimensions, device mode, and a reproducible variant state. Related artboards may share the same route; use the project's existing state mechanism, such as a device switch, app environment, query parameter, or fixed data, instead of inventing a route per artboard.
+Identify the requested page and variant scope and map the implementation to its local entry. Leave artboard selection and design-dependent fields pending when they require Lanhu evidence. Related artboards may share the same route; use the project's existing state mechanism, such as a device switch, app environment, query parameter, or fixed data, instead of inventing a route per artboard.
 
 Before drafting the contracts, read [page-contract.md](references/page-contract.md). Apply it separately to every artboard. Record user-stated layout relationships now; leave evidence-dependent relationships provisional until Step 2.
 
-**Complete when:** every included artboard maps to the page entry, has one device mode and reproducible variant state, and satisfies the draft criteria in `page-contract.md`; every applicable project rule has a checkable implementation assertion; no unrelated artboard is in scope.
+**Complete when:** the page entry and requested variant scope are identified, the contract draft distinguishes known conditions from evidence-dependent fields, and every applicable project rule has a checkable implementation assertion.
 
 ### 2. Use direct design evidence
 
-Call `lanhu_get_designs` once, then call `lanhu_get_ai_analyze_design_result` for the selected artboards. Call `lanhu_get_design_slices` only when a target uses assets.
+Obtain the current artboard list with `lanhu_get_designs`, select only the requested page's artboards, then call `lanhu_get_ai_analyze_design_result` for them. Reuse a valid result already obtained for this task and scope; apply the tool-failure limit above to retries. Call `lanhu_get_design_slices` only when a target uses assets.
 
 Apply the design-evidence roles directly to the current Lanhu MCP result. Adapt returned code to the project rather than pasting it, and do not create a replacement manifest or condensed design specification.
 
@@ -47,9 +51,9 @@ After inspecting the design evidence, identify every layout-critical region and 
 
 A CSS positioning declaration is only a clue. For any edge or overlapping region, compare the preceding content's visible boundary and check whether its container leaves a dedicated area. Visible separation and reserved container space mean the regions do not overlap even when the inner element uses absolute positioning. Explain any specialized term the first time it is needed; prefer plain descriptions such as `bottom operation area` over abbreviations.
 
-Finalize each artboard contract with these confirmed or user-authorized inferred relationships. Treat the relationship as the requirement, not a particular CSS technique.
+Before implementation, finalize each artboard contract with its design dimensions, page entry, device mode, reproducible variant state, capture conditions, and confirmed or user-authorized inferred relationships. Treat the relationship as the requirement, not a particular CSS technique.
 
-**Complete when:** every visible element is accounted for; each needed asset is available, explicitly excluded, or blocked; and every layout-critical relationship is finalized with its user or design-evidence source.
+**Complete when:** every selected artboard has a finalized contract, every visible element is accounted for, each needed asset is available, explicitly excluded, or blocked, and every layout-critical relationship has its user or design-evidence source.
 
 ### 3. Materialize assets and implement
 
@@ -57,20 +61,22 @@ Follow the user's asset instruction, then the project's existing convention. Use
 
 Implement the smallest project-native change that represents every visible target element while preserving business behavior. Shared page changes must support all included variants.
 
-Before visual completion, audit every changed implementation file against every recorded project assertion, plus authorized scope, style isolation, and requested behavior. Run the narrowest applicable project checks and record each exact command, exit status, and relevant failure output; a claimed pass is not evidence. Reopen the implementation when any assertion or check fails. Stop for direction when a framework requirement genuinely conflicts with a project rule.
+Audit every changed implementation file against its applicable project assertions, authorized scope, style isolation, and requested behavior after initial implementation and at final verification. During repairs, recheck affected assertions; use the full audit when impact is uncertain. Run the narrowest applicable project checks and record each command, scope, exit status, and relevant failure output. Successful checks need no full log in context; retain detailed diagnostics in task evidence when needed and read the relevant failure or uncertainty. Rerun after changes to relevant files, configuration, or dependencies; when unsure whether a prior pass still applies, rerun the narrow check rather than build a hash-based check cache.
 
-**Complete when:** every variant renders its complete visible state with stable asset references, requested behavior still works, every recorded project assertion passes against the changed implementation, every applicable check exits successfully, and no framework/project-rule conflict remains unresolved.
+Fix failures introduced by this change or affecting the target page. Report a pre-existing unrelated failure separately, with current-checkout evidence establishing both its baseline status and lack of impact; do not label the failed command as passing or change unrelated code to clear it. If relevance or cause remains unresolved after focused diagnosis, report a blocker. Visual fixes consume the visual repair budget; purely nonvisual fixes such as export or lint corrections do not, but still follow the tool-failure limit. Recheck visual acceptance if a correction can affect rendering. Stop for direction on a genuine framework/project-rule conflict.
+
+**Complete when:** every variant renders its complete visible state with stable asset references, requested behavior still works, every recorded project assertion passes against the changed implementation, and checks pass apart from evidenced unrelated baseline failures reported separately. No target-affecting failure or framework/project-rule conflict remains unresolved.
 
 ### 4. Run the visual loop
 
-Before the first capture, read [visual-diff.md](references/visual-diff.md). It defines only the screenshot comparison, repair loop, rolling checkpoint, cold final scan, and cleanup.
+Before the first capture, read [visual-diff.md](references/visual-diff.md). It defines only the screenshot comparison, repair loop, rolling checkpoint, final scan, and cleanup.
 
-Run each artboard through that loop independently. After a shared implementation change, recheck every affected variant.
+Run each artboard through that loop independently, within its repair limits defined in the reference. After a shared implementation change, invalidate prior acceptance and recheck every affected variant.
 
 For an independent evaluation, benchmark, or user-designated high-risk verification, use fresh reviewers when available. First run the read-only visual verifier defined by `visual-diff.md`, then a fresh read-only implementation review with the project assertions, authorized scope, artboard contracts, and dynamic ignores. Keep their verdicts separate. Check findings about visible copy, repeated content, controls, assets, or variant presence against the current Lanhu evidence and artboard contract; design-required repetition is not a code smell. Any confirmed finding reopens the affected artboard or implementation.
 
-**Complete when:** every artboard passes its contract assertions, cold final scan, and the completion checklist; every recorded project assertion passes the Step 3 audit; and any triggered independent verification also passes. Otherwise the task remains active or ends with a concrete blocker and preserved evidence.
+**Complete when:** every artboard passes its contract assertions, final scan, and the completion checklist; every recorded project assertion passes the Step 3 audit; and any triggered independent verification also passes. Otherwise the task remains active or ends with a concrete blocker and preserved evidence.
 
 ## Handoff
 
-Report the visual fields required by `visual-diff.md` for each artboard, then add the page-level project assertion results and relevant behavior checks. State visual and implementation conclusions separately. Keep only the evidence required by the two references.
+Report the visual fields required by `visual-diff.md` for each artboard, then summarize project assertion and behavior-check results with links to detailed evidence. State visual and implementation conclusions separately. Keep only the evidence required by the two references.

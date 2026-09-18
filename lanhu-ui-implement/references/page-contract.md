@@ -1,10 +1,10 @@
 # Page and artboard contract
 
-Read this reference in Step 1 before implementation. Draft each contract from the user's request and project rules, then finalize evidence-dependent layout relationships after reading the current Lanhu evidence in Step 2.
+Read this reference in Step 1 before implementation. Draft known conditions from the user's request and project rules; mark missing artboard selection, dimensions, and other design-dependent fields as pending rather than guessing or asking the user for information Lanhu can provide. Finalize them from current Lanhu evidence in Step 2. Capture conditions specify the intended setup; verify actual browser state and readiness at capture time.
 
 ## Capture contract
 
-Record the following for every artboard:
+For one artboard, store its complete capture conditions directly in its checkpoint. For multiple artboards with substantial shared conditions, optionally record those once and use explicit references with per-artboard overrides. Resolve the following for every artboard:
 
 - shared or distinct page entry and reproducible variant state;
 - original design width and height;
@@ -18,7 +18,7 @@ Record the following for every artboard:
 - font and image readiness;
 - animation state.
 
-Different resolutions are comparable only through a proved uniform scale, such as `750x1624` to `375x812`. Horizontal and vertical scale must match. Stop comparison and request a corrected capture when the contract cannot prove the crop, offset, scale, page range, or device state.
+Different resolutions are comparable only through a proved uniform scale, such as `750x1624` to `375x812`. Horizontal and vertical scale must match. If crop, offset, scale, page range, or device state cannot be proved, stop comparison and correct capture conditions under the agent's control, following the main loop's retry limit. Ask the user only for missing evidence or a required decision that cannot be resolved from current sources.
 
 Use the project's real device switch, reload, wait for fonts and images, freeze animations, and capture the complete required page range. Record the design-unit conversion from the project assertions rather than assuming a viewport.
 
@@ -30,9 +30,9 @@ Record one compact contract per artboard:
 - `forbidden`: regions that must not appear in this variant;
 - `excluded`: external chrome removed from the implementation and comparison;
 - `layout relationships`: for each layout-critical region, what it stays attached to, whether nearby content leaves space for it, the visible-boundary or reserved-container evidence, and whether the user confirmed it or authorized inference;
-- page entry, variant state, device mode, fixed data, and comparable page range.
+- reference to its capture conditions above, without duplicating those fields.
 
-Keep the contract at region level. Do not enumerate design nodes, CSS properties, or recreate the Lanhu result.
+Keep the contract at region level: requirements, capture conditions, and relationship decisions belong here; observed geometry, check results, and repair history belong in the checkpoint or linked check evidence. Reference these records rather than copying them between files. Do not enumerate design nodes, CSS properties, or recreate the Lanhu result. Keep relationships and acceptance independent per artboard. Preserve referenced shared conditions with the evidence on exit; expand the effective contract, including dynamic ignores, when dispatching an independent reviewer. A shared-condition change invalidates affected prior checks.
 
 ## Authorized exclusions
 
