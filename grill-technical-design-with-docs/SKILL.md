@@ -14,7 +14,7 @@ The completion criterion is **architecture-ready**: the spec can name the intend
 
 ## 1. Recover the change path
 
-Read the agreed requirements, relevant `CONTEXT.md`, ADRs, code, tests, and recent changes in the affected area. Trace the current path from caller to observable result. Find facts in the repository rather than asking the user to recall them.
+Read the agreed requirements, relevant `GLOSSARY.md`, ADRs, code, tests, and recent changes in the affected area. Trace the current path from caller to observable result. Find facts in the repository rather than asking the user to recall them.
 
 Write a short working diagnosis before the first round:
 
@@ -73,7 +73,7 @@ When an answer opens a child question, classify it again. Add **Mechanics** leav
 
 Use `/domain-modeling` only when the design resolves domain vocabulary or produces an ADR-worthy decision:
 
-- update `CONTEXT.md` for domain terms, never implementation structure;
+- update `GLOSSARY.md` for domain terms, never implementation structure;
 - create an ADR only for a hard-to-reverse, surprising choice made through a real trade-off;
 - keep ordinary module and interface decisions in the conversation that `/to-spec` will consume.
 
