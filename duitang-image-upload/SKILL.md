@@ -19,7 +19,7 @@ node <skill-dir>/scripts/duitang-upload.mjs /absolute/path/a.png /absolute/path/
 
 默认后台是 `operate.duitang.com`。CLI 自动查找本机 Chrome、Edge、Arc 或 Chromium 中对该域名有效的 Cookie，不要求项目配置文件，也不修改项目 `.gitignore`。
 
-需要覆盖 host 或 Cookie，或者自动发现失败时，读 [authentication.md](references/authentication.md)。Cookie 只发送给 token 和 confirm 接口，不发送给签名 PUT URL；任何输出、缓存和日志都不得包含 Cookie、token 或签名 URL。
+需要覆盖 host 或 Cookie、自动发现失败，或用户表示“已经登录但上传失败”时，先读 [authentication.md](references/authentication.md)，按错误阶段诊断，再给操作建议。读取失败不等于未登录；用户在聊天中同意授权，也不代表操作系统权限已生效。Cookie 只发送给 token 和 confirm 接口，不发送给签名 PUT URL；任何输出、缓存和日志都不得包含 Cookie、token 或签名 URL。
 
 ## 完成
 

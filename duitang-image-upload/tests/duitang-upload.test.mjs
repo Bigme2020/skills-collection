@@ -323,3 +323,80 @@ test('rejects directories and remote URLs', async () => {
   assert.match(execution.stderr, /^\.: NOT_A_FILE:/m);
   assert.match(execution.stderr, /^https:\/\/example\.com\/a\.png: INVALID_INPUT:/m);
 });
+
+// 在隔离子进程中模拟系统读取边界，不访问开发者真实浏览器或钥匙串。
+const runDiscoveryFixture = async (mode) => {
+  const root = await makeWorkspace();
+  const preload = join(root, 'auth-boundary.mjs');
+  await writeFile(preload, `
+    import fs from 'node:fs';
+    import childProcess from 'node:child_process';
+    import { syncBuiltinESMExports } from 'node:module';
+    const mode = ${JSON.stringify(mode)};
+    const readDirectory = fs.promises.readdir;
+    const fileStat = fs.promises.stat;
+    const execute = childProcess.execFileSync;
+    const denied = () => Object.assign(new Error('sensitive-auth-fixture'), { code: 'EPERM' });
+    fs.promises.readdir = async (path, ...args) => {
+      if (String(path).endsWith('Google/Chrome')) {
+        if (mode === 'directory-denied' || mode === 'fallback') throw denied();
+        if (mode === 'no-profile') return [];
+        return [{ name: 'Default', isDirectory: () => true }];
+      }
+      if (mode === 'fallback' && String(path).endsWith('Microsoft Edge')) {
+        return [{ name: 'Default', isDirectory: () => true }];
+      }
+      return readDirectory(path, ...args);
+    };
+    fs.promises.stat = async (path, ...args) => {
+      if (String(path).endsWith('/Default/Cookies')) return { isFile: () => true, mtimeMs: 1 };
+      return fileStat(path, ...args);
+    };
+    childProcess.execFileSync = (file, args, ...options) => {
+      if (file === '/usr/bin/sqlite3') {
+        if (mode === 'database-failed') throw denied();
+        if (mode === 'cookie-missing') return '[]';
+        const plain = mode === 'plaintext' || mode === 'fallback';
+        return JSON.stringify([{ host_key: '.duitang.com', name: 'dt_auth',
+          value: plain ? 'sensitive-auth-fixture' : '', encrypted_value: plain ? '' : '763130000000', expires_utc: '0' }]);
+      }
+      if (file === '/usr/bin/security') {
+        if (mode === 'decrypt-failed') return 'sensitive-auth-fixture';
+        throw denied();
+      }
+      return execute(file, args, ...options);
+    };
+    syncBuiltinESMExports();
+  `);
+  return runCli(root, ['missing.png'], [], {
+    HOME: root, NODE_OPTIONS: `--import=${preload}`,
+    DUITANG_UPLOAD_CONFIG: '', DUITANG_UPLOAD_COOKIE: '', DUITANG_UPLOAD_HOST: 'operate.duitang.com',
+  });
+};
+
+for (const [mode, code] of [
+  ['directory-denied', 'AUTH_BROWSER_ACCESS_DENIED'],
+  ['database-failed', 'AUTH_COOKIE_DATABASE_READ_FAILED'],
+  ['keychain-failed', 'AUTH_KEYCHAIN_UNAVAILABLE'],
+  ['decrypt-failed', 'AUTH_COOKIE_DECRYPT_FAILED'],
+  ['no-profile', 'AUTH_BROWSER_PROFILE_NOT_FOUND'],
+  ['cookie-missing', 'AUTH_COOKIE_NOT_FOUND'],
+]) {
+  test(`认证发现区分 ${mode}，且不泄露凭据或原始命令错误`, async () => {
+    const result = await runDiscoveryFixture(mode);
+    assert.equal(result.code, 1);
+    assert.equal(result.stdout, '');
+    assert.match(result.stderr, new RegExp(`^${code}:`));
+    assert.equal(result.stderr.includes('sensitive-auth-fixture'), false);
+  });
+}
+
+for (const mode of ['plaintext', 'fallback']) {
+  test(`认证发现 ${mode} 可用时继续处理文件，不被其他读取错误阻断`, async () => {
+    const result = await runDiscoveryFixture(mode);
+    assert.equal(result.code, 1);
+    assert.equal(result.stdout, '');
+    assert.match(result.stderr, /^missing\.png: FILE_NOT_FOUND:/);
+    assert.equal(result.stderr.includes('sensitive-auth-fixture'), false);
+  });
+}

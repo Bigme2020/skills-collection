@@ -212,7 +212,7 @@ const inspectFile = async (inputPath) => {
   };
 };
 
-const listBrowserDatabases = async () => {
+const listBrowserDatabases = async (issues) => {
   const userHome = homedir();
   const browsers = [
     { root: join(userHome, 'Library/Application Support/Google/Chrome'), service: 'Chrome Safe Storage' },
@@ -227,7 +227,13 @@ const listBrowserDatabases = async () => {
       profiles = (await readdir(browser.root, { withFileTypes: true }))
         .filter((entry) => entry.isDirectory() && (entry.name === 'Default' || entry.name.startsWith('Profile ')))
         .map((entry) => join(browser.root, entry.name));
-    } catch {
+    } catch (error) {
+      if (!['ENOENT', 'ENOTDIR'].includes(error.code)) {
+        issues.push({
+          code: ['EPERM', 'EACCES'].includes(error.code) ? 'AUTH_BROWSER_ACCESS_DENIED' : 'AUTH_BROWSER_READ_FAILED',
+          message: `Cannot list ${browser.root} (${error.code || 'read failed'}). Browser login status is unknown; check OS access for the current terminal/application.`,
+        });
+      }
       continue;
     }
     for (const profile of profiles) {
@@ -235,23 +241,36 @@ const listBrowserDatabases = async () => {
         try {
           const details = await stat(candidate);
           if (details.isFile()) found.push({ path: candidate, service: browser.service, modified: details.mtimeMs });
-        } catch {}
+        } catch (error) {
+          if (!['ENOENT', 'ENOTDIR'].includes(error.code)) {
+            issues.push({
+              code: ['EPERM', 'EACCES'].includes(error.code) ? 'AUTH_BROWSER_ACCESS_DENIED' : 'AUTH_BROWSER_READ_FAILED',
+              message: `Cannot inspect ${candidate} (${error.code || 'read failed'}). Check OS access for the current terminal/application.`,
+            });
+          }
+        }
       }
     }
   }
   return found.sort((left, right) => right.modified - left.modified);
 };
 
-const readSafeStoragePassword = (service) => {
+const readSafeStoragePassword = (service, issues) => {
   try {
-    return execFileSync('/usr/bin/security', ['find-generic-password', '-w', '-s', service], {
+    const password = execFileSync('/usr/bin/security', ['find-generic-password', '-w', '-s', service], {
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'ignore'],
       timeout: 15000,
     }).trim();
+    if (password) return password;
   } catch {
-    return null;
+    // security 的原始输出不进入日志；失败不能作为“用户未登录”的证据。
   }
+  issues.push({
+    code: 'AUTH_KEYCHAIN_UNAVAILABLE',
+    message: `Cannot read ${service} from Keychain (unavailable, locked, denied, or timed out). Check the system permission prompt; browser login status is unknown.`,
+  });
+  return null;
 };
 
 const decryptBrowserValue = (hexValue, password, hostKey) => {
@@ -287,32 +306,55 @@ const chromeExpiryNow = () => BigInt(Date.now()) * 1000n + 11644473600000000n;
 
 const discoverBrowserCookie = async (targetHost) => {
   const candidates = [];
-  for (const database of await listBrowserDatabases()) {
+  const issues = [];
+  const databases = await listBrowserDatabases(issues);
+  for (const database of databases) {
     let rows;
     try {
-      const query = "SELECT host_key,name,value,hex(encrypted_value) AS encrypted_value,CAST(expires_utc AS TEXT) AS expires_utc FROM cookies WHERE host_key LIKE '%duitang.com';";
+      const query = "SELECT host_key,name,value,hex(encrypted_value) AS encrypted_value,CAST(expires_utc AS TEXT) AS expires_utc FROM cookies WHERE name='dt_auth' AND host_key LIKE '%duitang.com';";
       const raw = execFileSync('/usr/bin/sqlite3', ['-json', database.path, query], {
         encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 5000,
       });
       rows = JSON.parse(raw || '[]').filter((row) => cookieMatchesHost(row.host_key, targetHost));
     } catch {
+      // sqlite 错误可能包含查询结果，只保留阶段和文件路径，不输出原始stderr。
+      issues.push({
+        code: 'AUTH_COOKIE_DATABASE_READ_FAILED',
+        message: `Cannot read or parse ${database.path}. Check database access/lock and sqlite3 availability; browser login status is unknown.`,
+      });
       continue;
     }
-    if (rows.length === 0) continue;
-    const password = readSafeStoragePassword(database.service);
-    const cookies = rows
-      .filter((row) => !row.expires_utc || row.expires_utc === '0' || BigInt(row.expires_utc) > chromeExpiryNow())
-      .map((row) => ({
-        name: row.name,
-        value: row.value || decryptBrowserValue(row.encrypted_value, password, row.host_key),
-      }))
-      .filter((row) => row.name === 'dt_auth' && row.value && [...`${row.name}=${row.value}`].every((character) => character.codePointAt(0) <= 0xff));
+    const activeRows = rows.filter((row) => row.name === 'dt_auth' &&
+      (!row.expires_utc || row.expires_utc === '0' || BigInt(row.expires_utc) > chromeExpiryNow()));
+    if (activeRows.length === 0) continue;
+    const needsDecryption = activeRows.some((row) => !row.value && row.encrypted_value);
+    const password = needsDecryption ? readSafeStoragePassword(database.service, issues) : null;
+    const cookies = activeRows
+      .map((row) => {
+        const value = row.value || decryptBrowserValue(row.encrypted_value, password, row.host_key);
+        if (!value && password && row.encrypted_value) {
+          issues.push({
+            code: 'AUTH_COOKIE_DECRYPT_FAILED',
+            message: `Cannot decrypt dt_auth in ${database.path}. Check browser encryption compatibility; this does not establish that the user is signed out.`,
+          });
+        }
+        return { name: row.name, value };
+      })
+      .filter((row) => row.value && [...`${row.name}=${row.value}`].every((character) => character.codePointAt(0) <= 0xff));
     if (cookies.length > 0) {
       candidates.push({ cookies, score: cookies.length, modified: database.modified });
     }
   }
   candidates.sort((left, right) => right.score - left.score || right.modified - left.modified);
-  return candidates[0]?.cookies.map(({ name, value }) => `${name}=${value}`).join('; ') || null;
+  if (candidates.length > 0) return candidates[0].cookies.map(({ name, value }) => `${name}=${value}`).join('; ');
+  // 其他浏览器可用时继续上传；全部候选失败时保留真正的失败阶段，而非误报未登录。
+  if (issues.length > 0) {
+    assert(false, issues.map((issue, index) => index === 0 ? issue.message : `${issue.code}: ${issue.message}`).join(' | '), issues[0].code);
+  }
+  assert(databases.length > 0,
+    'No supported browser profile with a Cookies database was found. Check the browser/profile location or provide local authentication configuration.',
+    'AUTH_BROWSER_PROFILE_NOT_FOUND');
+  return null;
 };
 
 const loadAuth = async (args) => {
@@ -326,7 +368,7 @@ const loadAuth = async (args) => {
     process.env.DUITANG_UPLOAD_COOKIE ||
     (await discoverBrowserCookie(targetHost)),
   );
-  assert(cookie, `No dt_auth Cookie found for ${targetHost}. Sign in or provide DUITANG_UPLOAD_COOKIE/--config.`, 'AUTH_COOKIE_NOT_FOUND');
+  assert(cookie, `No usable dt_auth Cookie found for ${targetHost}. Verify the browser/profile, target domain and cookie expiry, or provide local authentication configuration.`, 'AUTH_COOKIE_NOT_FOUND');
   return {
     host,
     cookie,

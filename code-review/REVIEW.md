@@ -56,13 +56,9 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 
 ### 4. 并行创建两个独立 reviewer
 
-主代理使用当前 harness 实际提供的 subagent/agent-dispatch 能力，创建全新的 `standards_reviewer` 和 `spec_reviewer`。尽可能在同一次派发中并行启动两个 reviewer，并为每个 reviewer 提供独立上下文、工作目录和下面对应轴的自包含评审包，让 reviewer 自行检查工作区证据。
+主代理使用当前 harness 实际提供的 subagent/agent-dispatch 能力，创建 Standards 和 Spec 两个独立 reviewer。尽可能并行派发，分别提供独立上下文、工作目录和对应轴的自包含评审包，让 reviewer 自行检查工作区证据。
 
-启动评审代理前，先使用当前运行环境提供的原生能力发现机制。
-
-如果运行环境支持显式指定模型或推理强度，为所有评审代理设置相同的值，不依赖继承的默认配置；如果不支持，则保持该运行环境原有的默认行为。
-
-在 Pi 中，优先使用已加载的 `subagent` extension tool，以并行 `tasks` 派发两个 reviewer；可用的 agent 配置或工具集应限制 reviewer 为只读。其他 harness 使用其等价的 agent-dispatch 机制。不要假定存在特定的工具名、`fork_turns`、`reasoning_effort` 或其他 harness 私有参数。
+优先使用已定义的 `reviewer`；若未找到，按本次评审选择合适的模型与推理强度。
 
 每个评审包须明确 reviewer 只执行指定轴，独立读取工作区证据并返回报告，不调用 `code-review`、不执行本文件的派发与汇总步骤、不创建下级代理。
 
