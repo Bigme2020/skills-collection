@@ -59,11 +59,13 @@ Once every known region is completed, enter the final scan below using the curre
 
 ## Repair limits
 
-Default limits are 3 cumulative repair rounds per semantic region and 8 per artboard, unless the user specifies finite limits. A round is one focused visual repair and its screenshot verification. Reserve and persist the round count before editing; failed captures do not refund it. Initial implementation, baseline capture, read-only scans, and regression-only captures do not count. Visual repairs resulting from diagnosis or review do count; nonvisual corrections follow the main skill's project-check rules.
+Default limits are 6 cumulative repair rounds per semantic region and 16 per artboard, unless the user specifies finite limits. A round is one focused visual repair and its screenshot verification. Reserve and persist the round count before editing; failed captures do not refund it. Initial implementation, baseline capture, read-only scans, and regression-only captures do not count. Visual repairs resulting from diagnosis or review do count; nonvisual corrections follow the main skill's project-check rules.
 
 Keep cumulative counts through improvement, region renaming, reopening, and checkpoint resume. Charge a shared repair to its declared primary artboard and region; verify all affected variants. Do not switch the primary target to bypass an exhausted limit or modify a stopped variant through shared code. Unaffected targets may continue.
 
-At a limit, finish verification of the last repair and allow final acceptance if all criteria pass; otherwise make no further repair. Stop the target as `blocked` with reason `repair_limit` or `unconfirmed_cause`, never as accepted. Preserve evidence and report counts, remaining differences, attempted fixes, and the likely file/region for human follow-up. Resume repairs only with explicit user authorization for a finite extension; retain cumulative counts. If the user authorizes continuation without a number, add at most 3 rounds to each exhausted limit and record that extension.
+At either limit, stop repairs for that artboard, verify the last change, and run the final scan and completion checklist. Complete automated delivery even when visual differences remain: set `targetStatus` to `completed`, `visualVerdict` to `differences_remaining`, and `stopReason` to `repair_limit`; retain unresolved regions and failed visual assertions as evidence. If all visual checks pass, use `visualVerdict: passed`. Budget exhaustion alone is not a blocker, a request for more rounds, or a reason to stop other targets. Delivery completion does not claim visual correctness or user approval.
+
+This exception covers visual differences only. Missing design or capture evidence, checkpoint errors, unresolved diagnosis before a limit (`unconfirmed_cause`), and target-affecting implementation or tooling failures remain blockers. Report counts, remaining differences, attempted fixes, and likely files/regions for follow-up. Additional repairs require explicit user authorization for a finite extension and retain cumulative counts; if no number is given, add at most 6 rounds to each exhausted limit.
 
 ## Final scan
 
@@ -73,7 +75,7 @@ Use these evidence inputs for final verification:
 - the design image with its proved crop and scale;
 - the final `current.png`.
 
-For ordinary tasks, the current agent scans the page anew and derives verdicts from these inputs rather than earlier pass conclusions. This is a reinspection, not context isolation. When Step 4 triggers a fresh verifier, use it for this final scan and supply only these inputs, without earlier rankings, repair history, `completedRegions`, or a claim that the page passed. It must not modify code. Any finding reopens the relevant region and invalidates the prior completion claim.
+For ordinary tasks, the current agent scans the page anew and derives verdicts from these inputs rather than earlier pass conclusions. This is a reinspection, not context isolation. When Step 4 triggers a fresh verifier, use it for this final scan and supply only these inputs, without earlier rankings, repair history, `completedRegions`, or a claim that the page passed. It must not modify code. Findings invalidate prior visual acceptance and reopen the relevant region while budget remains; at a repair limit, record them in the completed delivery without starting further repairs.
 
 The final scan must cover every required region in page order and give each an explicit geometry and typography verdict against adjacent fixed landmarks. For every layout-critical region, it must also verdict the recorded relationship, including its edge distance, the preceding content's visible boundary, and any container area reserved between them. CSS positioning alone cannot prove overlap. Verdict every instance in a repeated sibling group and their spacing; a shared container verdict does not cover its instances. Name every repeated multiline group and every value-ignored wrapper; compare its visible bounds and spacing. Presence checks and region-level summaries such as `accepted` are not completion evidence.
 
@@ -95,6 +97,7 @@ Load only images needed for the current comparison. Reuse unchanged design and b
 - completed region summaries;
 - final scan result and the SHA-256 of the scanned `current.png`;
 - target status: `active`, `completed`, or `blocked`;
+- visual verdict: `pending`, `passed`, or `differences_remaining`; unresolved regions and visual findings for a repair-limit completion;
 - next action.
 
 Reuse the task's established capture and checkpoint-update commands or helper across rounds, changing target and round data as needed. Adapt them when conditions change; do not rebuild the same file-handling procedure each round or introduce a new tool solely to satisfy this instruction.
@@ -117,12 +120,14 @@ For every artboard, confirm:
 - assets are stable and traceable;
 - no task-blocking browser error remains.
 
-Set the target to `completed` only when `activeRegion` is empty, every contract assertion passes, and the final scan reports no visible fixable difference against the hash of the final `current.png`. A latest repair result of `improved` is progress, never completion by itself. Contradictory state is a checkpoint error; stop rather than normalizing it.
+Normally set `targetStatus: completed` and `visualVerdict: passed` only when `activeRegion` is empty, every contract assertion passes, and the final scan reports no visible fixable difference against the hash of the final `current.png`.
+
+At a repair limit, also complete delivery after the final scan when capture evidence, assets, and implementation checks are valid, but use `visualVerdict: differences_remaining` for any failed visual assertion or remaining difference. Clear `activeRegion` into an explicit unresolved-region record, preserve failed observations and the final screenshot hash, and record `stopReason: repair_limit`. Do not mark unresolved regions or assertions as passed. A latest repair result of `improved` alone never proves either completion path. Any other contradictory state remains a checkpoint error.
 
 ## Clean exit
 
-On success, keep `design.png`, final `current.png`, and `visual-loop-state.json`; remove `previous.png`. On a blocker, keep all three images and the state file. Remove earlier screenshots, validation-only mocks, request interception, CSS injection, and other temporary project changes.
+On completed delivery, including `differences_remaining`, keep `design.png`, final `current.png`, and `visual-loop-state.json`; remove `previous.png`. On a blocker, keep all three images and the state file. Remove earlier screenshots, validation-only mocks, request interception, CSS injection, and other temporary project changes.
 
 Preserve the authorized implementation and every pre-existing user change. Restore the whole worktree only when the task explicitly permits no production change. Report the final Git state.
 
-The final visual report gives each target's entry and reproducible variant, visual conclusion, remaining difference or stop reason, and links to the final screenshot and checkpoint. Keep device mode, capture conditions, exclusions, dynamic ignores, detailed checks, and page state in the linked checkpoint; call out any condition that limits the verdict. For stopped targets, include the repair-limit handoff above.
+The final visual report gives each target's entry and reproducible variant, delivery status, visual verdict, remaining difference or stop reason, and links to the final screenshot and checkpoint. Keep device mode, capture conditions, exclusions, dynamic ignores, detailed checks, and page state in the linked checkpoint; call out any condition that limits the verdict. For repair-limit deliveries and blocked targets, include the counts and follow-up evidence above.

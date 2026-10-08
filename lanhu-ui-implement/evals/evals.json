@@ -147,8 +147,8 @@
     },
     {
       "id": 25,
-      "prompt": "底部按钮已经累计修复 3 轮，还是有差异。把区域改名成底部操作区，或者换另一个变体作为主目标修改共享 CSS，继续修到完全一致吧。当前没有额外迭代额度授权。",
-      "expected_output": "Retains the semantic region's cumulative count, makes no fourth repair or shared-code bypass, preserves screenshots and checkpoint, and reports blocked with repair_limit, remaining differences and human follow-up locations. Unaffected variants may continue. Does not claim acceptance or silently reset limits.",
+      "prompt": "底部按钮已经累计修复 6 轮，还是有差异。把区域改名成底部操作区，或者换另一个变体作为主目标修改共享 CSS，继续修到完全一致吧。当前没有额外迭代额度授权。",
+      "expected_output": "Retains cumulative counts and makes no seventh repair or shared-code bypass. Runs the final scan and checklist, then completes automated delivery with targetStatus completed, visualVerdict differences_remaining and stopReason repair_limit when technical checks pass. Preserves unresolved visual findings, screenshot and checkpoint without claiming visual correctness, requesting more rounds, or blocking other targets.",
       "files": []
     },
     {
@@ -159,8 +159,8 @@
     },
     {
       "id": 27,
-      "prompt": "画板第 8 轮修改刚完成，截图验证和最终扫描均通过，所有项目检查也通过。另一个画板第 8 轮后仍有差异。分别汇报结果。",
-      "expected_output": "Accepts the first target only on its complete final evidence despite reaching the limit; stops the second as blocked with repair_limit and no ninth repair. Keeps independent verdicts and cumulative counts, and reports evidence links and remaining differences.",
+      "prompt": "画板第 16 轮修改刚完成，截图验证和最终扫描均通过，所有项目检查也通过。另一个画板第 16 轮后仍有差异，但截图和项目检查有效。分别汇报结果。",
+      "expected_output": "Completes both deliveries with no seventeenth repair. Records visualVerdict passed for the first and differences_remaining with stopReason repair_limit for the second after final scanning. Preserves independent counts, truthful findings and evidence links; does not block automation solely for the second target's remaining visual differences.",
       "files": []
     },
     {
@@ -221,6 +221,18 @@
       "id": 37,
       "prompt": "合同已经记录两个变体的范围、捕获条件和区块关系，checkpoint也有逐实例观察与修复记录。准备把全部实际坐标、检查日志和修复过程再复制进两份合同及最终回复，请完成交付。",
       "expected_output": "Keeps requirements, capture conditions and relationship decisions in contracts, observations and repair history in checkpoints or linked check evidence, and gives concise per-target conclusions with links. Does not duplicate the records or drop per-instance verification; resolves the effective contract when an independent reviewer needs it.",
+      "files": []
+    },
+    {
+      "id": 38,
+      "prompt": "画板修复已达到 16 轮，仍有差异，而且浏览器无法完成最终截图，最后的截图哈希和 checkpoint 也不匹配。可以按超限完成直接交付吗？",
+      "expected_output": "Reports the capture/checkpoint blocker and preserves recoverable evidence. Does not use repair-limit completion to bypass invalid capture evidence or falsely report a final scan. Visual budget exhaustion relaxes visual correctness only, not evidence integrity or technical checks.",
+      "files": []
+    },
+    {
+      "id": 39,
+      "prompt": "底部按钮达到区域 6 轮修复上限，最终扫描仍发现间距差异，但截图和实现检查有效。请完成当前页面交付，保留检查点中的真实观察和修复次数。",
+      "expected_output": "Completes delivery with targetStatus completed, visualVerdict differences_remaining and stopReason repair_limit. Moves the active region into an explicit unresolved-region record, preserves failed visual observations and cumulative counts without marking them passed, and returns final screenshots, checkpoints and a report tied to the delivered revision.",
       "files": []
     }
   ]
