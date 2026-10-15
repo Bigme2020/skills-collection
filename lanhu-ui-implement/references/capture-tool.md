@@ -51,6 +51,31 @@ node <skill目录>/scripts/ui-evidence.mjs <plan.json> <session名称> <输出�
 - `checks`：`equal` 检查至少两个匹配元素的某一边界值一致；`size` 检查全部匹配元素的值等于指定 `value`；`inside` 检查全部匹配元素在唯一 `container` 内。`metric` 为 `x/y/right/bottom/width/height`。无匹配不能通过。`tolerance` 单位为 CSS px，默认 0.5，仅吸收布局取整，不是视觉相似度阈值。
 - `screenshot.fullPage` 只覆盖 document，不会自动展开嵌套滚动区；可用 `screenshot.selector` 指定元素图；该元素须先完整进入视口，否则工具报错，避免截图自动滚动使已记录几何失效。关系／滚动验证优先使用视口图并显式指定滚动位置。CLI 自动填写截图路径；函数入口必须填写绝对 `path`。
 
+### 配置适配预检
+
+改写共享字段、覆盖规则或steps时，先静态查看最终生效配置，再运行少量能区分继承/覆盖行为的代表目标：
+
+```bash
+node <skill目录>/scripts/ui-evidence.mjs --inspect <plan.json>
+```
+
+预检不连接浏览器、不导航、不执行prepare、不创建输出目录，也不要求尚未分配的`screenshot.path`。函数入口为同模块具名导出的`await inspectPlan(plan)`。输出按最终捕获点展开，标明`reuse`；共享标量/checks整体覆盖、measurements/screenshot按字段合并，结合原始配置核对来源。它不验证DOM匹配、资源或视觉效果。
+
+任务可在计划顶层提供独立确认的`coverage`，以**最终捕获点ID**索引预期字段：
+
+```json
+{
+  "coverage": {
+    "single-start": { "boundaryProbe": false, "measurements": { "footer": "footer" } },
+    "single-end": { "boundaryProbe": false }
+  }
+}
+```
+
+启用时目标ID必须完全匹配；每个已声明字段作完整值核对，嵌套对象忽略键序，数组保留顺序。不声明的字段不作业务推断；例如measurements中多出一个键也会失败。预期从任务契约或可信旧输入独立提供，不能从待验计划直接生成后自证正确。`boundaryProbe`只是任务适配字段示例，工具不理解其业务含义。旧计划不必迁移。
+
+普通CLI和`captureUI`也会在首次浏览器访问前核对coverage；错误直接失败，不等待整批捕获。静态通过后的小检用于确认真实页面适配，不能代替完整目标覆盖；有效且输入未变的小检证据可复用。
+
 ### 同一场景连续取证
 
 同一 URL、设备和数据准备下的首屏、横滚末尾或操作后状态，可用 `steps` 复用一次导航。每个捕获点仍独立重验资源、测量、断言并截图；结果 ID 为 `场景id-捕获点id`。普通 targets 仍保持逐项导航行为，旧配置无需迁移。

@@ -1,7 +1,14 @@
 // 无项目依赖；同一个函数可用于 Playwright 测试或 playwright-cli run-code。
 // 保持函数自包含：CLI 会序列化函数，而不是在浏览器执行环境里 import。
-export async function captureUI(page, plan, prepare) {
+export async function captureUI(page, plan, prepare, inspectOnly = false) {
   const records = [];
+  const requireValue = (ok, message) => {
+    if (!ok) throw new Error(message);
+  };
+  requireValue(
+    Array.isArray(plan.targets) && plan.targets.length > 0,
+    "targets 必须为非空数组",
+  );
   const defaults = plan.defaults || {};
   const merge = (base, override) => ({
     ...base,
@@ -26,15 +33,6 @@ export async function captureUI(page, plan, prepare) {
       };
     });
   });
-  let previousSucceeded = false;
-  const browserVersion = page.context().browser()?.version() ?? null;
-  const requireValue = (ok, message) => {
-    if (!ok) throw new Error(message);
-  };
-  requireValue(
-    Array.isArray(plan.targets) && targets.length > 0,
-    "targets 必须为非空数组",
-  );
   const ids = new Set();
   for (const target of targets) {
     requireValue(
@@ -50,7 +48,7 @@ export async function captureUI(page, plan, prepare) {
       `${target.id}: 必须指定 ready 和 resourceRoot`,
     );
     requireValue(
-      target.screenshot && typeof target.screenshot.path === "string",
+      inspectOnly || typeof target.screenshot.path === "string",
       `${target.id}: 必须指定 screenshot.path`,
     );
     for (const rule of target.checks || []) {
@@ -89,6 +87,53 @@ export async function captureUI(page, plan, prepare) {
       );
     }
   }
+  // 预期来自任务契约，不从待验证计划反向生成。只核对声明字段，通用工具不猜业务。
+  if (plan.coverage !== undefined) {
+    const coverage = plan.coverage;
+    requireValue(
+      coverage && typeof coverage === "object" && !Array.isArray(coverage),
+      "coverage 必须是按最终捕获点 ID 索引的对象",
+    );
+    const missing = [...ids].filter((id) => !Object.hasOwn(coverage, id));
+    const extra = Object.keys(coverage).filter((id) => !ids.has(id));
+    requireValue(
+      !missing.length && !extra.length,
+      `coverage 目标不符：未声明=${missing.join(",")}；多余=${extra.join(",")}`,
+    );
+    // 对象忽略键序，数组保留顺序；使用同一逻辑核对嵌套字段，避免JSON键序误报。
+    const equal = (a, b) => {
+      if (a === b) return true;
+      if (!a || !b || typeof a !== "object" || typeof b !== "object")
+        return false;
+      const keys = Object.keys(a);
+      return (
+        Array.isArray(a) === Array.isArray(b) &&
+        keys.length === Object.keys(b).length &&
+        keys.every((key) => Object.hasOwn(b, key) && equal(a[key], b[key]))
+      );
+    };
+    for (const target of targets) {
+      const expected = coverage[target.id];
+      requireValue(
+        expected && typeof expected === "object" && !Array.isArray(expected),
+        `${target.id}: coverage 必须声明字段对象`,
+      );
+      for (const [key, value] of Object.entries(expected))
+        requireValue(
+          Object.hasOwn(target, key) && equal(target[key], value),
+          `${target.id}.${key}: 覆盖预期不符；预期=${JSON.stringify(value)}；实际=${JSON.stringify(target[key])}`,
+        );
+    }
+  }
+  // inspectPlan复用完全相同的展开/校验路径；此处之前不读取或改变浏览器状态。
+  if (inspectOnly)
+    return {
+      ok: true,
+      targets: targets.map(({ steps, ...target }) => target),
+      visualVerdict: "pending",
+    };
+  let previousSucceeded = false;
+  const browserVersion = page.context().browser()?.version() ?? null;
   for (const target of targets) {
     const record = { id: target.id, ok: false, checks: [], screenshot: null };
     records.push(record);
@@ -406,4 +451,9 @@ export async function captureUI(page, plan, prepare) {
     records,
     visualVerdict: "pending",
   };
+}
+
+// screenshot.path由捕获调用方填写；静态检查不要求该输出路径，也不会连接浏览器。
+export async function inspectPlan(plan) {
+  return captureUI(null, plan, undefined, true);
 }

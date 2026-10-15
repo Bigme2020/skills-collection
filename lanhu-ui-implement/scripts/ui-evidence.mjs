@@ -14,7 +14,7 @@ import { tmpdir } from "node:os";
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
-import { captureUI } from "./capture-ui.mjs";
+import { captureUI, inspectPlan } from "./capture-ui.mjs";
 import { summarize } from "./evidence-summary.mjs";
 
 const hash = (value) => createHash("sha256").update(value).digest("hex");
@@ -55,15 +55,22 @@ export function sourceIdentity() {
     untrackedHash: hash(JSON.stringify(untracked)),
   };
 }
-export function main(argv) {
-  if (argv.length !== 3 || argv.includes("--help")) {
+export async function main(argv) {
+  if (argv.length === 2 && argv[0] === "--inspect") {
+    const plan = JSON.parse(readFileSync(resolve(argv[1]), "utf8"));
+    console.log(JSON.stringify(await inspectPlan(plan), null, 2));
+    return 0;
+  }
+  if (argv.length !== 3 || argv.some((arg) => arg.startsWith("--"))) {
     console.log(
-      "用法：node ui-evidence.mjs <plan.json> <已有浏览器session> <输出目录>\n从被测仓库运行；输出目录放仓库外或已忽略路径。不会创建浏览器、安装依赖或判定视觉通过。",
+      "用法：node ui-evidence.mjs <plan.json> <已有浏览器session> <输出目录>\n静态预检：node ui-evidence.mjs --inspect <plan.json>\n从被测仓库运行；输出目录放仓库外或已忽略路径。不会创建浏览器、安装依赖或判定视觉通过。",
     );
     return argv.includes("--help") ? 0 : 2;
   }
   const [config, session, directory] = argv;
   const plan = JSON.parse(readFileSync(resolve(config), "utf8"));
+  // 在创建输出目录、读取Git、连接session之前尽早失败；实际捕获仍校验同一份计划。
+  await inspectPlan(plan);
   const out = resolve(directory);
   mkdirSync(out, { recursive: true });
   for (const target of plan.targets || []) {
@@ -162,7 +169,7 @@ if (
   import.meta.url === pathToFileURL(resolve(process.argv[1])).href
 ) {
   try {
-    process.exitCode = main(process.argv.slice(2));
+    process.exitCode = await main(process.argv.slice(2));
   } catch (error) {
     console.error(error.message);
     process.exitCode = 1;

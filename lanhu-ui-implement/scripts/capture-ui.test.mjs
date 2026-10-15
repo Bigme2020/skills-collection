@@ -5,10 +5,142 @@ import { mkdtempSync, rmSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { createRequire } from "node:module";
-import { captureUI } from "./capture-ui.mjs";
+import { captureUI, inspectPlan } from "./capture-ui.mjs";
 
 // 只使用调用项目已有的 Playwright；不会安装、下载或重链接依赖。
 const { chromium } = createRequire(resolve("package.json"))("@playwright/test");
+test("静态预检复用真实合并规则，覆盖契约拦截两类适配错误且不接触页面", async () => {
+  const plan = {
+    defaults: {
+      ready: "main",
+      resourceRoot: "body",
+      boundaryProbe: true,
+      measurements: { footer: "footer" },
+      screenshot: { fullPage: false },
+      checks: [{ type: "equal", selector: ".item", metric: "height" }],
+    },
+    targets: [
+      {
+        id: "single",
+        boundaryProbe: false,
+        checks: [],
+        steps: [
+          { id: "start", measurements: { item: ".single" } },
+          { id: "end", measurements: { item: ".last" } },
+        ],
+      },
+    ],
+    coverage: {
+      "single-start": {
+        measurements: { item: ".single", footer: "footer" },
+        boundaryProbe: false,
+        checks: [],
+      },
+      "single-end": {
+        measurements: { footer: "footer", item: ".last" },
+        boundaryProbe: false,
+      },
+    },
+  };
+  const snapshot = structuredClone(plan);
+  const inspected = await inspectPlan(plan);
+  assert.deepEqual(plan, snapshot);
+  assert.equal(inspected.visualVerdict, "pending");
+  assert.deepEqual(
+    inspected.targets.map((t) => [t.id, t.reuse]),
+    [
+      ["single-start", false],
+      ["single-end", true],
+    ],
+  );
+  assert.deepEqual(inspected.targets[0].measurements, {
+    footer: "footer",
+    item: ".single",
+  });
+  assert.deepEqual(inspected.targets[0].checks, []);
+  assert.deepEqual(inspected.targets[0].screenshot, { fullPage: false });
+  // 任何页面读取或prepare都会让测试失败，证明错误在浏览器边界之前被拦下。
+  const page = new Proxy(
+    {},
+    {
+      get() {
+        assert.fail("预检不应访问页面");
+      },
+    },
+  );
+  for (const [change, error] of [
+    [
+      (p) => {
+        delete p.targets[0].boundaryProbe;
+      },
+      /single-start.boundaryProbe/,
+    ],
+    [
+      (p) => {
+        p.defaults.measurements.extra = ".pair";
+      },
+      /single-start.measurements/,
+    ],
+    [
+      (p) => {
+        delete p.coverage["single-end"];
+      },
+      /coverage 目标不符/,
+    ],
+    [
+      (p) => {
+        p.coverage.unused = {};
+      },
+      /coverage 目标不符/,
+    ],
+    [
+      (p) => {
+        p.targets[0].steps[1].viewport = { width: 1, height: 1 };
+      },
+      /复用捕获点/,
+    ],
+    [
+      (p) => {
+        p.targets[0].steps = [];
+      },
+      /steps/,
+    ],
+    [
+      (p) => {
+        p.targets[0].steps[1].id = "start";
+      },
+      /唯一/,
+    ],
+    [
+      (p) => {
+        p.targets[0].checks = [{ type: "guess" }];
+      },
+      /未知检查/,
+    ],
+    [
+      (p) => {
+        p.targets = {};
+      },
+      /targets/,
+    ],
+  ]) {
+    const bad = structuredClone(plan);
+    change(bad);
+    // 实际捕获仍要求输出路径；保持其他输入合法以验证目标错误。
+    for (const target of Array.isArray(bad.targets) ? bad.targets : [])
+      if (Array.isArray(target.steps))
+        for (const step of target.steps)
+          step.screenshot = { path: "/unused.png" };
+    await assert.rejects(
+      captureUI(page, bad, () => assert.fail("不应prepare")),
+      error,
+    );
+  }
+  const legacy = structuredClone(plan);
+  delete legacy.coverage;
+  assert.equal((await inspectPlan(legacy)).ok, true);
+});
+
 const picture =
   "data:image/svg+xml," +
   encodeURIComponent(
