@@ -69,7 +69,7 @@ Read [visual-diff.md](references/visual-diff.md) before the first capture. It is
 
 初始检查先看最有诊断价值的布局关系：混排类型、状态混排、首尾项、窄屏及底部边界；按契约核对同组元素之间的尺寸、对齐、间距和角标锚点，而不只核对各自数值。关系检查优先于其余变体，但仍须完成全部所选画板的基线检查后统一规划修复，不增加局部修复循环，也不默认混排必须等高。
 
-批量截图、资源就绪、滚动和几何取证优先复用 [通用取证工具](references/capture-tool.md)，由任务配置提供入口、选择器和已确认关系。业务操作用最小适配；脚本结果不替代视觉判断。工具不适用时记录具体缺口，只补缺失能力，不为每一批复制整套捕获脚本。
+批量截图、资源就绪、滚动和几何取证优先复用 [通用取证工具](references/capture-tool.md)：共享条件放 defaults、目标只写差异；同场景连续捕获用 steps 复用导航；失败与几何差异用现成摘要入口。由任务提供入口、选择器、关系和最小业务适配，脚本结果不替代视觉判断。工具不适用时记录具体缺口，只补缺失能力，不为每批重建捕获器或通用比较器。
 
 Review every selected artboard initially. Batch confirmed, nonconflicting visual repairs instead of entering a separate iterative loop for each region. Recheck affected variants after shared changes; uncertainty expands coverage. Combine the last review with final verification, using the same valid screenshots rather than scheduling an additional identical scan.
 

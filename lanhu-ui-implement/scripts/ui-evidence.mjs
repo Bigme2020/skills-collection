@@ -15,6 +15,7 @@ import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
 import { captureUI } from "./capture-ui.mjs";
+import { summarize } from "./evidence-summary.mjs";
 
 const hash = (value) => createHash("sha256").update(value).digest("hex");
 const git = (args) => {
@@ -68,10 +69,20 @@ export function main(argv) {
   for (const target of plan.targets || []) {
     if (!/^[\w-]+$/.test(target.id))
       throw new Error("target.id 仅允许字母、数字、_、-");
-    target.screenshot = {
-      ...target.screenshot,
-      path: join(out, `${target.id}.png`),
-    };
+    if (target.steps) {
+      for (const step of target.steps) {
+        if (!/^[\w-]+$/.test(step.id))
+          throw new Error("step.id 仅允许字母、数字、_、-");
+        step.screenshot = {
+          ...step.screenshot,
+          path: join(out, `${target.id}-${step.id}.png`),
+        };
+      }
+    } else
+      target.screenshot = {
+        ...target.screenshot,
+        path: join(out, `${target.id}.png`),
+      };
   }
   const source = sourceIdentity();
   const temporary = mkdtempSync(join(tmpdir(), "ui-evidence-"));
@@ -138,11 +149,7 @@ export function main(argv) {
   renameSync(`${manifestPath}.tmp`, manifestPath);
   console.log(
     JSON.stringify({
-      ok: manifest.ok,
-      targets: manifest.records.length,
-      failed: manifest.records
-        .filter((record) => !record.ok)
-        .map((record) => record.id),
+      ...summarize(manifest),
       sourceUnchanged,
       manifest: manifestPath,
       visualVerdict: "pending",

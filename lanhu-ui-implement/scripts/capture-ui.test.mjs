@@ -80,6 +80,81 @@ test("通用捕获：不同布局、资源、滚动及失败证据", async (t) =
         assert.ok(existsSync(result.records[0].screenshot));
       },
     );
+    await t.test("共享默认值、连续捕获只导航一次且逐点重验资源", async () => {
+      let navigations = 0;
+      const goto = page.goto.bind(page);
+      page.goto = (...args) => {
+        navigations++;
+        return goto(...args);
+      };
+      try {
+        const result = await captureUI(page, {
+          defaults: {
+            ready: "main",
+            resourceRoot: "main",
+            measurements: { tiles: ".tile" },
+            checks: [{ type: "equal", selector: ".tile", metric: "height" }],
+          },
+          targets: [
+            {
+              id: "scene",
+              url,
+              steps: [
+                {
+                  id: "first",
+                  screenshot: { path: join(directory, "first.png") },
+                },
+                {
+                  id: "end",
+                  scroll: { selector: ".row", axis: "x", to: "end" },
+                  screenshot: { path: join(directory, "end.png") },
+                },
+              ],
+            },
+          ],
+        });
+        assert.equal(navigations, 1);
+        assert.equal(result.ok, true);
+        assert.equal(result.records.length, 2);
+        assert.ok(
+          result.records.every(
+            (record) =>
+              record.resources.total === 1 && record.timingsMs.screenshot >= 0,
+          ),
+        );
+        const failure = await captureUI(page, {
+          defaults: { ready: "main", resourceRoot: "main" },
+          targets: [
+            {
+              id: "failed-scene",
+              url,
+              steps: [
+                {
+                  id: "first",
+                  checks: [
+                    {
+                      type: "size",
+                      selector: ".tile",
+                      metric: "height",
+                      value: 999,
+                    },
+                  ],
+                  screenshot: { path: join(directory, "bad.png") },
+                },
+                {
+                  id: "second",
+                  screenshot: { path: join(directory, "blocked.png") },
+                },
+              ],
+            },
+          ],
+        });
+        assert.equal(failure.records[1].ok, false);
+        assert.equal(failure.records[1].screenshot, null);
+      } finally {
+        page.goto = goto;
+      }
+    });
     await t.test("多资源根与显式元素裁剪可复用同一捕获器", async () => {
       const result = await captureUI(page, {
         targets: [

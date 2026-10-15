@@ -2,15 +2,41 @@
 // 保持函数自包含：CLI 会序列化函数，而不是在浏览器执行环境里 import。
 export async function captureUI(page, plan, prepare) {
   const records = [];
+  const defaults = plan.defaults || {};
+  const merge = (base, override) => ({
+    ...base,
+    ...override,
+    measurements: { ...base.measurements, ...override.measurements },
+    screenshot: { ...base.screenshot, ...override.screenshot },
+  });
+  // steps 只描述同一场景内的捕获点；业务操作仍由 prepare 回调执行。
+  const targets = (plan.targets || []).flatMap((target) => {
+    const scene = merge(defaults, target);
+    if (!target.steps) return [{ ...scene, reuse: false }];
+    if (!Array.isArray(target.steps) || !target.steps.length)
+      throw new Error("steps 必须是非空数组");
+    return target.steps.map((step, index) => {
+      if (index > 0 && (step.url !== undefined || step.viewport !== undefined))
+        throw new Error("复用捕获点不允许改变 url/viewport，请另建场景");
+      if (!step.id) throw new Error("每个捕获点必须指定 id");
+      return {
+        ...merge(scene, step),
+        id: `${target.id}-${step.id}`,
+        reuse: index > 0,
+      };
+    });
+  });
+  let previousSucceeded = false;
+  const browserVersion = page.context().browser()?.version() ?? null;
   const requireValue = (ok, message) => {
     if (!ok) throw new Error(message);
   };
   requireValue(
-    Array.isArray(plan.targets) && plan.targets.length > 0,
+    Array.isArray(plan.targets) && targets.length > 0,
     "targets 必须为非空数组",
   );
   const ids = new Set();
-  for (const target of plan.targets) {
+  for (const target of targets) {
     requireValue(
       typeof target.id === "string" &&
         /^[\w-]+$/.test(target.id) &&
@@ -63,48 +89,44 @@ export async function captureUI(page, plan, prepare) {
       );
     }
   }
-  for (const target of plan.targets) {
+  for (const target of targets) {
     const record = { id: target.id, ok: false, checks: [], screenshot: null };
     records.push(record);
     let animationStyle;
+    let phaseStarted = Date.now();
+    record.timingsMs = {};
+    const mark = (name) => {
+      const now = Date.now();
+      record.timingsMs[name] = now - phaseStarted;
+      phaseStarted = now;
+    };
     try {
       const timeout = plan.timeoutMs ?? 10000;
-      if (target.viewport) await page.setViewportSize(target.viewport);
-      if (target.url)
-        await page.goto(target.url, { waitUntil: "domcontentloaded", timeout });
-      else await page.reload({ waitUntil: "domcontentloaded", timeout });
+      if (target.reuse)
+        requireValue(previousSucceeded, "前一捕获点失败，不复用未验证页面状态");
+      else {
+        if (
+          target.viewport &&
+          JSON.stringify(page.viewportSize()) !==
+            JSON.stringify(target.viewport)
+        )
+          await page.setViewportSize(target.viewport);
+        if (target.url)
+          await page.goto(target.url, {
+            waitUntil: "domcontentloaded",
+            timeout,
+          });
+        else await page.reload({ waitUntil: "domcontentloaded", timeout });
+      }
+      mark("navigation");
       if (prepare) await prepare(page, target);
-      // 设备模式由调用方创建 context 时设置；改 viewport 不会自动切换设备模式。
+      mark("prepare");
       await page.locator(target.ready).waitFor({ state: "visible", timeout });
       await page
         .locator(target.resourceRoot)
         .first()
         .waitFor({ state: "visible", timeout });
-      const context = page.context();
-      const actual = {
-        viewport: page.viewportSize(),
-        browser: context.browser()?.version() ?? null,
-        // Playwright 的公开 context 选项不提供事后读取接口；实测信号不冒充创建参数。
-        ...(await page.evaluate(() => ({
-          dpr: devicePixelRatio,
-          zoom: window.visualViewport?.scale ?? 1,
-          touchPoints: navigator.maxTouchPoints,
-          userAgent: navigator.userAgent,
-        }))),
-      };
-      record.actual = actual;
-      for (const key of ["dpr", "zoom"]) {
-        if (plan.expected?.[key] !== undefined)
-          requireValue(
-            Math.abs(actual[key] - plan.expected[key]) < 0.001,
-            `${key} 与捕获契约不符`,
-          );
-      }
-      if (plan.expected?.touch !== undefined)
-        requireValue(
-          actual.touchPoints > 0 === plan.expected.touch,
-          "触摸能力与捕获契约不符",
-        );
+      mark("ready");
       animationStyle = await page.addStyleTag({
         content:
           "*,*::before,*::after{animation-play-state:paused!important;transition:none!important;caret-color:transparent!important}",
@@ -147,13 +169,16 @@ export async function captureUI(page, plan, prepare) {
           "契约要求溢出，但实际无溢出",
         );
       }
-      // 先让滚动触发的视口观察器有机会更新资源；异步业务加载仍由 ready/prepare 明确等待。
-      await page.evaluate(
-        () =>
-          new Promise((resolve) =>
-            requestAnimationFrame(() => requestAnimationFrame(resolve)),
-          ),
-      );
+      mark("scroll");
+      // 仅发生滚动/业务准备时等待观察器；普通导航无需额外预等待。
+      if (target.scroll || prepare)
+        // 先让滚动触发的视口观察器有机会更新资源；异步业务加载仍由 ready/prepare 明确等待。
+        await page.evaluate(
+          () =>
+            new Promise((resolve) =>
+              requestAnimationFrame(() => requestAnimationFrame(resolve)),
+            ),
+        );
       record.resources = await page.evaluate(
         async ({ selector, timeout }) => {
           const roots = [...document.querySelectorAll(selector)];
@@ -221,13 +246,7 @@ export async function captureUI(page, plan, prepare) {
         { selector: target.resourceRoot, timeout },
       );
       requireValue(record.resources.failed.length === 0, "资源加载或解码失败");
-      // 等两帧完成布局；不依赖 run-code 沙箱提供全局计时器。
-      await page.evaluate(
-        () =>
-          new Promise((resolve) =>
-            requestAnimationFrame(() => requestAnimationFrame(resolve)),
-          ),
-      );
+      mark("resources");
       if (target.scroll) {
         record.scroll.actual = await page
           .locator(target.scroll.selector)
@@ -240,8 +259,11 @@ export async function captureUI(page, plan, prepare) {
           "未到达请求的滚动位置；检查 scroll-snap／虚拟列表等页面行为",
         );
       }
-      record.geometry = await page.evaluate(
-        ({ measurements, checks }) => {
+      const snapshot = await page.evaluate(
+        async ({ measurements, checks }) => {
+          await new Promise((resolve) =>
+            requestAnimationFrame(() => requestAnimationFrame(resolve)),
+          );
           const rect = (el) => {
             const r = el.getBoundingClientRect();
             return {
@@ -260,18 +282,54 @@ export async function captureUI(page, plan, prepare) {
               ...(rule.container ? [rule.container] : []),
             ]),
           ]);
-          return Object.fromEntries(
+          const geometry = Object.fromEntries(
             [...selectors].map((selector) => [
               selector,
               [...document.querySelectorAll(selector)].map(rect),
             ]),
           );
+          return {
+            geometry,
+            page: {
+              url: location.href,
+              width: innerWidth,
+              height: innerHeight,
+              documentWidth: document.documentElement.scrollWidth,
+              scrollX,
+              scrollY,
+            },
+            actual: {
+              dpr: devicePixelRatio,
+              zoom: window.visualViewport?.scale ?? 1,
+              touchPoints: navigator.maxTouchPoints,
+              userAgent: navigator.userAgent,
+            },
+          };
         },
         {
           measurements: target.measurements || {},
           checks: target.checks || [],
         },
       );
+      record.geometry = snapshot.geometry;
+      record.page = snapshot.page;
+      record.actual = {
+        ...snapshot.actual,
+        viewport: page.viewportSize(),
+        browser: browserVersion,
+      };
+      for (const key of ["dpr", "zoom"]) {
+        if (plan.expected?.[key] !== undefined)
+          requireValue(
+            Math.abs(record.actual[key] - plan.expected[key]) < 0.001,
+            `${key} 与捕获契约不符`,
+          );
+      }
+      if (plan.expected?.touch !== undefined)
+        requireValue(
+          record.actual.touchPoints > 0 === plan.expected.touch,
+          "触摸能力与捕获契约不符",
+        );
       for (const rule of target.checks || []) {
         const boxes = record.geometry[rule.selector];
         const tolerance = rule.tolerance ?? 0.5;
@@ -299,14 +357,7 @@ export async function captureUI(page, plan, prepare) {
         }
         record.checks.push({ ...rule, ok, matched: boxes.length });
       }
-      record.page = await page.evaluate(() => ({
-        url: location.href,
-        width: innerWidth,
-        height: innerHeight,
-        documentWidth: document.documentElement.scrollWidth,
-        scrollX,
-        scrollY,
-      }));
+      mark("geometry");
       // 断言失败仍捕获诊断图；资源/设备就绪失败不生成可比较截图。
       const screenshot = {
         path: target.screenshot.path,
@@ -331,6 +382,7 @@ export async function captureUI(page, plan, prepare) {
           ...screenshot,
           fullPage: target.screenshot.fullPage ?? false,
         });
+      mark("screenshot");
       record.screenshot = screenshot.path;
       record.ok = record.checks.every((check) => check.ok);
       if (!record.ok) record.error = "布局契约断言失败";
@@ -345,6 +397,8 @@ export async function captureUI(page, plan, prepare) {
           record.cleanupError = error.message;
         }
       }
+      mark("cleanup");
+      previousSucceeded = record.ok;
     }
   }
   return {
