@@ -142,6 +142,20 @@ node <skill目录>/scripts/evidence-summary.mjs <before.json> <after.json>
 
 比较要求两份标准清单的目标 ID／测量选择器一致，机械输出覆盖缺口及几何差异；不同场景命名需由任务适配统一身份后再比较。不用工具替代图片查看、业务行为或协议特有比较；常规任务不再另写通用结果摘要／几何比较器。
 
+### 已封存证据收尾
+
+已封存材料满足下述检查点结构、且已记录逐图观察和预算时，使用固定入口核对现有材料，不重跑捕获或另写封存脚本。其他结构继续使用既有收尾，不因入口不适用而重写或重跑证据：
+
+```bash
+node <skill目录>/scripts/seal-evidence.mjs <manifest.json> <checkpoint.json> <toolIdentity.json> <output.json>
+```
+
+Node 18+，原生依赖；具名函数入口为同模块 `sealEvidence(manifestPath, checkpointPath, toolIdentityPath, outputPath)`，同步返回 receipt 并原子写出 JSON。证据根为 checkpoint 的父目录，三份输入与 `checkpoint.servedProof`、`images[].file` 必须在根内；输出必须在根外，不覆盖原证据。根内符号链接不读取并阻断成功。stdout 只报告紧凑的 `ok/issues/output`；失败退出非零，安全输出位置仍保存失败 receipt，输出路径非法时不写入。
+
+仅支持以下已封存检查点结构：`businessRevision/toolRevision/servedProof/budget/visualVerdict/images/geometry.relationships`；图片项包含 `id/file/sha256/width/height/scanned/verdict`。清单使用 `source/sourceAfter/sourceUnchanged/servedRevision/records/boundaryRecords`；toolIdentity 的 `current` 表示**捕获工具**修订，而不是封存脚本版本。核对源码前后身份及声明版本、目标覆盖、截图文件名、PNG 头／尺寸／hash、字体／资源／断言、独立服务证明的文件内一致性。计数继承现有记录和关系数量，不推断业务关系是否通过；receipt 保留边界记录并递归列出根内全部普通文件的大小和 hash，包括旧 index、日志与失败材料。
+
+`visual` 只继承检查点结论与预算并标记 `carriedForward:true`；所有图片必须已有 `scanned:true`。封存不看图、不查询浏览器／服务／Git／接口，不运行旧封存脚本；`servedRevision` 原样保留，独立 servedProof 一致不等于当前服务已验证。receipt 不替代视觉判断，也不把既有验收文字当作新检查结果。
+
 清单包含实际浏览器／视口、字体／资源状态、几何和断言、滚动方式、源码身份、PNG 尺寸及 SHA-256；以原子写入保存。任一目标失败或源码变化，进程非零退出，已成功目标的证据仍保留。配置错误可阻止整批开始，不用外层 shell 成功替代内部 `ok`。
 
 通用工具不判断设计一致、裁剪映射是否正确、业务行为是否满足，亦不设置 `visualVerdict: passed`。模型读取有效图片完成视觉判断；共享检查点记录契约、预算、观察和限制，引用清单，不重复抄录全部测量数据。收尾格式以主 skill 的 Handoff 为唯一规则。

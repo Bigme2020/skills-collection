@@ -81,6 +81,8 @@ Confirmed reviewer findings use the remaining shared budget; they do not open an
 
 ## Handoff
 
+已有完整清单且检查点符合 [固定封存入口支持的结构](references/capture-tool.md#已封存证据收尾) 时，用该入口核对并生成根外 machine receipt；不重跑捕获、不升级服务或视觉结论，人工交付引用同一 receipt。其他检查点结构沿用既有收尾，不为调用工具重写原证据。
+
 只写一份简短人工交付结论：交付提交与范围；逐目标入口／复现状态、视觉结论、截图及差异；项目检查与独立审查（如要求）的结论和原始证据链接；共享预算、验证限制、待决策及清理／保留结果。逐目标用紧凑表格，不展开重复叙述。
 
 原始设计结果、截图、命令日志及审查原文保留不变；捕获条件、源身份和图片 hash 使用工具清单，观察与预算使用共享检查点。每项引用必须已落盘、可访问且版本匹配。任务票只更新状态并追加提交、审批／阻塞与交付链接；父会话呈现必要截图和用户决策，不重新生成完整验证报告。协议要求的结构化结果照常提供，引用同一证据而非另写一套长叙述。Delivery completion, visual correctness, and user approval are separate conclusions.
