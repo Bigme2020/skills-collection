@@ -1,133 +1,94 @@
-# Visual iteration
+# Bounded visual review
 
-Read this reference before the first capture for an artboard, after finalizing its [page and artboard contract](page-contract.md). Use those contracts throughout the iteration instead of redefining them here.
+Read before the first capture. Use the finalized [page contract](./page-contract.md) without rebuilding it each round.
 
-## Independent target state
+## Shared page budget
 
-Give every artboard its own task-specific OS temporary directory:
+Default: **at most two visual repair batches for the whole page and all selected variants**, unless the user supplies another finite limit. A batch is one planned set of one to three confirmed, nonconflicting visual fixes followed by screenshot verification. Initial implementation, baseline review, read-only diagnosis, and regression-only captures do not consume batches. Any post-baseline rendering correction, including one discovered by review or a project check, consumes a batch; purely nonvisual corrections do not.
+
+Record the shared count before editing. Failed captures, improvement, renaming regions, adding variants, restarting the agent, and checkpoint resume never refund or reset it. A shared edit consumes one batch, not one per artboard. Once a batch is verified, further visual edits require another batch. Diagnosis does not provide a free repair.
+
+Use remaining budget for major layout, missing visual fidelity, assets, cropping, wrapping, or typography before small decorative differences. A vague request to continue until convergence does not remove the finite default. Extensions require an explicit finite user authorization; when a user authorizes more repairs without a number, add at most one batch and record that bound.
+
+## Evidence and captures
+
+Use one task-specific OS temporary directory and one shared checkpoint:
 
 ```text
-<task-temp>/<target>/
-├── design.png
-├── previous.png
-├── current.png
-└── visual-loop-state.json
+<task-temp>/
+├── visual-loop-state.json
+└── <artboard>/
+    ├── design.png
+    ├── current.png
+    └── previous.png       # optional, only when needed to judge a repair
 ```
 
-The first round may omit `previous.png`. Never share these files or region state between variants, even when they use the same route or component.
+Keep images and contract records separate per artboard. The checkpoint contains a shared page budget and a `targets` record with each artboard's contract, capture conditions or resolved shared reference, observations, and verdict. A target record is that artboard's checkpoint for purposes of the page-contract reference.
 
-## Semantic comparison
+Before every capture, verify actual device/state, crop, scale, page range, viewport, DPR, zoom, scroll, fonts, images, and frozen animations. Stop comparison until uniform scale and comparable ranges are proved. Return compact readiness totals, failed resources, and relevant bounds/styles, not full DOM or successful resource lists.
 
-Verify actual capture state and readiness before every capture. Check all required, forbidden, and excluded assertions at baseline and final verification, using DOM or geometry evidence where practical. During inner repairs, check the active region, adjacent layout, and assertions affected by the change; if impact is uncertain, check all. Record checked scope and observations as `contract_assertions`; carried-forward results are not fresh observations.
+Compare screenshots with model vision. Use DOM/geometry evidence to resolve uncertainty and check assertions; no pixel-difference percentages, heatmaps, or numeric visual pass thresholds. Reuse unchanged design images already in context. Load the new screenshot and only load a previous image when needed; deleting files does not remove prior images from model context.
 
-Compare the full page with model vision. Do not generate pixel-difference percentages, heatmaps, automatic connected regions, or numeric pass thresholds.
+## Review sequence
 
-Keep browser diagnostics compact without reducing check coverage: return readiness totals and failed resources, and only the bounds or styles needed for the current region and its neighbors. Retain per-instance final verdicts below; expand failed or uncertain checks instead of dumping the full DOM, style objects, or successful resource lists.
+### 1. Baseline review
 
-At each outer scan, select the one to three semantic regions with the greatest visual impact and repair value. Prefer page geometry and major containers, then large components, backgrounds, and asset crops, then local spacing, wrapping, and typography.
+按主流程的关系优先顺序开始，再完成全部所选画板的基线检查后统一修复。Capture and review all selected artboards once. For each, check every required region in page order, required/forbidden/excluded assertions, layout-critical relationships, major geometry, typography, assets, and dynamic wrappers. Record the largest confirmed discrepancies and the evidence needed for uncertain ones.
 
-Record each region's semantic name, design appearance, current appearance, and the next evidence to check. For a layout-critical region, also compare its recorded relationship to the viewport, page edge, parent, and nearby content. Coordinates are optional; do not invent precision the images do not support.
+If no visible, fixable difference remains, this review is also the final scan once the final coverage and implementation gates below are satisfied. Do not invent edits or perform a second identical inspection.
 
-## Two-layer loop
+### 2. Plan and verify a repair batch
 
-### Outer full-page scheduling
+Select one to three confirmed, nonconflicting fixes across the page. Record each issue, evidence-supported cause, intended change, and affected artboards. If a cause is uncertain, use one focused diagnostic pass before editing. Coordinate deltas are hypotheses: reconcile crop, scale, coordinate space, and DOM bounds before acting on them.
 
-1. Validate the capture contract and checkpoint.
-2. Inspect the current full-page screenshot against the design.
-3. If no visible, fixable difference exists, enter final verification without creating an active region or modifying code. Otherwise list the largest one to three semantic regions to repair.
-4. Mark one region `active` and enter its inner loop.
-5. When it becomes `completed`, rescan the current full page and rank remaining regions again.
+Reserve a batch, make the planned edits, and capture every affected variant. Check changed regions, adjacent layout, and affected assertions. Shared changes invalidate affected acceptance; uncertain impact requires all selected variants to be rechecked. Unaffected checks can be carried forward only with their original provenance, not reported as new observations.
 
-Stay in the inner loop until the active region completes, then rescan and rerank from current evidence. Return to the outer loop early if a repair reveals a clear cross-region regression. Do not repeat full-page scheduling after every inner repair; affected-variant checks still apply.
+Give each planned fix an `improved`, `unchanged`, or `regressed` result, expanding evidence only for failures or uncertainty. Improvement alone is not acceptance. Movement away from confirmed design geometry is regression. Batch related safe adjustments; do not require a separate repair/capture per region or per CSS property.
 
-### Inner region repair
+A fully unchanged or regressed batch triggers one focused diagnosis before any next repair. If no supported cause is established, stop with `unconfirmed_cause` while budget remains. Do not repeat speculative edits. At an exhausted budget, record unresolved visual differences and finalize if technical evidence remains valid; no additional repair follows diagnosis.
 
-1. Lock the active region and its visible completion condition.
-2. Choose one most likely cause.
-3. Check the repair limits below, then make one focused repair.
-4. Capture the complete page again under the same contract.
-5. Compare the design, `previous.png`, and `current.png`, including directly adjacent layout.
-6. Record the round as `improved`, `unchanged`, or `regressed` and update the region lifecycle.
+### 3. Finalize using the last review
 
-For position or size repairs, or feedback based on coordinates, treat reported deltas as hypotheses and reconcile them with the current crop, scale, and DOM bounds before editing. Record the relevant design, before, and after geometry when supported by evidence; movement away from the design is `regressed`, not `improved`. For other repairs, record evidence relevant to the changed property rather than unrelated coordinates.
+Normally each artboard needs one baseline comparison and up to two post-repair comparisons. Reuse the last affected-variant review as final verification by expanding its coverage to the checklist below on the same valid screenshot. An unaffected artboard may retain its baseline as final evidence only when no later rendering change affects it.
 
-`improved` does not mean completed. For `improved + active`, reset the consecutive non-improvement count and continue the same region. Mark it `completed` only when no visible, fixable difference remains, its dynamic wrapper is checked, and the repair created no adjacent-layout problem.
+No duplicate final screenshot or identical full-page scan is required merely to finish. Recapture when data, state, readiness, code, or other rendering inputs changed or the image is invalid. Required regression checks and failed-capture retries can add captures, but not free visual repairs.
 
-After two consecutive `unchanged` or `regressed` rounds, stop styling guesses and perform one focused diagnostic pass using evidence relevant to the symptom: DOM bounds, styles, fonts, assets, or page/capture state. If it establishes a cause and budget remains, repair it in the same region. Otherwise stop the target and hand off; do not repeat diagnosis without new evidence.
+If final coverage discovers another issue, repair only within the remaining shared budget. At the limit, finish with disclosed visual differences rather than reopening an unbounded loop. Missing required UI, broken interactions, unstable assets, project-rule failures, and evidence/tooling failures remain implementation or evidence blockers, not allowable fidelity differences.
 
-Once every known region is completed, enter the final scan below using the current full-page screenshot. This is one final scan, not an additional preliminary pass. Add an overlooked region or reactivate an affected one when needed. Record `regressed` only when the current image is visibly worse than the previous image.
+## Final coverage
 
-## Repair limits
+For every artboard, cover all required regions in page order, with explicit geometry and typography conclusions. Presence alone or a generic `accepted` is insufficient. Verify each layout-critical relationship against page/viewport/parent edges, preceding content's visible boundary, and any reserved space.
 
-Default limits are 6 cumulative repair rounds per semantic region and 16 per artboard, unless the user specifies finite limits. A round is one focused visual repair and its screenshot verification. Reserve and persist the round count before editing; failed captures do not refund it. Initial implementation, baseline capture, read-only scans, and regression-only captures do not count. Visual repairs resulting from diagnosis or review do count; nonvisual corrections follow the main skill's project-check rules.
+For repeated siblings or lists, check all instances for missing content, overflow, wrapping anomalies, occlusion, and spacing/edge consistency, using compact DOM or geometry assertions where practical. Inspect visual representatives of every distinct layout/text-wrapping type, including first/last and suspicious instances; inspect every instance when unique, uncertain, or inconsistent. A consistent group may have one shared geometry/typography verdict naming its checked instances and exceptions, rather than repeating identical prose. Identify every multiline group and value-ignored wrapper; continue checking wrapper geometry and styling when its value is ignored.
 
-Keep cumulative counts through improvement, region renaming, reopening, and checkpoint resume. Charge a shared repair to its declared primary artboard and region; verify all affected variants. Do not switch the primary target to bypass an exhausted limit or modify a stopped variant through shared code. Unaffected targets may continue.
+Check the last content item's gap to each container bottom. Diagnose excess whitespace through height, min-height, flex stretch, or reserved space; preserve justified design spacing. For variable-length lists, test sparse or empty data for content boundaries and bottom occlusion. For bottom safe-area layouts, verify both zero and nonzero clearance under the page-contract rule. Run these pressure checks once at final verification, rerunning only if relevant layout changes; they are regression checks, not new design artboards or evidence of real-device testing.
 
-At either limit, stop repairs for that artboard, verify the last change, and run the final scan and completion checklist. Complete automated delivery even when visual differences remain: set `targetStatus` to `completed`, `visualVerdict` to `differences_remaining`, and `stopReason` to `repair_limit`; retain unresolved regions and failed visual assertions as evidence. If all visual checks pass, use `visualVerdict: passed`. Budget exhaustion alone is not a blocker, a request for more rounds, or a reason to stop other targets. Delivery completion does not claim visual correctness or user approval.
+Run the final changed-file assertion audit and affected project checks with this verification. Any rendering fix invalidates relevant visual evidence and follows the shared budget; a nonvisual fix only reruns its applicable checks.
 
-This exception covers visual differences only. Missing design or capture evidence, checkpoint errors, unresolved diagnosis before a limit (`unconfirmed_cause`), and target-affecting implementation or tooling failures remain blockers. Report counts, remaining differences, attempted fixes, and likely files/regions for follow-up. Additional repairs require explicit user authorization for a finite extension and retain cumulative counts; if no number is given, add at most 6 rounds to each exhausted limit.
+For an authorized independent review, use the fresh read-only review in the main skill for this final coverage rather than duplicating self-review and reviewer scans. Supply resolved contracts and current images, not prior pass claims or repair history. Keep visual and implementation verdicts separate. Review findings cannot extend the budget.
 
-## Final scan
+## Lightweight checkpoint
 
-Use these evidence inputs for final verification:
+Maintain `visual-loop-state.json` with:
 
-- the artboard contract;
-- the design image with its proved crop and scale;
-- the final `current.png`.
+- page entry, selected targets, shared batch count/limit, authorized extensions, pending batch and affected targets;
+- per-target contract, sources, capture conditions, exclusions, dynamic selectors/reasons, image paths and dimensions;
+- per-batch issues and concise outcomes, checked scope, observations and provenance, unresolved differences, next action;
+- per-target `targetStatus` (`active`, `completed`, `blocked`), `visualVerdict` (`pending`, `passed`, `differences_remaining`), stop reason and final coverage;
+- final image SHA-256 hashes and scanned screenshot hash when sealing evidence, plus the delivered revision or working-tree identity.
 
-For ordinary tasks, the current agent scans the page anew and derives verdicts from these inputs rather than earlier pass conclusions. This is a reinspection, not context isolation. When Step 4 triggers a fresh verifier, use it for this final scan and supply only these inputs, without earlier rankings, repair history, `completedRegions`, or a claim that the page passed. It must not modify code. Findings invalidate prior visual acceptance and reopen the relevant region while budget remains; at a repair limit, record them in the completed delivery without starting further repairs.
+Reserve the budget with an atomic state-file replacement before editing; preserve this state if capture fails. Stage a screenshot, validate dimensions and readiness, install it, then atomically update observations. Reuse established capture/state commands. Intermediate rounds need no full checkpoint backup, repeated image hashing, or dedicated new helper.
 
-The final scan must cover every required region in page order and give each an explicit geometry and typography verdict against adjacent fixed landmarks. For every layout-critical region, it must also verdict the recorded relationship, including its edge distance, the preceding content's visible boundary, and any container area reserved between them. CSS positioning alone cannot prove overlap. Verdict every instance in a repeated sibling group and their spacing; a shared container verdict does not cover its instances. Name every repeated multiline group and every value-ignored wrapper; compare its visible bounds and spacing. Presence checks and region-level summaries such as `accepted` are not completion evidence.
+Seal image hashes at final delivery, planned handoff, or a recoverable stop. Mark evidence dirty/pending before changes, clearing stale final acceptance. Interrupted updates do not imply code rollback, acceptance, or a refunded batch.
 
-## Rolling checkpoint
+Resume only a user-identified checkpoint. Validate contracts, counters, image dimensions and any recorded hashes before reusing sealed evidence. A mismatch or contradictory completion is a blocker; preserve evidence and report it rather than guessing progress. An unsealed intermediate checkpoint supplies counters and pending work only: do not reuse its visual acceptance. Obtain current design evidence, recapture the current implementation, and validate the new evidence before continuing; preserve cumulative counts. If counters or contracts cannot be established, stop for direction.
 
-Keep per-region and per-instance check results compact: identify the item and checked dimensions with a brief verdict; expand evidence for failures and uncertainty. Do not replace individual checks with a single container-level pass or repeat unchanged contracts in round reports.
+## Completion and cleanup
 
-Load only images needed for the current comparison. Reuse unchanged design and before images already available in context; reload them only when unavailable or insufficient to judge. Load the new current screenshot after each repair, and the previous screenshot when needed to establish improvement or regression. Do not reload older rounds. File rotation limits disk evidence, not images already present in conversation context.
+Set `targetStatus: completed` and `visualVerdict: passed` only when final coverage finds no visible, fixable difference and capture evidence, required UI/behavior, stable assets, project assertions, and relevant checks are valid. Bind the conclusion to the final `current.png` hash and delivered revision.
 
-`visual-loop-state.json` is the recovery point and must record at least:
+At the shared limit, valid technical delivery may use `targetStatus: completed`, `visualVerdict: differences_remaining`, and `stopReason: repair_limit`. Preserve unresolved visual findings and failed fidelity observations without marking them passed. Budget exhaustion alone is not a blocker or a request for extra rounds. Other evidence, implementation, or tooling failures use `targetStatus: blocked`, with an explicit cause; a fully passed target is not downgraded because another variant has remaining differences.
 
-- capture conditions or a resolvable shared-record reference with overrides, and authorized exclusions;
-- artboard contract, layout-relationship sources, and observed contract assertions;
-- dynamic selectors and reasons;
-- image paths, dimensions, and SHA-256 hashes;
-- active region and completion condition;
-- latest round result and consecutive non-improvement count;
-- cumulative artboard and region repair counts, finite limits and authorized extensions, pending repair if any, and stop reason;
-- completed region summaries;
-- final scan result and the SHA-256 of the scanned `current.png`;
-- target status: `active`, `completed`, or `blocked`;
-- visual verdict: `pending`, `passed`, or `differences_remaining`; unresolved regions and visual findings for a repair-limit completion;
-- next action.
+Keep design images, final screenshots, and the shared checkpoint. Remove previous/earlier images after completed delivery; on blockers retain the previous image when relevant. Remove validation-only mocks, interception, injected CSS, and temporary project changes while preserving authorized implementation and all pre-existing user changes. Report the final Git state.
 
-Reuse the task's established capture and checkpoint-update commands or helper across rounds, changing target and round data as needed. Adapt them when conditions change; do not rebuild the same file-handling procedure each round or introduce a new tool solely to satisfy this instruction.
-
-Update safely after every successful capture:
-
-1. Stage the new screenshot and state in temporary files and validate their dimensions, hashes, and consistency.
-2. Preserve a complete backup of the existing checkpoint, including its images, referenced conditions, and already reserved repair count.
-3. Install the new image pair and replace the state file last; retain the backup throughout this update.
-4. Validate the installed checkpoint before removing the backup and staging files.
-
-If capture fails, preserve the last complete checkpoint and pending repair count, and apply the main loop's tool-failure limit. If installation is interrupted, restore only a validated backup from this update, report the recovery, and recapture the current implementation before further comparison; restoring evidence does not restore code or refund rounds. Without a validated backup, stop and report a checkpoint error for missing files, hash failures, or conflicting dimensions. Do not guess progress or silently reset counters.
-
-## Completion checklist
-
-For every artboard, confirm:
-
-- the capture contract and image mapping are proved;
-- all contract assertions and the per-region final scan pass;
-- assets are stable and traceable;
-- no task-blocking browser error remains.
-
-Normally set `targetStatus: completed` and `visualVerdict: passed` only when `activeRegion` is empty, every contract assertion passes, and the final scan reports no visible fixable difference against the hash of the final `current.png`.
-
-At a repair limit, also complete delivery after the final scan when capture evidence, assets, and implementation checks are valid, but use `visualVerdict: differences_remaining` for any failed visual assertion or remaining difference. Clear `activeRegion` into an explicit unresolved-region record, preserve failed observations and the final screenshot hash, and record `stopReason: repair_limit`. Do not mark unresolved regions or assertions as passed. A latest repair result of `improved` alone never proves either completion path. Any other contradictory state remains a checkpoint error.
-
-## Clean exit
-
-On completed delivery, including `differences_remaining`, keep `design.png`, final `current.png`, and `visual-loop-state.json`; remove `previous.png`. On a blocker, keep all three images and the state file. Remove earlier screenshots, validation-only mocks, request interception, CSS injection, and other temporary project changes.
-
-Preserve the authorized implementation and every pre-existing user change. Restore the whole worktree only when the task explicitly permits no production change. Report the final Git state.
-
-The final visual report gives each target's entry and reproducible variant, delivery status, visual verdict, remaining difference or stop reason, and links to the final screenshot and checkpoint. Keep device mode, capture conditions, exclusions, dynamic ignores, detailed checks, and page state in the linked checkpoint; call out any condition that limits the verdict. For repair-limit deliveries and blocked targets, include the counts and follow-up evidence above.
+按主 skill 的单份简短交付结论收尾，引用本检查点与工具清单，避免在票、验证文档、完成报告和最终回复里重复展开同一事实。差异或阻塞附已尝试修复及后续区域指针；模拟验证如实标明。Do not claim user approval or a check that was not performed.

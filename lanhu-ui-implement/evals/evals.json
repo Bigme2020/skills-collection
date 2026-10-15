@@ -3,236 +3,140 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "根据这个蓝湖设计稿实现当前 React 项目的活动页：https://lanhuapp.com/web/#/item/project/stage?tid=demo&pid=desktop 。目标画板是‘活动首页-桌面端’，本地页面是 http://127.0.0.1:3000/activity。切图请直接放进项目现有 assets 目录。实现后持续截图对比，直到视觉收敛。",
-      "expected_output": "Uses the current Lanhu MCP result directly, follows the local-asset instruction and React project conventions, proves the capture contract before semantic comparison, and completes the model visual loop without a manifest, pixel threshold, or heatmap.",
+      "prompt": "实现当前蓝湖活动页，目标有桌面和移动两个画板。项目有自己的设备切换入口。资产放现有assets目录，保留原有业务交互，没有指定修复额度。",
+      "expected_output": "Reads applicable project instructions and both references, uses current direct Lanhu evidence, respects assets and behavior, records independent contracts and device states, and applies one shared page budget of at most two repair batches rather than two budgets per artboard.",
       "files": []
     },
     {
       "id": 2,
-      "prompt": "把蓝湖里的‘个人主页-Web’和‘个人主页-Mobile’作为同一页面的两个变体还原到这个 Vue 项目，地址：https://lanhuapp.com/web/#/item/project/stage?tid=demo&pid=responsive 。项目里有自己的 PC/H5 切换按钮，不要只改 viewport。两个端都要给我最终截图。",
-      "expected_output": "Treats both artboards as one page implementation boundary with a shared page entry; uses the project's existing PC/H5 switch to give each artboard an independent reproducible variant state, device mode, capture contract, temporary checkpoint, semantic region lifecycle, and final visual conclusion; does not invent one route per artboard and rechecks both after shared changes.",
+      "prompt": "首次截图比较没有可见差异。所有区域、项目检查、安全区和空列表检查都已覆盖，截图状态仍有效。请交付。",
+      "expected_output": "Uses the baseline review as final verification, seals current screenshot evidence, delivers passed with zero batches used, and creates no forced repair, duplicate screenshot, identical second scan, or automatic reviewer.",
       "files": []
     },
     {
       "id": 3,
-      "prompt": "参考这个蓝湖稿把当前本地商品详情页做出来：https://lanhuapp.com/web/#/item/project/stage?tid=demo&pid=product 。我没指定切图怎么处理，你自己按流程完成。页面原来的下单交互和数据逻辑不能变。",
-      "expected_output": "Uses the project's existing asset convention before considering an approved Duitang CDN flow, keeps temporary Lanhu URLs out of production code, preserves business behavior, and runs semantic visual comparison for the selected page variants.",
+      "prompt": "首次审核确认标题字号、卡片间距、独立图标裁剪有差异。三个原因明确，修改互不冲突，两个画板都受影响。",
+      "expected_output": "Plans the three confirmed fixes in one batch, reserves the shared count before editing, verifies both affected artboards, and records issue outcomes without creating a separate per-region or per-property repair loop.",
       "files": []
     },
     {
       "id": 4,
-      "prompt": "用蓝湖设计稿校准 hasaki-douyin-exchange 的站外兑换页。项目按 750/rem 开发，设计图为 750x1624，浏览器截图为 375x812。需求明确说明设计稿顶部的 WebView 壳属于外部容器，不需要页面实现。只做视觉验证，不要改生产 UI；固定数据验证后恢复所有临时改动。",
-      "expected_output": "Reads the applicable repository instructions and page-contract reference before implementation, records the target-specific WebView-shell exclusion, crops the excluded design pixels, rebases the remaining design content to page origin with no shell element or blank 88px placeholder, proves the comparable page ranges, and restores validation-only changes without a manifest or pixel diff.",
+      "prompt": "第二批修复后，一个画板已一致，另一个仍有装饰点阵差异。最终截图、全部必需元素和交互、实现检查都有效。继续改区域名称再修几轮吧，没有授权额外额度。",
+      "expected_output": "Keeps cumulative shared usage at two, refuses a rename or workflow-switch bypass, completes the passed target and the differences_remaining target separately, preserves remaining fidelity findings with repair_limit, and does not request or start extra rounds automatically.",
       "files": []
     },
     {
       "id": 5,
-      "prompt": "页面的倒计时数值会变化，但其卡片位置、背景和圆角必须和蓝湖一致。请持续修复视觉差异；如果同一区域两次修复没有改善，停止盲调。",
-      "expected_output": "Fixes the value when possible; otherwise records its selector and reason, ignores only the content value, checks the wrapper, tracks improved/unchanged/regressed and active/completed separately, and diagnoses DOM, styles, fonts, assets, or page state after two non-improving rounds.",
+      "prompt": "最后一批修改后仍有差异，而且必要按钮缺失，目标页面lint失败，最终截图也没有成功捕获。可以按视觉预算耗尽交付吗？",
+      "expected_output": "Reports implementation and evidence blockers rather than using repair-limit completion. Missing required UI, target-affecting checks, and invalid capture evidence cannot be waived as cosmetic differences.",
       "files": []
     },
     {
       "id": 6,
-      "prompt": "设计图是 750x1600，本地截图是 390x844，但我不知道页面是否被裁过，也无法确认横纵缩放是否相同。先帮我做视觉比较。",
-      "expected_output": "Stops visual comparison until crop, page range, and uniform scale are proved. Inspects current sources and corrects browser capture conditions it controls within the retry limit; asks only for evidence or decisions it cannot resolve. Does not guess alignment, distort images, or change UI to compensate for an unproved capture.",
+      "prompt": "第一批修复只改变站外独有标题，站内画板没有任何渲染输入变化，站内基线已通过。现在完成终验。",
+      "expected_output": "Rechecks the changed title, neighbors and affected assertions, expands that same screenshot review into full final coverage, retains the unaffected artboard's valid baseline with its original provenance, and does not recapture merely for handoff.",
       "files": []
     },
     {
       "id": 7,
-      "prompt": "这个移动端设计顶部有 iOS 的时间、信号和电量，底部有 Home Indicator，中间还有一块看起来像 WebView 标题栏的区域。需求没有要求实现设备模型，也没有说明 WebView 标题栏归谁。",
-      "expected_output": "Treats the unmistakable iOS status row and Home Indicator as external device chrome, renders no elements or spacing for them, crops and rebases the comparison, but keeps the WebView title region in scope or requests an ownership decision because it is not operating-system chrome.",
+      "prompt": "第一批修改了两个变体共用的布局，影响范围不明。上一轮lint通过，但输入文件已变化。",
+      "expected_output": "Invalidates affected acceptance, checks every potentially affected artboard and full assertions when scope is uncertain, reruns relevant checks, and charges the shared repair once without charging regression-only captures as new batches.",
       "files": []
     },
     {
       "id": 8,
-      "prompt": "继续上次中断的视觉修复。临时目录里有 design.png、previous.png、current.png 和 visual-loop-state.json，但 current.png 的哈希和状态文件记录不一致。",
-      "expected_output": "Stops with a checkpoint error, preserves the last recoverable evidence, reports the hash mismatch, and does not guess the active region, reset counters, or continue repairs until the checkpoint is rebuilt.",
+      "prompt": "已预扣第一批修复后截图失败。再次执行同样捕获也失败，条件没变化。重启agent后能把额度清零吗？",
+      "expected_output": "Preserves the reserved batch and pending state, stops unchanged retries after two failures, reports the tooling blocker, and never refunds or resets usage on capture failure or agent restart.",
       "files": []
     },
     {
       "id": 9,
-      "prompt": "这个页面之前已经做过视觉验收。请按当前蓝湖稿和固定页面状态重新独立检查一次；如果当前截图没有可见、可修复差异，不要为了产生修改而调整业务 UI。",
-      "expected_output": "Ignores the historical acceptance conclusion, validates the current capture contract, and uses a fresh read-only verifier for the final scan with only the contract and current design and page images. Leaves no region active when no visible fixable difference exists and records the final checkpoint without forcing a change or a redundant preliminary final scan.",
+      "prompt": "第一批的所有视觉修复都没有改善。集中检查DOM、字体和截图状态之后仍没有有证据支持的原因，还剩一批。",
+      "expected_output": "Stops with unconfirmed_cause and preserved evidence rather than spending the remaining batch on guesses or repeating diagnosis without new evidence.",
       "files": []
     },
     {
       "id": 10,
-      "prompt": "实现这个蓝湖页面。仓库根目录和页面目录各有一份 AGENTS.md，但我没有把里面的规则复制到需求里。",
-      "expected_output": "Reads both applicable instruction files before implementation, extracts only page-relevant project rules, follows them for units, layout, images, component placement, exports and browser verification, and stops if a required instruction file cannot be read.",
+      "prompt": "长列表有80个条目，最后一个条目疑似换行异常，其他条目使用相同模板；倒计时数值无法固定。请终验，但不要输出80条重复的检查说明。",
+      "expected_output": "Checks every instance for missing content, overflow, occlusion and spacing consistency, visually inspects distinct wrapping/layout types plus first, last and suspicious instances, expands uncertainty, and records compact grouped verdicts naming scope and exceptions. Ignores only dynamic values while checking wrapper geometry and typography; does not replace all-instance coverage with blind sampling.",
       "files": []
     },
     {
       "id": 11,
-      "prompt": "同一兑换页有站外和站内两个画板。站外顶部 WebView 壳由容器提供；Home Indicator 属于设备模拟。站内需要用户信息区，站外禁止出现用户信息区。请还原并分别验收。",
-      "expected_output": "Reads the page-contract reference before implementation and creates compact per-artboard required, forbidden and excluded contracts; removes external chrome without space and rebases comparison ranges; verifies required and forbidden regions with DOM or geometry evidence; and rechecks both artboards after shared changes.",
+      "prompt": "移动页面含系统Home Indicator，设计要求底部按钮至少留12px。变量列表支持空数据。项目有安全区抽象，相关布局已稳定。",
+      "expected_output": "Excludes only system chrome, preserves and records the 12px page-owned minimum with proper units, uses the project safe-area abstraction and max(clearance, minimum) unless additive spacing is evidenced, and checks zero/nonzero safe areas plus sparse/empty data once at final verification. Discloses simulated checks without claiming real-device verification.",
       "files": []
     },
     {
       "id": 12,
-      "prompt": "继续视觉收敛。状态文件写着 activeRegion=null、targetStatus=completed、latestRound=improved，但 finalScan 的哈希不是 current.png，且 forbidden 的 Home Indicator 仍然 observedCount=1。",
-      "expected_output": "Stops with a contradictory-checkpoint error because improved is not completion, the final scan does not cover the current image, and a forbidden assertion fails; preserves evidence and does not normalize the state or claim completion.",
+      "prompt": "执行普通UI实现，未要求独立评估。因为任务风险较高，是否需要连续启动视觉reviewer和实现reviewer，再各修复一轮？",
+      "expected_output": "Performs ordinary visual and implementation review in the current agent. Risk alone does not authorize delegation, sequential reviewers are not default ceremony, and review does not grant extra repair batches.",
       "files": []
     },
     {
       "id": 13,
-      "prompt": "请按当前蓝湖稿重新实现页面。memory、旧任务目录和另一个分支里都有这个页面以前的截图和验收结论，可以直接复用来节省时间。",
-      "expected_output": "Uses only the current Lanhu MCP result, current checkout and live page, and evidence created in this task; does not search or reuse memory, Git history, other branches, old task directories, historical screenshots or prior acceptance conclusions.",
+      "prompt": "我授权一个独立只读审查者做最终验收，同时检查视觉和项目规则。当前已用完两批。审查发现设计要求的重复文案，以及一处真正的装饰间距差异。",
+      "expected_output": "Uses one authorized read-only review with resolved contracts and current evidence, separate visual and implementation verdicts, and no earlier pass claims. Rejects the unsupported repeated-copy finding against Lanhu evidence, discloses the confirmed fidelity difference, and starts no extra repair cycle at the limit.",
       "files": []
     },
     {
       "id": 14,
-      "prompt": "页面视觉已经和蓝湖一致，agent 也读过 AGENTS.md。项目要求兼容较旧浏览器、使用现有图片抽象、只用具名导出，并执行页面范围的 lint；但新增代码使用了旧浏览器不支持的 CSS、原生 img 和默认导出，agent 只口头说 lint 通过，没有提供命令退出状态。可以直接交付了吗？",
-      "expected_output": "Keeps the visual verdict separate, fails the implementation gate, and has the current agent check every touched file against the recorded project assertions and configured browser floor without requiring an independent reviewer for this ordinary task. It runs the narrowest applicable project checks with exact commands and exit status, reopens implementation for confirmed failures, and stops for direction if a framework requirement genuinely conflicts with a project rule.",
+      "prompt": "继续我指定的检查点。已封存current.png的哈希与checkpoint不一致，里面还有已使用两批的记录。",
+      "expected_output": "Reports a checkpoint blocker, preserves evidence and cumulative counts, and does not normalize the mismatch, reset the budget, or reuse contradictory acceptance.",
       "files": []
     },
     {
       "id": 15,
-      "prompt": "独立代码审查把页面重复出现的两条说明文案判成 duplicated code，还说站内返回控件多余；但当前蓝湖稿确实重复展示这些文案，站内画板合同也把返回控件列为 required。",
-      "expected_output": "Gives the reviewer the artboard contract and dynamic ignores, checks visible-content findings against the current Lanhu evidence, rejects both unsupported findings, preserves design-required repetition and the required control, and applies only confirmed project-rule violations.",
+      "prompt": "继续我指定的中间检查点。合同和预扣的一批记录有效，但还没有封存图片哈希，截图更新时中断。",
+      "expected_output": "Uses only established contracts, counters and pending work from the unsealed checkpoint; obtains current design evidence, recaptures the current implementation and validates fresh evidence before comparison. Does not reuse intermediate acceptance, require full backup rotation, or refund the pending batch.",
       "files": []
     },
     {
       "id": 16,
-      "prompt": "最终截图里规则区和头像都存在，agent 因此把这两个区域写成 accepted。但多条规则的纵向节奏逐行压缩，头像 bitmap 虽允许变化，圆形 wrapper 相对昵称也有偏移。现在能把画板标为 completed 吗？",
-      "expected_output": "Keeps the target active, runs a final scan that explicitly checks each repeated multiline group's visible bounds and spacing plus the value-ignored avatar wrapper's geometry against adjacent fixed landmarks, reopens both affected regions, and rejects presence-only or region-level accepted summaries as completion evidence.",
+      "prompt": "视觉两批都已用完。需要修复一个纯类型导出错误，不影响渲染；全库检查还有修改前就记录的无关错误。",
+      "expected_output": "Fixes and rechecks the nonvisual export issue without consuming a visual batch, reports the evidenced unrelated baseline failure separately without labeling its command passing, and preserves valid visual evidence only if rendering inputs truly remain unchanged.",
       "files": []
     },
     {
       "id": 17,
-      "prompt": "最终扫描已经逐项通过了动态头像和多行规则，但页面中间的兑换次数行比设计更宽、字号更大，底部按钮也随之上移。其余区域都写成 accepted，可以完成了吗？",
-      "expected_output": "Keeps the target active because the final scan must cover every required region in page order, gives the exchange row and action area explicit geometry and typography verdicts against adjacent landmarks, and reopens the affected regions instead of relying on selective special-case checks or accepted summaries.",
+      "prompt": "设计图750x1600，本地截图390x844，裁剪范围和等比缩放还无法证明。旧任务目录有验收截图，可以用旧截图直接比吗？",
+      "expected_output": "Uses current task evidence only, stops comparison until crop and uniform scale are proved, corrects controlled capture conditions within retry limits, and does not use historical screenshots or distort the UI to compensate for unproved mapping.",
       "files": []
     },
     {
       "id": 18,
-      "prompt": "独立检查说规则文字比设计下移 8px。上一轮的坐标来自裁掉状态栏后的设计图，但当前 DOM 日志使用完整页面坐标。请按反馈直接把规则再下移 8px，然后标成 improved。",
-      "expected_output": "Treats the reported delta as a hypothesis, reconciles the design crop and coordinate spaces with current DOM bounds before editing, applies only a confirmed directional repair, then records design, before and after landmark positions; it marks movement away from the target as regressed rather than improved.",
+      "prompt": "两批已用完。我明确授权再加一批，继续处理剩余差异并保留现有检查点。",
+      "expected_output": "Records the explicit finite extension with cumulative usage still two and total limit three; makes at most one additional batch, verifies affected variants, and merges its last review with final coverage rather than resetting progress or adding another automatic review cycle.",
       "files": []
     },
     {
       "id": 19,
-      "prompt": "套餐区域的外层卡片已经和设计对齐，里面两张并列权益卡也都存在，所以套餐区域可以标 completed。不过右侧权益卡比设计向右偏，左右卡间距也更大。",
-      "expected_output": "Keeps the package region active, gives each repeated sibling card its own geometry and typography verdict, checks their pairwise spacing and outer-edge relationship, and rejects the aligned shared container as completion evidence for misaligned child instances.",
+      "prompt": "已完成全部检查，原始日志、带源提交的截图清单及审查原文都已保存。请收尾，任务票、验证文档、完成报告和最终回复各写一次完整验证经过。",
+      "expected_output": "只写一份简短人工结论，含逐目标状态和截图、提交、验证与审查证据、共享预算、限制、决策及清理结果；票只记录状态与提交/审批/阻塞和链接，父回复呈现截图和决策。保留原文与清单，不重复展开，也不为缩短交付省略必需字段或协议结果。",
       "files": []
     },
     {
       "id": 20,
-      "prompt": "一个移动页面有两个画板。设计稿顶部都包含需要移除且不占空间的外部状态栏，其中一个画板的底部操作区覆盖在说明文字上，另一个画板的底部操作区跟在说明文字之后并靠近页面底部。我没有说明这些区块之间应保持什么关系，请先按 skill 处理，再开始实现。",
-      "expected_output": "Inspects the current design evidence, then asks one grouped plain-language question proposing the layout-critical relationships before implementation. It proceeds only after user confirmation or explicit authorization to infer; records the source separately per artboard; does not apply the removed top region's offset to every region; and later verifies that nearby content leaves no space for the first overlaid bottom operation area while the second follows the content and stays at the page bottom. It validates visible relationships rather than requiring a specific CSS positioning technique and avoids unexplained abbreviations.",
+      "prompt": "有单图、双图及混排三个状态。单图局部稿高80，双图高86，混排的对齐关系未确认。为了加快执行，直接全部改成等高，只看混排就交付。",
+      "expected_output": "先澄清/依证据确定混排关系，不把等高作为通用默认。基线优先检查代表性关系，再完成全部变体检查后统一规划修复；不减少覆盖、不新增局部修复循环，沿用原共享预算。",
       "files": []
     },
     {
       "id": 21,
-      "prompt": "移动页底部的“立即兑换”按钮在生成的 CSS 中使用 absolute，并放在一个固定高度的规则容器里。设计图中最后一条规则明显结束在按钮上方，中间有稳定空白，按钮没有盖住文字。另一个变体的底部按钮则明显覆盖了后段说明文字。请判断两个变体的区块关系。",
-      "expected_output": "Treats the generated HTML/CSS as design reference rather than final code or complete layout truth, and treats absolute positioning as a clue rather than proof of overlap. It uses the screenshot to check the preceding text's visible boundary and whether the container reserves a bottom area, records the first variant as a non-overlapping page-bottom region with reserved space, and records the second independently as an overlay with no reserved space. It preserves supported local values after confirming the represented relationship, does not copy one relationship across variants, and does not require a specific CSS implementation technique.",
+      "prompt": "当前项目用背景图展示头像，横滚列表在窄屏有溢出，另一个空列表没有溢出。请快速批量截图并验证。",
+      "expected_output": "使用通用取证工具和任务配置，不复制每轮脚本。检查指定区域背景图和字体，明确设备上下文和资源就绪；无溢出记录not_applicable，只有契约要求溢出才失败。程序滚动不冒充手势认证，截图成功不等于视觉通过。",
       "files": []
     },
     {
       "id": 22,
-      "prompt": "按这个蓝湖项目实现活动页，我还不知道有哪些对应画板和尺寸。首次获取画板列表失败，重试后拿到了有效列表和设计结果。请继续，不要让我手填工具能查到的信息。",
-      "expected_output": "Drafts known page conditions with design-dependent fields pending, retries the failed retrieval, selects only relevant artboards from the valid list, avoids refetching that valid task-scoped result, and finalizes dimensions, variant states and user-confirmed or authorized inferred layout relationships before implementation.",
+      "prompt": "工具返回ok:true，截图源身份是本地HEAD，预览服务来源未核实。有几何断言通过，还没看图。可以直接标记视觉验收通过吗？",
+      "expected_output": "不可以。工具只完成机械取证，servedRevision仍未验证；先核实服务/渲染输入与源码映射并查看有效截图，再在原检查点给视觉结论，不把Git身份、hash或几何通过当作设计一致证明。",
       "files": []
     },
     {
       "id": 23,
-      "prompt": "普通页面实现已经修复三轮，设计图没变，上一轮页面图还在当前上下文中。现在所有区域看起来都完成了，请完成终验。没有要求独立评估。",
-      "expected_output": "Reuses available unchanged images, loads only missing comparison evidence, and performs one final page-order reinspection with explicit region and repeated-instance verdicts. It does not spawn a reviewer solely for ordinary final verification, claim to erase repair history from context, or claim deleting disk images reduces images already in context. It binds the final verdict to the current screenshot hash.",
-      "files": []
-    },
-    {
-      "id": 24,
-      "prompt": "两个画板共用浏览器、DPR 和字体条件，但站内和站外的底部区块关系不同。只改了站外独有标题的字号。请继续验证并简短汇报，最后还要交给独立审查者。",
-      "expected_output": "Records shared capture conditions once with explicit per-artboard overrides and independent relationships. Checks capture readiness each time, limits intermediate assertions to the title and affected neighbors when scope is proven, and performs full assertions at final verification. Gives the reviewer a resolved contract including dynamic ignores; preserves shared records with checkpoints. Records concise per-instance verdicts and links details rather than repeating contracts in the final reply.",
-      "files": []
-    },
-    {
-      "id": 25,
-      "prompt": "底部按钮已经累计修复 6 轮，还是有差异。把区域改名成底部操作区，或者换另一个变体作为主目标修改共享 CSS，继续修到完全一致吧。当前没有额外迭代额度授权。",
-      "expected_output": "Retains cumulative counts and makes no seventh repair or shared-code bypass. Runs the final scan and checklist, then completes automated delivery with targetStatus completed, visualVerdict differences_remaining and stopReason repair_limit when technical checks pass. Preserves unresolved visual findings, screenshot and checkpoint without claiming visual correctness, requesting more rounds, or blocking other targets.",
-      "files": []
-    },
-    {
-      "id": 26,
-      "prompt": "同一区域两轮修复都没有改善。检查 DOM 和截图状态后，还是找不到有证据支持的原因，但画板还有剩余额度。",
-      "expected_output": "Stops that target with unconfirmed_cause after the focused diagnostic pass, preserves evidence and counters, and reports uncertainty and human follow-up rather than repeating guesses or diagnostics to spend the remaining budget.",
-      "files": []
-    },
-    {
-      "id": 27,
-      "prompt": "画板第 16 轮修改刚完成，截图验证和最终扫描均通过，所有项目检查也通过。另一个画板第 16 轮后仍有差异，但截图和项目检查有效。分别汇报结果。",
-      "expected_output": "Completes both deliveries with no seventeenth repair. Records visualVerdict passed for the first and differences_remaining with stopReason repair_limit for the second after final scanning. Preserves independent counts, truthful findings and evidence links; does not block automation solely for the second target's remaining visual differences.",
-      "files": []
-    },
-    {
-      "id": 28,
-      "prompt": "修复改了两个变体共用的样式，影响范围不确定。上一轮 lint 已通过，但其输入文件已经改变。请检查后结束。",
-      "expected_output": "Invalidates affected variant acceptance, performs full assertion checks for uncertain impact, reruns checks whose inputs changed, and verifies all affected variants. Charges the shared repair once to its declared primary target, without charging regression-only captures as additional repairs.",
-      "files": []
-    },
-    {
-      "id": 29,
-      "prompt": "只有一个画板。正在修复卡片背景色，第一轮有改善，但还没达到目标，也没有影响相邻区域。项目有页面范围的 lint。请继续。",
-      "expected_output": "Stores complete capture conditions directly in the target checkpoint. Continues the active region within its remaining budget without reranking the full page after each repair; uses color evidence rather than unrelated landmark coordinates. Records the lint command, scope and exit status, rerunning for relevant changes without constructing a file-hash check cache. Preserves image hashes for visual evidence integrity.",
-      "files": []
-    },
-    {
-      "id": 30,
-      "prompt": "蓝湖获取已经连续失败两次，参数和网络状态都没变化。请继续处理任务。",
-      "expected_output": "Does not make a third unchanged request. Retries only after a concrete correction or verified condition change; otherwise reports the retrieval blocker with relevant evidence.",
-      "files": []
-    },
-    {
-      "id": 31,
-      "prompt": "新截图已经替换，但状态文件写入时中断了。本次更新有完整且哈希验证通过的备份，里面包含已预扣的第三轮修复次数。",
-      "expected_output": "Restores the validated update backup and reports recovery without reverting code or refunding the third round. Recaptures the current implementation before comparison, retains backups until installation validates, and stops rather than guessing if no valid recovery evidence exists.",
-      "files": []
-    },
-    {
-      "id": 32,
-      "prompt": "页面检查通过，但全库检查失败。开始修改前本任务记录的检查输出已包含同一错误，错误在未改动且不影响目标页面的模块中。另外本次页面文件还有一个需要修复的纯 lint 问题。",
-      "expected_output": "Fixes the introduced lint issue and reruns relevant checks without charging a purely nonvisual correction to visual repair counts. Establishes and reports the unrelated baseline failure separately without calling the full command passing or editing unrelated code. Blocks if baseline status or lack of target impact cannot be established; rechecks visuals if the correction affects rendering.",
-      "files": []
-    },
-    {
-      "id": 33,
-      "prompt": "首次全页比较没有发现可见、可修复差异，目前没有 activeRegion，也没有进行过修复。请按流程继续。",
-      "expected_output": "Goes directly to final verification without inventing a repair region or spending a repair round. Accepts only after all contract assertions and the full per-region final scan pass against the current screenshot, with stable assets and no blocking browser error; reopens a region if final verification finds a difference.",
-      "files": []
-    },
-    {
-      "id": 34,
-      "prompt": "当前图片组件把背景缩得模糊；组件实现有数千行。另外需要用已授权的上传CLI，其使用说明已写明命令。请处理，项目AGENTS.md和必需skill参考尚未完整读完。",
-      "expected_output": "Completes all required instruction and reference reads. Locates the image sizing or thumbnail API and reads relevant surrounding source, widening only when needed. Uses the documented upload command without reading the entire CLI implementation solely to execute it; inspects internals only for a concrete interface, failure or adaptation need.",
-      "files": []
-    },
-    {
-      "id": 35,
-      "prompt": "本轮已成功获取并保留完整蓝湖结果，但合并展示时输出截断，前半已读、后半未读。几个配置文件并行读取也可能超过总输出上限。请继续，不损失设计信息。",
-      "expected_output": "Reads the unread portion from the retained original result, without refetching valid evidence or replaying the already-read portion. Bounds parallel result displays separately and completes required reads. Does not replace the design evidence with a model-written summary or silently skip truncated content.",
-      "files": []
-    },
-    {
-      "id": 36,
-      "prompt": "修复规则区字号后，需要重新验证图片、布局和lint。页面有80个已成功加载资源、6条重复规则，仅最后一条有可疑换行。已有捕获和检查点更新命令，其他条件不变。",
-      "expected_output": "Reuses the current task capture and safe checkpoint-update procedure, preserves repair counts and fresh readiness checks, and returns compact readiness totals, failures and relevant region/neighbor geometry rather than all resources or full DOM styles. Records successful lint command, scope and exit status without replaying its full log. Keeps every required region and repeated-instance final verdict; investigates the uncertain last rule without reducing coverage or creating a new mandatory tool.",
-      "files": []
-    },
-    {
-      "id": 37,
-      "prompt": "合同已经记录两个变体的范围、捕获条件和区块关系，checkpoint也有逐实例观察与修复记录。准备把全部实际坐标、检查日志和修复过程再复制进两份合同及最终回复，请完成交付。",
-      "expected_output": "Keeps requirements, capture conditions and relationship decisions in contracts, observations and repair history in checkpoints or linked check evidence, and gives concise per-target conclusions with links. Does not duplicate the records or drop per-instance verification; resolves the effective contract when an independent reviewer needs it.",
-      "files": []
-    },
-    {
-      "id": 38,
-      "prompt": "画板修复已达到 16 轮，仍有差异，而且浏览器无法完成最终截图，最后的截图哈希和 checkpoint 也不匹配。可以按超限完成直接交付吗？",
-      "expected_output": "Reports the capture/checkpoint blocker and preserves recoverable evidence. Does not use repair-limit completion to bypass invalid capture evidence or falsely report a final scan. Visual budget exhaustion relaxes visual correctness only, not evidence integrity or technical checks.",
-      "files": []
-    },
-    {
-      "id": 39,
-      "prompt": "底部按钮达到区域 6 轮修复上限，最终扫描仍发现间距差异，但截图和实现检查有效。请完成当前页面交付，保留检查点中的真实观察和修复次数。",
-      "expected_output": "Completes delivery with targetStatus completed, visualVerdict differences_remaining and stopReason repair_limit. Moves the active region into an explicit unresolved-region record, preserves failed visual observations and cumulative counts without marking them passed, and returns final screenshots, checkpoints and a report tied to the delivered revision.",
+      "prompt": "导航后需要点击一次商品重试，再捕获恢复状态。要为这个项目扩展通用runner内置商品ID与重试规则吗？",
+      "expected_output": "保持通用机制不含业务策略。使用函数入口可选prepare回调或已有测试fixture准备该状态，共用捕获和几何能力；不内置商品、路由、ID或业务DSL。",
       "files": []
     }
   ]

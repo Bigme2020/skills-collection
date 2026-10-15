@@ -32,6 +32,10 @@ Record one compact contract per artboard:
 - `layout relationships`: for each layout-critical region, what it stays attached to, whether nearby content leaves space for it, the visible-boundary or reserved-container evidence, and whether the user confirmed it or authorized inference;
 - reference to its capture conditions above, without duplicating those fields.
 
+For each major container, specify whether its height follows content, fills available space, or is fixed by the design. Distinguish the page shell, scroll container, and inner content cards; artboard height does not establish card height.
+
+混排关系按组明确：不同内容类型和加载／成功／失败状态之间，哪些边缘、基线、内图、间距或角标锚点应一致，哪些差异是设计有意保留。将证据或用户确认绑定到关系；不把等高当作通用默认。标明最有诊断价值的代表状态，供基线优先检查，仍保留所有变体的独立契约和完整覆盖。
+
 Keep the contract at region level: requirements, capture conditions, and relationship decisions belong here; observed geometry, check results, and repair history belong in the checkpoint or linked check evidence. Reference these records rather than copying them between files. Do not enumerate design nodes, CSS properties, or recreate the Lanhu result. Keep relationships and acceptance independent per artboard. Preserve referenced shared conditions with the evidence on exit; expand the effective contract, including dynamic ignores, when dispatching an independent reviewer. A shared-condition change invalidates affected prior checks.
 
 ## Authorized exclusions
@@ -42,7 +46,15 @@ Other regions remain in scope unless the user, requirement, or project rule assi
 
 For each exclusion, record the artboard, visible boundary or description, reason, and authorization source.
 
-Exclusion means removal, not imitation: render no element, spacing, blank placeholder, padding, margin, or offset for it. Crop the excluded pixels from the design comparison range. Rebase ordinary top and normally ordered page content to the corresponding page origin, but move each layout-critical region according to its recorded relationship. A region attached to the bottom of the visible browser area keeps its bottom distance; a page-bottom region stays at the page bottom; a region attached to a parent keeps its relationship to that parent. Do not apply a removed top region's offset to every region. The design and browser ranges may then have different total heights; compare only their proved in-scope ranges.
+Exclusion means removal of the external graphic, not imitation. Render no element or placeholder merely to reproduce external chrome, and exclude its graphic from the comparison. Preserve page-owned spacing and device-required safe-area clearance according to the rule below. Rebase ordinary top and normally ordered page content to the corresponding page origin, but move each layout-critical region according to its recorded relationship. A region attached to the bottom of the visible browser area keeps its bottom distance; a page-bottom region stays at the page bottom; a region attached to a parent keeps its relationship to that parent. Do not apply a removed top region's offset to every region. The design and browser ranges may then have different total heights; compare only their proved in-scope ranges.
+
+### Bottom safe area and minimum spacing
+
+When an artboard includes a system Home Indicator, exclude the indicator graphic but inspect the safe-area clearance and minimum spacing required by the adjacent bottom operation area, popup, or panel. Prefer explicit design annotations for the minimum distance; otherwise infer it from content-to-container edge relationships. When top and bottom spacing are symmetric, the top spacing of that same region may establish the minimum bottom distance. Record the value, unit, and annotation or inference evidence in the layout contract. If unresolved, confirm the relationship through the main workflow rather than substituting a universal indicator height.
+
+Prefer the project's SafeSpace / useSafeSpace or equivalent abstraction, and verify parameter units. By default, use `actual safe-area clearance = max(system safe-area distance, design-required minimum distance)`. Add the two only when the design explicitly requires safe-area clearance in addition to ordinary bottom padding; count each spacing requirement once. Place a spacer below the content and ensure Flex layout cannot shrink it.
+
+With a zero safe area, verify the minimum spacing. With a nonzero safe area, verify clearance and absence of duplicate spacing. Symmetry establishes the visual minimum for a zero safe area; it does not require symmetric spacing on devices with a safe area. Exclude the system-rendered indicator from comparison without automatically cropping justified page spacing or safe-area clearance, or treating either as excess whitespace.
 
 ## Dynamic content
 

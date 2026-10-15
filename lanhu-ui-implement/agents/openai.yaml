@@ -1,6 +1,9 @@
 interface:
   display_name: "Lanhu UI Implement"
-  short_description: "Implement one Lanhu page and verify every visual variant"
+  short_description: "Implement one Lanhu page with bounded visual repair"
   icon_small: "./assets/playwright-small.svg"
   icon_large: "./assets/playwright.png"
-  default_prompt: "Use $lanhu-ui-implement to implement one browser page and its selected Lanhu artboard variants from current design evidence, then visually verify each variant with fixed-state Playwright screenshots."
+  default_prompt: >-
+    Use $lanhu-ui-implement to implement one browser page and its selected
+    Lanhu artboard variants from current design evidence, then verify them
+    with fixed-state Playwright screenshots under the shared page repair budget.
