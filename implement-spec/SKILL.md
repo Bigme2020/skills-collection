@@ -1,40 +1,38 @@
 ---
 name: implement-spec
-description: "Implement the result of /to-spec and /to-tickets in code."
+description: Implement the result of /to-spec and /to-tickets on one integration branch through review and delivery.
 disable-model-invocation: true
 ---
 
-You have been provided a spec. This spec should have tickets associated with it, describing how to implement the spec.
+# Implement Spec
 
-The issue tracker should have been provided to you. If not, tell the user to run `/setup-matt-pocock-skills`.
+Implement `/to-spec` and `/to-tickets` on one **integration branch**. If no issue tracker is configured, ask the user to run `/setup-matt-pocock-skills`.
 
-The goal is the entire spec implemented on a single **integration branch**, with every ticket resolved the way the issue tracker closes work.
+Tickets form a **task graph**, not a step list. Dispatch the **frontier** whose blockers are satisfied to `implementer`.
 
-The tickets are not a list of steps. They are a **task graph** with blocking relationships between them. This means there is always a **frontier** of tickets which are ready to be grabbed.
+## Orchestration
 
-Communication to and from subagents should be sparse. Communicate primarily through **context pointers**: to the spec, tickets, research notes, and previous commits. Don't duplicate information already available via pointers.
+The parent owns dispatch, monitoring, blockers, integration, and user acceptance. Each implementer owns its configured implementation, tests, required independent reviews, fixes, and issue-status updates. Use configured agent models and skills; do not duplicate their workflow in the parent.
 
-Use the configured **`implementer` agent type** for ticket implementation and review fixes. Its implementation workflow belongs to the agent. Run these subagents in the background where possible for maximum concurrency.
+Run implementers in the background with one writer per isolated worktree. Use a **merger subagent** for serialized integration. Use issues as the status source of truth and communicate through spec, ticket, commit, and evidence pointers rather than duplicate briefs or handoff-only agents. Record the review baseline and approvals in the tracker, PR, or conversation.
+
+## Execution Rules
+
+- **Advance automatically.** Once execution is authorized, dispatch the current frontier. After completion or blocker changes, refresh the task frontier and dispatch ready work, fixes, and safe recovery without asking about internal details. Pause only affected work; if no safe progress remains, report attempted corrections and the specific blocker rather than claiming completion.
+- **Recover within bounds.** Preserve the error, run records, Git state, partial changes, and evidence. Retry only with a concrete correction and attempt limit; stop repeated failures without new evidence. Keep the original model and tool protocol. Inspect long-running commands before interrupting them, and stop only verified task-owned processes.
+- **Reuse evidence.** Prefer complete, traceable artifacts matching the review scope and source commit, including tool-managed records. Missing or mismatched evidence is not a pass. Do not rerun reviews or checks merely to recreate files or change formatting. Fix commits still require independent review.
+- **Honor acceptance and authorization.** Run applicable spec and project checks, including browser behavior where relevant. Disclose simulated environments, differences, and unverified scope; disclosure does not replace required validation. Keep affected tickets unaccepted until resolved or explicitly waived, without blocking independent work. Respect business clarification, dependency permissions, high-risk operation authorization, and user approval gates.
 
 ## Steps
 
-1. Read the spec and tickets to understand the task graph.
+1. Read the spec and tickets; identify dependencies, scope, and acceptance criteria. Resolve ambiguities and cycles before affected implementation. Optionally use an exploration subagent to save shared notes outside the repo, accessible to subsequent implementers.
 
-2. (optional) Use an **exploration subagent** to conduct any exploration required by the tickets - relevant codebase files or external documentation. Ensure the exploration subagent can save files - it should save its markdown notes in a directory outside the repo, accessible by all future subagents. This lets **`implementer` subagents** focus on implementation rather than exploration.
+2. Create the integration branch from the current working branch, and merge it back into that branch when complete. Record the pre-implementation review baseline. Confirm the `implementer` agent type is available. If the tracker closes work through PRs, or the user requests one, open a draft PR after the first integration merge, linked to the spec and tickets.
 
-3. Create the integration branch. If the issue tracker closes work through PRs, or the user asks for one, open a draft PR after the first merge in step 5 (a branch with no commits ahead of main can't open one), marked as closing the spec and tickets.
+3. Dispatch ready tickets to **`implementer` subagents**, each on its own branch and worktree based on the current integration branch. Provide the ticket, spec, scope, acceptance criteria, and evidence location. Each agent confirms its base before starting, preserves user changes, commits its work, merges the integration tip before reporting completion, and returns validation and review evidence.
 
-4. Dispatch each ready ticket to an **`implementer` subagent**, each in its own worktree on its own branch. Give it the ticket, spec, scope, acceptance criteria, and branch instructions. Each subagent:
-   - confirms its worktree is based on the integration branch before starting, reconciling the base while preserving existing user changes;
-   - commits its work and returns validation and review results;
-   - merges the integration branch tip into its own branch before reporting done
+4. Use the merger subagent to integrate completed branches one at a time. Check the integrated result and dispatch newly unblocked tickets until all work is implemented.
 
-5. Once an **`implementer` subagent** completes, merge its work to the integration branch with a **merger subagent**.
+5. Once all tickets are implemented, run `code-review` on the integration branch against the recorded baseline and full spec. Dispatch fixes to `implementer` with exclusive ownership, integrate serially, and rerun affected checks; obtain independent review of fix commits.
 
-6. If this changes the **frontier** of available tickets, kick off more **`implementer` subagents** to work on the new tickets. This allows for maximum concurrency.
-
-7. Once all tickets are complete, call the Skill tool with `code-review` on the integration branch. Fix all issues raised by the code review in a single **`implementer` subagent**.
-
-8. If a draft PR exists, mark it ready for review. Otherwise, resolve each ticket the way the issue tracker closes work, and report the integration branch.
-
-9. Clean up all **`implementer` subagent** worktrees.
+6. Mark an existing draft PR ready for review; otherwise resolve tickets as the tracker requires. Preserve evidence outside disposable worktrees. Use `git worktree remove` only for this workflow's clean, fully merged, inactive temporary worktrees, including the merged integration worktree. Preserve the original worktree, unrelated worktrees, and branches; do not force removal. Report the delivery branch/commit, evidence links, cleanup results, and specific blockers for retained worktrees.
