@@ -123,4 +123,4 @@ Before asking for confirmation, report:
 - Ready for `/to-spec` | Not ready: ...
 ```
 
-Ask the user to confirm the proposed encapsulation. After confirmation, hand the unchanged session context to `/to-spec`, then `/to-tickets`. `/implement` and `/tdd` may choose private mechanics, but they must preserve the agreed modules, interfaces, seams, and test surfaces.
+Ask the user to confirm the proposed encapsulation. After confirmation, call `/to-aligned-requirements` to freeze the agreed architecture into the durable hand-off file. `/ship-frontend` then drives `/to-spec`, `/to-frontend-tickets`, and `/implement-frontend-spec` from that file. Private mechanics chosen downstream must preserve the agreed modules, interfaces, seams, and test surfaces.
