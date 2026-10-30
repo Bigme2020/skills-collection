@@ -1,61 +1,52 @@
 # Page and artboard contract
 
-Read this reference in Step 1 before implementation. Draft known conditions from the user's request and project rules; mark missing artboard selection, dimensions, and other design-dependent fields as pending rather than guessing or asking the user for information Lanhu can provide. Finalize them from current Lanhu evidence in Step 2. Capture conditions specify the intended setup; verify actual browser state and readiness at capture time.
+Read in Step 1. Draft from the request and project rules, leaving design-dependent fields pending; resolve them from current Lanhu evidence in Step 2 rather than guessing or asking for information Lanhu can supply. Record intended conditions here and verify actual conditions at capture time.
 
 ## Capture contract
 
-For one artboard, store its complete capture conditions directly in its checkpoint. For multiple artboards with substantial shared conditions, optionally record those once and use explicit references with per-artboard overrides. Resolve the following for every artboard:
+Store conditions in each target's checkpoint. Shared conditions may be recorded once with explicit per-artboard overrides; preserve referenced records and resolve them fully for an independent reviewer.
 
-- shared or distinct page entry and reproducible variant state;
-- original design width and height;
-- browser viewport CSS width and height;
-- DPR, zoom, browser, and browser version;
-- the explicit scale between the design and browser screenshot;
-- the page range, crop, and whitespace contained in both images;
-- the real device mode, such as PC, H5, in-app, or out-of-app;
-- fixed business state and data;
-- scroll position;
-- font and image readiness;
-- animation state.
+For every artboard, establish:
 
-Different resolutions are comparable only through a proved uniform scale, such as `750x1624` to `375x812`. Horizontal and vertical scale must match. If crop, offset, scale, page range, or device state cannot be proved, stop comparison and correct capture conditions under the agent's control, following the main loop's retry limit. Ask the user only for missing evidence or a required decision that cannot be resolved from current sources.
+- Entry and reproducible variant/business data; real device mode, including in-app/out-of-app state.
+- Browser/version, viewport CSS dimensions, DPR, and zoom.
+- Original design dimensions, project unit conversion, uniform screenshot scale, crop, page range, and included whitespace.
+- Scroll position, font/image readiness, and animation state.
 
-Use the project's real device switch, reload, wait for fonts and images, freeze animations, and capture the complete required page range. Record the design-unit conversion from the project assertions rather than assuming a viewport.
+Use the appropriate real device context through `playwright-cli`, apply any project device switch, then refresh and await fonts, images, and stable state before capture. Screen dimensions alone do not establish device mode.
+
+For corresponding-artboard comparison, prove range/crop mapping and equal horizontal/vertical scale. Correct controllable conditions before comparing, under the main retry bound; ask only for uncertainty current sources cannot resolve. Pressure scenarios within selected device scope instead test reflow, reachability, occlusion, and visual integrity, without requiring whole-artboard scaling or adding platforms/artboards. A missing matching design limits equivalence claims, not judgment of visible defects.
 
 ## Artboard contract
 
-Record one compact contract per artboard:
+Keep one region-level record per artboard:
 
-- `required`: variant-specific regions that must be visible;
-- `forbidden`: regions that must not appear in this variant;
-- `excluded`: external chrome removed from the implementation and comparison;
-- `layout relationships`: for each layout-critical region, what it stays attached to, whether nearby content leaves space for it, the visible-boundary or reserved-container evidence, and whether the user confirmed it or authorized inference;
-- reference to its capture conditions above, without duplicating those fields.
+- `required`, `forbidden`, and `excluded` regions, with the exclusion basis below.
+- `layout relationships`: each critical region's attachment, neighboring reserved space, visible-boundary/container evidence, and sourced judgment or user decision.
+- Its capture conditions or resolved shared reference.
 
-For each major container, specify whether its height follows content, fills available space, or is fixed by the design. Distinguish the page shell, scroll container, and inner content cards; artboard height does not establish card height.
+Distinguish page shell, scroller, and inner cards; specify content-driven, fill, or fixed height from their own relationships, not total artboard height. For mixed content/states, identify intentional differences and matching edges, baselines, inner images, gaps, and badge anchors rather than assuming equal height. Name diagnostic representatives for baseline-first inspection without reducing variant coverage. Absolute positioning alone does not establish overlap.
 
-混排关系按组明确：不同内容类型和加载／成功／失败状态之间，哪些边缘、基线、内图、间距或角标锚点应一致，哪些差异是设计有意保留。将证据或用户确认绑定到关系；不把等高当作通用默认。标明最有诊断价值的代表状态，供基线优先检查，仍保留所有变体的独立契约和完整覆盖。
-
-Keep the contract at region level: requirements, capture conditions, and relationship decisions belong here; observed geometry, check results, and repair history belong in the checkpoint or linked check evidence. Reference these records rather than copying them between files. Do not enumerate design nodes, CSS properties, or recreate the Lanhu result. Keep relationships and acceptance independent per artboard. Preserve referenced shared conditions with the evidence on exit; expand the effective contract, including dynamic ignores, when dispatching an independent reviewer. A shared-condition change invalidates affected prior checks.
+Keep observed geometry, check results, and repair history in checkpoint evidence, not duplicated contracts. Record requirements and relationships rather than enumerating design nodes/CSS properties or recreating Lanhu output. Acceptance stays independent per artboard; shared-condition changes invalidate affected evidence under the main validity rule.
 
 ## Authorized exclusions
 
-Treat unmistakable operating-system chrome used only to frame a device mockup as external by default. This includes clock, signal and battery rows, gesture or Home Indicators, Android system bars, device frames, and hardware cutouts. Keep them only when the request explicitly asks for a device mockup.
+Unmistakable OS chrome framing a device mockup is external by default: clock/signal/battery rows, gesture/Home Indicators, Android system bars, device frames, and hardware cutouts. Include it only for an explicitly requested device mockup. App/WebView bars, navigation, and blank regions remain in scope unless user/requirements/project rules assign them outside the page.
 
-Other regions remain in scope unless the user, requirement, or project rule assigns them to an external container. Appearance alone does not make an app bar, WebView title bar, navigation area, or blank region external.
+Record each exclusion's artboard, boundary/description, reason, and authority. Remove the graphic from implementation/comparison rather than imitating it with placeholders, while preserving page-owned spacing and system clearance.
 
-For each exclusion, record the artboard, visible boundary or description, reason, and authorization source.
-
-Exclusion means removal of the external graphic, not imitation. Render no element or placeholder merely to reproduce external chrome, and exclude its graphic from the comparison. Preserve page-owned spacing and device-required safe-area clearance according to the rule below. Rebase ordinary top and normally ordered page content to the corresponding page origin, but move each layout-critical region according to its recorded relationship. A region attached to the bottom of the visible browser area keeps its bottom distance; a page-bottom region stays at the page bottom; a region attached to a parent keeps its relationship to that parent. Do not apply a removed top region's offset to every region. The design and browser ranges may then have different total heights; compare only their proved in-scope ranges.
+Rebase ordinary top/in-flow content to the page origin. Move other regions by their recorded attachment: viewport-bottom retains viewport distance, page-bottom stays at page bottom, and parent-attached content retains that relationship. A removed top strip is not a global offset. Compare proved in-scope ranges even when resulting total heights differ.
 
 ### Bottom safe area and minimum spacing
 
-When an artboard includes a system Home Indicator, exclude the indicator graphic but inspect the safe-area clearance and minimum spacing required by the adjacent bottom operation area, popup, or panel. Prefer explicit design annotations for the minimum distance; otherwise infer it from content-to-container edge relationships. When top and bottom spacing are symmetric, the top spacing of that same region may establish the minimum bottom distance. Record the value, unit, and annotation or inference evidence in the layout contract. If unresolved, confirm the relationship through the main workflow rather than substituting a universal indicator height.
+Excluding a Home Indicator does not remove the adjacent operation area's minimum bottom spacing. Prefer annotations; otherwise infer the minimum from content/container edges, including same-region symmetry when supported. Record value, unit, and basis; resolve remaining ambiguity through the main workflow, not a universal indicator height.
 
-Prefer the project's SafeSpace / useSafeSpace or equivalent abstraction, and verify parameter units. By default, use `actual safe-area clearance = max(system safe-area distance, design-required minimum distance)`. Add the two only when the design explicitly requires safe-area clearance in addition to ordinary bottom padding; count each spacing requirement once. Place a spacer below the content and ensure Flex layout cannot shrink it.
+Reuse project safe-area facilities, verifying units and parent clearance. Combine design minimum and system clearance by replacement, maximum, or addition according to actual design/project semantics; count each space once without imposing a component or spacer. At zero safe area verify the minimum; at nonzero verify clearance without duplication. Symmetry may establish the zero-area minimum, not symmetric spacing on every device. Preserve justified spacing when excluding the system graphic.
 
-With a zero safe area, verify the minimum spacing. With a nonzero safe area, verify clearance and absence of duplicate spacing. Symmetry establishes the visual minimum for a zero safe area; it does not require symmetric spacing on devices with a safe area. Exclude the system-rendered indicator from comparison without automatically cropping justified page spacing or safe-area clearance, or treating either as excess whitespace.
+## Verification-environment interference
+
+Before the baseline, move/disable an occluding verification aid only when its identity and lack of retention requirement are established. Use existing controls in the verification browser context, recording restoration; keep shared initialization unchanged. Investigate uncertain identity/impact before asking. Preserve business overlays, real errors, and required UI and address their impact rather than hiding defects.
 
 ## Dynamic content
 
-Fix dynamic values when possible. Otherwise record the content selector and reason, then ignore only that value during semantic comparison. Continue checking its wrapper's position, dimensions, background, border, spacing, and typography. Do not hide the whole region with an image mask.
+Fix dynamic values where possible. Otherwise record selector/reason and ignore only the value, still judging wrapper position, dimensions, background, border, spacing, and typography. Do not mask the whole region.

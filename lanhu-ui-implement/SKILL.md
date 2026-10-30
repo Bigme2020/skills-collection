@@ -5,82 +5,70 @@ description: Implement a Lanhu browser page and related variants with current de
 
 # Lanhu UI Implement
 
-Use a bounded page workflow:
+`page contract -> current design evidence -> implement -> bounded visual review -> deliver`
 
-`page contract -> current design evidence -> implement -> full-page review -> up to two repair batches -> deliver`
-
-One invocation covers one page, route, or component and its selected artboard variants. Keep direct Lanhu evidence, implementation, and visual comparison in the same agent context. Each artboard has independent capture conditions and a visual verdict; all variants share one page repair budget, defined only in [visual-diff.md](references/visual-diff.md).
-
-Use the current Lanhu MCP result, current checkout and live page, and evidence created for this task. Resume only a user-identified task checkpoint after validation. Historical screenshots, prior acceptance claims, memory, Git history, and other branches are not visual guidance.
+One invocation covers one page, route, or component and its selected artboard variants. Keep direct Lanhu evidence, implementation, and visual judgment in the same agent context. Each artboard has its own capture contract and verdict; all share the budget in [visual-diff.md](references/visual-diff.md).
 
 ## Operating rules
 
-- After two consecutive failures of a tool operation under unchanged conditions, stop repeating it. Retry only after a concrete correction or verified condition change; otherwise preserve evidence and report the blocker.
-- Read required skills, references, and project instructions completely. Scope ordinary source inspection to relevant symbols or settings. Use tools from their documented interfaces; inspect internals only for a failure, unclear interface, or required adaptation.
-- Keep outputs compact. Retrieve unread portions of retained results instead of repeating requests. Preserve direct design evidence rather than replacing it with a model-written design summary.
+- Use current Lanhu results, checkout, live page, and task evidence, not historical implementations/images, acceptance claims, memory, Git history, or other branches. Resume only a user-identified checkpoint under the visual reference's rules.
+- Read required instructions/references completely; inspect relevant source units and documented tool interfaces. Current project rules/configuration define constraints without an adapter or command cache. Inspect internals only for failure, ambiguity, or necessary adaptation.
+- Preserve complete original evidence or its accessible source and call association. Read truncations from the same call, loading needed portions rather than repeating requests. Missing complete evidence is a blocker; a model summary cannot replace it.
+- Combine related reads and independent read-only checks on stable inputs; serialize shared browser operations and visual diagnosis/repair. Inspect results and block dependent work after failure. Concurrency does not authorize subagents.
+- Stop after two consecutive unchanged-condition tool failures. Retry only with a concrete correction or verified condition change; otherwise preserve/report the blocker.
 
 ## 1. Draft the page contract
 
-Read every applicable repository instruction file, including root and target-scoped `AGENTS.md` or `CLAUDE.md`, before inspecting or editing implementation. Stop if a required file is unavailable.
+Before inspecting or editing implementation, read every applicable repository instruction, including root and target-scoped `AGENTS.md` or `CLAUDE.md`. Stop if a required file is unavailable.
 
-Identify the page entry and requested variant scope. Extract checkable project assertions for framework, design units, layout, image handling, component placement, exports, compatibility, required checks, preview command, URL, and device switch.
+Read [page-contract.md](references/page-contract.md) and draft its region-level contracts. Record project requirements as editing prerequisites, capture conditions, or delivery gates, satisfying each at its required boundary. Use existing state/device mechanisms, not new routes per artboard.
 
-Read [page-contract.md](references/page-contract.md). Draft one region-level contract per artboard; leave design-dependent fields pending until current Lanhu evidence supplies them. Use existing state and device mechanisms rather than inventing routes per artboard. Record user-stated layout relationships now.
+**Complete when:** entry, selected variants/devices, project dependencies, known conditions, and pending design fields are recorded.
 
-**Complete when:** entry, scope, known capture conditions, and applicable project assertions are recorded, with evidence-dependent fields explicitly pending.
+## 2. Resolve current design evidence
 
-## 2. Retrieve and interpret current design evidence
+Get `lanhu_get_designs`, select requested artboards, then use `lanhu_get_ai_analyze_design_result`. Reuse valid same-task results; request `lanhu_get_design_slices` only for needed assets.
 
-Get the artboard list with `lanhu_get_designs`, select only requested targets, then call `lanhu_get_ai_analyze_design_result`. Reuse valid results already obtained for this task and scope. Call `lanhu_get_design_slices` only for needed assets.
+User/project rules define scope and constraints; screenshots establish composition and relationships. Use HTML/CSS for local values only after identifying their element/relationship, not as production code or complete layout truth. Tokens clarify missing effects/properties; slices supply artwork.
 
-Reconcile evidence by role:
+Resolve conflicts against artboard, units, crop, viewport, fonts/assets, data/scroll, device, and chrome. Apply the page reference's relationship, exclusion, and safe-area rules. Adopt supported judgments directly: a mobile design needs mobile verification, not unrequested desktop scope. Only unresolved material ambiguity warrants one consolidated question with recommendation and basis; user silence alone does not. Record the evidence or decision.
 
-- user requirements and project rules define scope, behavior, ownership, and implementation constraints;
-- the screenshot establishes composition, grouping, order, overlap, and layout relationships;
-- HTML/CSS supplies precise local values after confirming the represented element and relationship;
-- Design Tokens clarify tokenized properties or effects absent from HTML/CSS;
-- slices provide exact image and icon content.
+**Complete when:** every artboard's contract is resolved and sourced; needed assets are available, authorized as excluded, or reported blocked.
 
-Returned HTML/CSS is a reference, not final project code or a complete layout truth. For conflicts, verify artboard, units, crop, viewport, fonts, assets, data state, scroll position, device mode, and external chrome before asking for a decision.
+## 3. Implement and verify
 
-For each layout-critical region, record what it stays attached to and whether nearby content reserves space for it. Check visible content boundaries and reserved container space; absolute positioning alone does not prove overlap. Ask one grouped plain-language question with evidence-based proposals when relationships are not user-supplied. Implement after confirmation or explicit authorization to infer, recording the evidence and decision separately per artboard.
+Meet editing prerequisites first. Follow user/project asset storage, upload, and image-component conventions; use accessible, deliverable resources rather than temporary Lanhu URLs. Make the smallest project-native implementation covering required elements, behavior, and selected variants.
 
-Apply the reference's external-chrome and bottom-safe-area rules. Removing a Home Indicator graphic does not remove page-owned minimum spacing.
+Treat the **visible composite** as the contract, decomposition as a choice. Use the simplest combination of artwork, crop, opacity, and drawing order reproducing it against neighbors; keep shared coordinates, clipping/occlusion, and scrolling coherent, splitting only for differing behavior. Preserve matching appearance across sizes/states and each repeated item's distinct artwork, badges, and overlays. Verify component defaults, prop/style precedence, and crop/container behavior in the first implementation, without a separate preparation phase. Derive heights/aspect ratios from design and project semantics, not page height, bottom-operation spacing, or a universal equal-height policy.
 
-**Complete when:** every artboard has finalized dimensions, entry, device mode, reproducible state, capture conditions, authorized exclusions, required/forbidden regions, and sourced layout relationships; every needed asset is available, authorized as excluded, or reported blocked.
+Within each implementation/repair batch, read complete changed units and relevant shared rules/callers; edit with unique context, finish formatting/autofixes, then audit resulting units and actual diffs, including untracked files. Cover selector matches, flow/positioning, dimensions/relationships, decorative ownership, unintended deletion/duplication, project constraints, scope, isolation, and behavior. Expand uncertain impact; carry valid unchanged-unit audits forward. This does not replace visual review or grant repairs.
 
-## 3. Materialize assets and implement
+### Check selection and reuse
 
-Follow the user's asset instruction, then existing project conventions. Use `duitang-image-upload` only when approved project-ready references require Duitang CDN URLs. Keep temporary Lanhu URLs out of production code.
+Before implementation, choose checks for required delivery claims and real change risk; index commands, scope, triggers, sufficient evidence, inputs, results, and raw outputs/exits in the existing checkpoint. Verify entry points, arguments, extensions, configuration, and global declarations from project scripts/public help. Resolve blockers as found; run independent checks on stable inputs. Follow project dependency/tool authorization; unsupported optional metrics are limits, not extra gates.
 
-Make the smallest project-native change representing every required visible element while preserving business behavior and supporting all selected variants. Content cards default to content-driven height; fixed, fill, stretch, or minimum heights require the confirmed container contract. Page-fill and bottom-operation spacing do not establish an inner card's height.
+**Validity:** evidence is reusable only while its relevant sources, configuration, dependencies, environment, fixtures, and runtime state remain established and unchanged. Recheck affected/uncertain claims; retain unaffected results with original provenance. Decide per dependency, not per task: CSS edits do not invalidate unrelated TS/business checks; TS/TSX edits require affected static checks and related tests. Delivery text alone does not invalidate rendering. Close sufficiently evidenced claims instead of repeating them at handoff.
 
-Audit changed files against project assertions, authorized scope, style isolation, and behavior after initial implementation. During repairs, audit affected assertions; audit all when impact is uncertain. At delivery, consolidate the final audit with the last verification rather than repeating an unchanged review.
+- Retain all mandatory checks; otherwise test the narrowest actual impact. Unchanged imports are not changed test entries; verify declarative routing and investigate uncertain effects.
+- Static fidelity uses screenshots/model review/pressure checks, not new snapshots, pixel/style/DOM assertions, or invented data variants for fixed mocks. Changed logic still requires business-behavior, compatibility, and regression tests; explicit test requirements prevail.
+- Preserve raw commands/outputs/exits and inputs, loading conclusions/relevant failures only. Targeted success is not a full-repository pass. Report a baseline failure as unrelated only with current-checkout proof it predates the change and cannot affect the target. Introduced, target-affecting, or unresolved failures block; neither relabel failing commands nor modify unrelated code.
 
-Run the narrowest applicable project checks and record command, scope, exit status, and relevant failure output. Rerun checks after their inputs change; do not repeat an unchanged passing command merely for another handoff. Keep full successful logs out of context.
+**Complete when:** all variants implement required content/state and preserved behavior with stable assets, and applicable checks pass except separately evidenced unrelated baseline failures. Visual acceptance follows Step 4.
 
-Fix introduced or target-affecting failures. Report an unrelated baseline failure only with current-checkout evidence of its pre-existing status and lack of target impact; do not call that command passing or edit unrelated code to clear it. Unresolved relevance, implementation failures, or project-rule conflicts remain blockers. Purely nonvisual corrections do not consume visual batches, but any rendering effect requires visual rechecking under the visual reference's budget rules.
+## 4. Review within the shared budget
 
-**Complete when:** every variant renders its required elements and state with stable assets, requested behavior is preserved, and implementation assertions and relevant checks pass apart from evidenced unrelated baseline failures disclosed separately.
+Use a real target-device context through `playwright-cli`. Read [visual-diff.md](references/visual-diff.md) before the first capture and follow its baseline (including applicable pressure conditions), repair, final-coverage, and blocked/completion rules. It owns batch counting, checkpointing, restoration, and sealing.
 
-## 4. Review and repair within the page budget
+For batch capture, readiness, scrolling, geometry, or source binding, read and reuse [capture-tool.md](references/capture-tool.md). Use shared defaults and same-scene steps where appropriate. Tasks supply business selectors/state; the tools do not decide visual acceptance. If unsuitable, record the specific gap and add only missing adaptation, not another generic runner/comparator.
 
-Read [visual-diff.md](references/visual-diff.md) before the first capture. It is the authority for batch counting, review coverage, checkpointing, finalization, and cleanup.
+Review in this agent by default. Only authorized independent evaluation/user-designated verification may use one fresh read-only reviewer. Supply resolved contracts/ignores, current design/page evidence, project assertions, and scope, not past verdicts or repair rankings. Separate visual/implementation verdicts, disclose unavailable independence, and validate findings against design-required content. Findings consume the existing budget.
 
-初始检查先看最有诊断价值的布局关系：混排类型、状态混排、首尾项、窄屏及底部边界；按契约核对同组元素之间的尺寸、对齐、间距和角标锚点，而不只核对各自数值。关系检查优先于其余变体，但仍须完成全部所选画板的基线检查后统一规划修复，不增加局部修复循环，也不默认混排必须等高。
-
-批量截图、资源就绪、滚动和几何取证优先复用 [通用取证工具](references/capture-tool.md)：共享条件放 defaults、目标只写差异；同场景连续捕获用 steps 复用导航；失败与几何差异用现成摘要入口。由任务提供入口、选择器、关系和最小业务适配，脚本结果不替代视觉判断。工具不适用时记录具体缺口，只补缺失能力，不为每批重建捕获器或通用比较器。
-
-Review every selected artboard initially. Batch confirmed, nonconflicting visual repairs instead of entering a separate iterative loop for each region. Recheck affected variants after shared changes; uncertainty expands coverage. Combine the last review with final verification, using the same valid screenshots rather than scheduling an additional identical scan.
-
-Ordinary tasks use the current agent for visual and implementation review. Independent evaluation, benchmarks, or user-designated high-risk verification may use a fresh read-only reviewer only when delegation is authorized. Prefer one bounded review covering both visual and implementation checks, with separate verdicts. Supply resolved contracts, dynamic ignores, current design/page images, project assertions, and authorized scope, not prior acceptance claims or repair rankings. If no reviewer is available, disclose that independence was not achieved.
-
-Confirmed reviewer findings use the remaining shared budget; they do not open another automatic repair cycle. Validate visible-content findings against current Lanhu evidence: design-required repeated copy or controls are not code smells.
-
-**Complete when:** every artboard has a final scan and truthful visual verdict, implementation gates pass, and any requested independent review is recorded. Visual budget exhaustion permits delivery with disclosed differences, not bypassing missing evidence or technical blockers.
+**Complete when:** every target has the visual reference's final coverage, valid evidence, and truthful verdict; implementation gates and requested independent review are accounted for.
 
 ## Handoff
 
-只写一份简短人工交付结论：交付提交与范围；逐目标入口／复现状态、视觉结论、截图及差异；项目检查与独立审查（如要求）的结论和原始证据链接；共享预算、验证限制、待决策及清理／保留结果。逐目标用紧凑表格，不展开重复叙述。
+Reference saved, accessible, version-matched originals, manifests, and checkpoint indexes; add missing facts to their owning record, not parallel reports.
 
-原始设计结果、截图、命令日志及审查原文保留不变；捕获条件、源身份和图片 hash 使用工具清单，观察与预算使用共享检查点。每项引用必须已落盘、可访问且版本匹配。任务票只更新状态并追加提交、审批／阻塞与交付链接；父会话呈现必要截图和用户决策，不重新生成完整验证报告。协议要求的结构化结果照常提供，引用同一证据而非另写一套长叙述。Delivery completion, visual correctness, and user approval are separate conclusions.
+Write one short delivery with a compact per-target entry/state/verdict/screenshot/differences table; working-tree or commit identity/scope; check/review evidence; shared budget, limits, pending decisions, and cleanup/retention. Retain commit delivery under user/project requirements, including only task changes.
+
+After sealing and this conclusion, immediately submit the complete protocol-required terminal result, including failures/evidence/limits. Reuse content when both saving and submission are required; submit directly when runtime persists it. A saved file is not terminal submission. Execution completion, visual correctness, and user approval are separate.

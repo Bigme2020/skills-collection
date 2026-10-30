@@ -1,14 +1,11 @@
-// 无项目依赖；同一个函数可用于 Playwright 测试或 playwright-cli run-code。
-// 保持函数自包含：CLI 会序列化函数，而不是在浏览器执行环境里 import。
+// No project dependencies; share this function between Playwright tests and playwright-cli run-code.
+// Keep it self-contained: the CLI serializes the function instead of importing it in the browser runtime.
 export async function captureUI(page, plan, prepare, inspectOnly = false) {
   const records = [];
   const requireValue = (ok, message) => {
     if (!ok) throw new Error(message);
   };
-  requireValue(
-    Array.isArray(plan.targets) && plan.targets.length > 0,
-    "targets 必须为非空数组",
-  );
+  requireValue(Array.isArray(plan.targets) && plan.targets.length > 0, 'targets must be a nonempty array');
   const defaults = plan.defaults || {};
   const merge = (base, override) => ({
     ...base,
@@ -16,16 +13,15 @@ export async function captureUI(page, plan, prepare, inspectOnly = false) {
     measurements: { ...base.measurements, ...override.measurements },
     screenshot: { ...base.screenshot, ...override.screenshot },
   });
-  // steps 只描述同一场景内的捕获点；业务操作仍由 prepare 回调执行。
+  // steps describe capture points within one scene; prepare still handles business actions.
   const targets = (plan.targets || []).flatMap((target) => {
     const scene = merge(defaults, target);
     if (!target.steps) return [{ ...scene, reuse: false }];
-    if (!Array.isArray(target.steps) || !target.steps.length)
-      throw new Error("steps 必须是非空数组");
+    if (!Array.isArray(target.steps) || !target.steps.length) throw new Error('steps must be a nonempty array');
     return target.steps.map((step, index) => {
       if (index > 0 && (step.url !== undefined || step.viewport !== undefined))
-        throw new Error("复用捕获点不允许改变 url/viewport，请另建场景");
-      if (!step.id) throw new Error("每个捕获点必须指定 id");
+        throw new Error('Reused capture points cannot change url/viewport; create another scene');
+      if (!step.id) throw new Error('Each capture point must specify an id');
       return {
         ...merge(scene, step),
         id: `${target.id}-${step.id}`,
@@ -36,75 +32,58 @@ export async function captureUI(page, plan, prepare, inspectOnly = false) {
   const ids = new Set();
   for (const target of targets) {
     requireValue(
-      typeof target.id === "string" &&
-        /^[\w-]+$/.test(target.id) &&
-        !ids.has(target.id),
-      "target.id 必须唯一且只含字母、数字、_、-",
+      typeof target.id === 'string' && /^[\w-]+$/.test(target.id) && !ids.has(target.id),
+      'target.id must be unique and contain only letters, digits, _, and -',
     );
     ids.add(target.id);
     requireValue(
-      typeof target.ready === "string" &&
-        typeof target.resourceRoot === "string",
-      `${target.id}: 必须指定 ready 和 resourceRoot`,
+      typeof target.ready === 'string' && typeof target.resourceRoot === 'string',
+      `${target.id}: must specify ready and resourceRoot`,
     );
     requireValue(
-      inspectOnly || typeof target.screenshot.path === "string",
-      `${target.id}: 必须指定 screenshot.path`,
+      inspectOnly || typeof target.screenshot.path === 'string',
+      `${target.id}: must specify screenshot.path`,
     );
     for (const rule of target.checks || []) {
+      requireValue(['equal', 'size', 'inside'].includes(rule.type), `Unknown check type ${rule.type}`);
       requireValue(
-        ["equal", "size", "inside"].includes(rule.type),
-        `未知检查类型 ${rule.type}`,
+        rule.tolerance === undefined || (Number.isFinite(rule.tolerance) && rule.tolerance >= 0),
+        'tolerance must be a finite nonnegative number',
       );
       requireValue(
-        rule.tolerance === undefined ||
-          (Number.isFinite(rule.tolerance) && rule.tolerance >= 0),
-        "tolerance 必须是非负有限数",
+        rule.type === 'inside'
+          ? typeof rule.container === 'string'
+          : ['x', 'y', 'right', 'bottom', 'width', 'height'].includes(rule.metric),
+        'Check requires a valid metric/container',
       );
-      requireValue(
-        rule.type === "inside"
-          ? typeof rule.container === "string"
-          : ["x", "y", "right", "bottom", "width", "height"].includes(
-              rule.metric,
-            ),
-        "检查缺少有效的 metric/container",
-      );
-      requireValue(
-        rule.type !== "size" || Number.isFinite(rule.value),
-        "size.value 必须是有限数",
-      );
-      requireValue(typeof rule.selector === "string", "检查必须指定 selector");
+      requireValue(rule.type !== 'size' || Number.isFinite(rule.value), 'size.value must be finite');
+      requireValue(typeof rule.selector === 'string', 'Check must specify selector');
     }
     if (target.scroll) {
       requireValue(
-        ["x", "y"].includes(target.scroll.axis) &&
-          ["start", "end"].includes(target.scroll.to),
-        "scroll 必须指定 axis=x/y、to=start/end",
+        ['x', 'y'].includes(target.scroll.axis) && ['start', 'end'].includes(target.scroll.to),
+        'scroll must specify axis=x/y and to=start/end',
       );
-      requireValue(
-        typeof target.scroll.selector === "string",
-        "scroll 必须指定容器 selector",
-      );
+      requireValue(typeof target.scroll.selector === 'string', 'scroll must specify a container selector');
     }
   }
-  // 预期来自任务契约，不从待验证计划反向生成。只核对声明字段，通用工具不猜业务。
+  // Expectations come from the task contract, not the plan being tested. Check declared fields without inferring business rules.
   if (plan.coverage !== undefined) {
     const coverage = plan.coverage;
     requireValue(
-      coverage && typeof coverage === "object" && !Array.isArray(coverage),
-      "coverage 必须是按最终捕获点 ID 索引的对象",
+      coverage && typeof coverage === 'object' && !Array.isArray(coverage),
+      'coverage must be an object indexed by final capture-point ID',
     );
     const missing = [...ids].filter((id) => !Object.hasOwn(coverage, id));
     const extra = Object.keys(coverage).filter((id) => !ids.has(id));
     requireValue(
       !missing.length && !extra.length,
-      `coverage 目标不符：未声明=${missing.join(",")}；多余=${extra.join(",")}`,
+      `coverage target mismatch: missing=${missing.join(',')}; extra=${extra.join(',')}`,
     );
-    // 对象忽略键序，数组保留顺序；使用同一逻辑核对嵌套字段，避免JSON键序误报。
+    // Ignore object key order but preserve array order, applying the same comparison recursively.
     const equal = (a, b) => {
       if (a === b) return true;
-      if (!a || !b || typeof a !== "object" || typeof b !== "object")
-        return false;
+      if (!a || !b || typeof a !== 'object' || typeof b !== 'object') return false;
       const keys = Object.keys(a);
       return (
         Array.isArray(a) === Array.isArray(b) &&
@@ -115,22 +94,22 @@ export async function captureUI(page, plan, prepare, inspectOnly = false) {
     for (const target of targets) {
       const expected = coverage[target.id];
       requireValue(
-        expected && typeof expected === "object" && !Array.isArray(expected),
-        `${target.id}: coverage 必须声明字段对象`,
+        expected && typeof expected === 'object' && !Array.isArray(expected),
+        `${target.id}: coverage must declare a field object`,
       );
       for (const [key, value] of Object.entries(expected))
         requireValue(
           Object.hasOwn(target, key) && equal(target[key], value),
-          `${target.id}.${key}: 覆盖预期不符；预期=${JSON.stringify(value)}；实际=${JSON.stringify(target[key])}`,
+          `${target.id}.${key}: coverage mismatch; expected=${JSON.stringify(value)}; actual=${JSON.stringify(target[key])}`,
         );
     }
   }
-  // inspectPlan复用完全相同的展开/校验路径；此处之前不读取或改变浏览器状态。
+  // inspectPlan shares this exact expansion/validation path; no browser state has been read or changed yet.
   if (inspectOnly)
     return {
       ok: true,
       targets: targets.map(({ steps, ...target }) => target),
-      visualVerdict: "pending",
+      visualVerdict: 'pending',
     };
   let previousSucceeded = false;
   const browserVersion = page.context().browser()?.version() ?? null;
@@ -148,102 +127,71 @@ export async function captureUI(page, plan, prepare, inspectOnly = false) {
     try {
       const timeout = plan.timeoutMs ?? 10000;
       if (target.reuse)
-        requireValue(previousSucceeded, "前一捕获点失败，不复用未验证页面状态");
+        requireValue(previousSucceeded, 'Previous capture point failed; do not reuse unverified page state');
       else {
-        if (
-          target.viewport &&
-          JSON.stringify(page.viewportSize()) !==
-            JSON.stringify(target.viewport)
-        )
+        if (target.viewport && JSON.stringify(page.viewportSize()) !== JSON.stringify(target.viewport))
           await page.setViewportSize(target.viewport);
         if (target.url)
           await page.goto(target.url, {
-            waitUntil: "domcontentloaded",
+            waitUntil: 'domcontentloaded',
             timeout,
           });
-        else await page.reload({ waitUntil: "domcontentloaded", timeout });
+        else await page.reload({ waitUntil: 'domcontentloaded', timeout });
       }
-      mark("navigation");
+      mark('navigation');
       if (prepare) await prepare(page, target);
-      mark("prepare");
-      await page.locator(target.ready).waitFor({ state: "visible", timeout });
-      await page
-        .locator(target.resourceRoot)
-        .first()
-        .waitFor({ state: "visible", timeout });
-      mark("ready");
+      mark('prepare');
+      await page.locator(target.ready).waitFor({ state: 'visible', timeout });
+      await page.locator(target.resourceRoot).first().waitFor({ state: 'visible', timeout });
+      mark('ready');
       animationStyle = await page.addStyleTag({
         content:
-          "*,*::before,*::after{animation-play-state:paused!important;transition:none!important;caret-color:transparent!important}",
+          '*,*::before,*::after{animation-play-state:paused!important;transition:none!important;caret-color:transparent!important}',
       });
       if (target.scroll) {
         const scroll = target.scroll;
-        requireValue(
-          (await page.locator(scroll.selector).count()) === 1,
-          "滚动容器必须唯一",
-        );
-        record.scroll = await page
-          .locator(scroll.selector)
-          .evaluate((el, setting) => {
-            const horizontal = setting.axis === "x";
-            const max = Math.max(
-              0,
-              horizontal
-                ? el.scrollWidth - el.clientWidth
-                : el.scrollHeight - el.clientHeight,
-            );
-            const end =
-              horizontal && getComputedStyle(el).direction === "rtl"
-                ? -max
-                : max;
-            const requested = setting.to === "end" ? end : 0;
-            const behavior = el.style.scrollBehavior;
-            el.style.scrollBehavior = "auto";
-            if (horizontal) el.scrollLeft = requested;
-            else el.scrollTop = requested;
-            el.style.scrollBehavior = behavior;
-            return {
-              max,
-              requested,
-              status: max > 0 ? "applicable" : "not_applicable",
-              method: "programmatic",
-            };
-          }, scroll);
-        requireValue(
-          !scroll.requireOverflow || record.scroll.max > 0,
-          "契约要求溢出，但实际无溢出",
-        );
+        requireValue((await page.locator(scroll.selector).count()) === 1, 'Scroll container must be unique');
+        record.scroll = await page.locator(scroll.selector).evaluate((el, setting) => {
+          const horizontal = setting.axis === 'x';
+          const max = Math.max(0, horizontal ? el.scrollWidth - el.clientWidth : el.scrollHeight - el.clientHeight);
+          const end = horizontal && getComputedStyle(el).direction === 'rtl' ? -max : max;
+          const requested = setting.to === 'end' ? end : 0;
+          const behavior = el.style.scrollBehavior;
+          el.style.scrollBehavior = 'auto';
+          if (horizontal) el.scrollLeft = requested;
+          else el.scrollTop = requested;
+          el.style.scrollBehavior = behavior;
+          return {
+            max,
+            requested,
+            status: max > 0 ? 'applicable' : 'not_applicable',
+            method: 'programmatic',
+          };
+        }, scroll);
+        requireValue(!scroll.requireOverflow || record.scroll.max > 0, 'Contract requires overflow, but none exists');
       }
-      mark("scroll");
-      // 仅发生滚动/业务准备时等待观察器；普通导航无需额外预等待。
+      mark('scroll');
+      // Wait for observers only after scrolling or business preparation, not ordinary navigation.
       if (target.scroll || prepare)
-        // 先让滚动触发的视口观察器有机会更新资源；异步业务加载仍由 ready/prepare 明确等待。
+        // Let scroll-triggered viewport observers update resources; ready/prepare still explicitly await async business loading.
         await page.evaluate(
-          () =>
-            new Promise((resolve) =>
-              requestAnimationFrame(() => requestAnimationFrame(resolve)),
-            ),
+          () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
         );
       record.resources = await page.evaluate(
         async ({ selector, timeout }) => {
           const roots = [...document.querySelectorAll(selector)];
-          if (!roots.length) throw new Error("resourceRoot 未匹配元素");
-          const nodes = new Set(
-            roots.flatMap((root) => [root, ...root.querySelectorAll("*")]),
-          );
+          if (!roots.length) throw new Error('resourceRoot matched no elements');
+          const nodes = new Set(roots.flatMap((root) => [root, ...root.querySelectorAll('*')]));
           const urls = new Set();
           for (const el of nodes) {
             if (el instanceof HTMLImageElement) {
               const src = el.currentSrc || el.src;
-              // 在场景指定滚动位置读取当前资源；不改页面的懒加载策略。
+              // Read current resources at the scene's scroll position without changing page lazy-loading behavior.
               if (src) urls.add(src);
             }
-            for (const pseudo of [null, "::before", "::after"]) {
+            for (const pseudo of [null, '::before', '::after']) {
               const background = getComputedStyle(el, pseudo).backgroundImage;
-              for (const match of background.matchAll(
-                /url\(\s*["']?([^"')]+?)["']?\s*\)/g,
-              ))
-                urls.add(match[1]);
+              for (const match of background.matchAll(/url\(\s*["']?([^"')]+?)["']?\s*\)/g)) urls.add(match[1]);
             }
           }
           let timer;
@@ -271,17 +219,12 @@ export async function captureUI(page, plan, prepare, inspectOnly = false) {
                 );
                 return {
                   total: urls.size,
-                  failed: results
-                    .filter((item) => !item.ok)
-                    .map((item) => item.src),
+                  failed: results.filter((item) => !item.ok).map((item) => item.src),
                   fonts: document.fonts.status,
                 };
               })(),
               new Promise((_, reject) => {
-                timer = setTimeout(
-                  () => reject(new Error("字体或图片就绪超时")),
-                  timeout,
-                );
+                timer = setTimeout(() => reject(new Error('Font or image readiness timed out')), timeout);
               }),
             ]);
           } finally {
@@ -290,25 +233,20 @@ export async function captureUI(page, plan, prepare, inspectOnly = false) {
         },
         { selector: target.resourceRoot, timeout },
       );
-      requireValue(record.resources.failed.length === 0, "资源加载或解码失败");
-      mark("resources");
+      requireValue(record.resources.failed.length === 0, 'Resource loading or decoding failed');
+      mark('resources');
       if (target.scroll) {
         record.scroll.actual = await page
           .locator(target.scroll.selector)
-          .evaluate(
-            (el, axis) => (axis === "x" ? el.scrollLeft : el.scrollTop),
-            target.scroll.axis,
-          );
+          .evaluate((el, axis) => (axis === 'x' ? el.scrollLeft : el.scrollTop), target.scroll.axis);
         requireValue(
           Math.abs(record.scroll.actual - record.scroll.requested) <= 1,
-          "未到达请求的滚动位置；检查 scroll-snap／虚拟列表等页面行为",
+          'Requested scroll position was not reached; inspect scroll-snap, virtual lists, or other page behavior',
         );
       }
       const snapshot = await page.evaluate(
         async ({ measurements, checks }) => {
-          await new Promise((resolve) =>
-            requestAnimationFrame(() => requestAnimationFrame(resolve)),
-          );
+          await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
           const rect = (el) => {
             const r = el.getBoundingClientRect();
             return {
@@ -322,16 +260,10 @@ export async function captureUI(page, plan, prepare, inspectOnly = false) {
           };
           const selectors = new Set([
             ...Object.values(measurements),
-            ...checks.flatMap((rule) => [
-              rule.selector,
-              ...(rule.container ? [rule.container] : []),
-            ]),
+            ...checks.flatMap((rule) => [rule.selector, ...(rule.container ? [rule.container] : [])]),
           ]);
           const geometry = Object.fromEntries(
-            [...selectors].map((selector) => [
-              selector,
-              [...document.querySelectorAll(selector)].map(rect),
-            ]),
+            [...selectors].map((selector) => [selector, [...document.querySelectorAll(selector)].map(rect)]),
           );
           return {
             geometry,
@@ -363,32 +295,26 @@ export async function captureUI(page, plan, prepare, inspectOnly = false) {
         viewport: page.viewportSize(),
         browser: browserVersion,
       };
-      for (const key of ["dpr", "zoom"]) {
+      for (const key of ['dpr', 'zoom']) {
         if (plan.expected?.[key] !== undefined)
           requireValue(
             Math.abs(record.actual[key] - plan.expected[key]) < 0.001,
-            `${key} 与捕获契约不符`,
+            `${key} does not match the capture contract`,
           );
       }
       if (plan.expected?.touch !== undefined)
         requireValue(
           record.actual.touchPoints > 0 === plan.expected.touch,
-          "触摸能力与捕获契约不符",
+          'Touch capability does not match the capture contract',
         );
       for (const rule of target.checks || []) {
         const boxes = record.geometry[rule.selector];
         const tolerance = rule.tolerance ?? 0.5;
-        let ok = boxes.length >= (rule.type === "equal" ? 2 : 1);
-        if (rule.type === "equal")
-          ok &&= boxes.every(
-            (box) =>
-              Math.abs(box[rule.metric] - boxes[0][rule.metric]) <= tolerance,
-          );
-        if (rule.type === "size")
-          ok &&= boxes.every(
-            (box) => Math.abs(box[rule.metric] - rule.value) <= tolerance,
-          );
-        if (rule.type === "inside") {
+        let ok = boxes.length >= (rule.type === 'equal' ? 2 : 1);
+        if (rule.type === 'equal')
+          ok &&= boxes.every((box) => Math.abs(box[rule.metric] - boxes[0][rule.metric]) <= tolerance);
+        if (rule.type === 'size') ok &&= boxes.every((box) => Math.abs(box[rule.metric] - rule.value) <= tolerance);
+        if (rule.type === 'inside') {
           const containers = record.geometry[rule.container];
           ok &&=
             containers.length === 1 &&
@@ -402,24 +328,22 @@ export async function captureUI(page, plan, prepare, inspectOnly = false) {
         }
         record.checks.push({ ...rule, ok, matched: boxes.length });
       }
-      mark("geometry");
-      // 断言失败仍捕获诊断图；资源/设备就绪失败不生成可比较截图。
+      mark('geometry');
+      // Capture diagnostic images after assertion failure; unready resources/devices produce no comparable image.
       const screenshot = {
         path: target.screenshot.path,
-        scale: "css",
-        animations: "allow",
+        scale: 'css',
+        animations: 'allow',
       };
       if (target.screenshot.selector) {
-        const box = await page
-          .locator(target.screenshot.selector)
-          .boundingBox();
+        const box = await page.locator(target.screenshot.selector).boundingBox();
         requireValue(
           box &&
             box.x >= 0 &&
             box.y >= 0 &&
             box.x + box.width <= record.page.width &&
             box.y + box.height <= record.page.height,
-          "元素截图须先完整滚入视口，避免自动滚动使几何证据失效",
+          'Scroll the full element into view before capture to prevent automatic scrolling from invalidating geometry',
         );
         await page.locator(target.screenshot.selector).screenshot(screenshot);
       } else
@@ -427,10 +351,10 @@ export async function captureUI(page, plan, prepare, inspectOnly = false) {
           ...screenshot,
           fullPage: target.screenshot.fullPage ?? false,
         });
-      mark("screenshot");
+      mark('screenshot');
       record.screenshot = screenshot.path;
       record.ok = record.checks.every((check) => check.ok);
-      if (!record.ok) record.error = "布局契约断言失败";
+      if (!record.ok) record.error = 'Layout contract assertion failed';
     } catch (error) {
       record.error = error.message;
     } finally {
@@ -442,18 +366,18 @@ export async function captureUI(page, plan, prepare, inspectOnly = false) {
           record.cleanupError = error.message;
         }
       }
-      mark("cleanup");
+      mark('cleanup');
       previousSucceeded = record.ok;
     }
   }
   return {
     ok: records.every((record) => record.ok),
     records,
-    visualVerdict: "pending",
+    visualVerdict: 'pending',
   };
 }
 
-// screenshot.path由捕获调用方填写；静态检查不要求该输出路径，也不会连接浏览器。
+// Capture callers supply screenshot.path; static inspection neither requires that path nor connects to a browser.
 export async function inspectPlan(plan) {
   return captureUI(null, plan, undefined, true);
 }

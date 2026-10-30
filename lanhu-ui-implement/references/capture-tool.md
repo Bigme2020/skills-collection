@@ -1,24 +1,26 @@
-# 通用 UI 取证工具
+# Generic UI evidence tools
 
-批量截图、资源就绪、滚动或几何检查时读取本文件。机制通用，任务提供业务契约；不内置域名、路由、设计宽度、组件选择器、等高要求或通过标准。
+Read for batch captures, resource readiness, scrolling, or geometry checks. The mechanism is generic; tasks supply business contracts. It embeds no domain, route, design width, component selector, equal-height requirement, or acceptance threshold.
 
-## 入口
+## Entry point
 
-复用现有 `playwright-cli` session，先按项目规则创建真实桌面／移动 context。工具只调整 viewport 并导航／刷新，**不会创建或切换设备模式**。先用 `command -v playwright-cli` 和 `--version` 确认可用；遵守项目依赖安装权限，不自动下载工具。
+Use `playwright-cli` to create or reuse the device context and session required by current design evidence. Verify only selected devices. The tool changes viewport and navigates/reloads; **it does not create or switch device modes**. Confirm availability with `command -v playwright-cli` and `--version`. Follow project dependency-installation authorization without automatically downloading tools.
 
-从被测仓库运行（Node 18+）：
+Run from the tested repository with Node 18+:
 
 ```bash
-node <skill目录>/scripts/ui-evidence.mjs <plan.json> <session名称> <输出目录>
+node <skill-dir>/scripts/ui-evidence.mjs <plan.json> <session-name> <output-dir>
 ```
 
-输出目录使用任务临时／证据目录，放仓库外或已忽略路径；每个源码修订／批次使用独立目录。CLI 不覆盖任务预算或修改业务源码。支持 `--help`。
+Use task temporary/evidence directories outside the repository or in an ignored location, with separate output for each source revision/batch. The CLI neither overrides the task budget nor changes business sources. It supports `--help`.
 
-工具读取 Git HEAD、tracked diff 与 untracked 内容身份；捕获前后来源变化则失败。**这只是本地 checkout 身份，不证明运行中的服务使用了该源码**。调用者仍须核实服务 cwd、构建输入与版本，再在共享检查点关联清单；`servedRevision: unverified` 不得擅自当作已验证。源码身份采集不包含 ignored 文件，如它们影响渲染，调用者必须另行固定并记录。
+By default, source identity includes Git HEAD, tracked diffs, and untracked content. For established rendering scope, top-level `sourceFiles` lists individual verified files: page dependencies, relevant configuration, lockfiles, and rendering-relevant ignored inputs. Resolve paths from the tested repository and expand known directories to their actual files when constructing this list; the tool neither expands directory/glob entries nor discovers dependencies. The containing project may have no Git repository or commits. Keep default Git identity when scope is uncertain. Selected file changes during capture cause failure.
 
-## 任务配置
+**Local file identity does not prove the running service uses those sources.** Reuse available service startup directory, build/deployment revision, and actually loaded resource provenance. Associate manifests with that evidence once in the shared checkpoint; inspect real responses or source maps when necessary instead of reproving unchanged inputs. A working directory or screenshot hash alone is insufficient. Keep `servedRevision: unverified` unchanged and reference the separately verified service evidence.
 
-以下为合成示例，不是默认验收要求；只填写当前契约确认的关系：
+## Task configuration
+
+This synthetic example is not a default acceptance requirement. Include only relationships established by the current contract:
 
 ```json
 {
@@ -33,8 +35,18 @@ node <skill目录>/scripts/ui-evidence.mjs <plan.json> <session名称> <输出�
       "resourceRoot": "main, footer",
       "measurements": { "items": "[data-card]", "footer": "footer" },
       "checks": [
-        { "type": "equal", "selector": "[data-card]", "metric": "height", "tolerance": 0.5 },
-        { "type": "equal", "selector": "[data-card]", "metric": "y", "tolerance": 0.5 }
+        {
+          "type": "equal",
+          "selector": "[data-card]",
+          "metric": "height",
+          "tolerance": 0.5
+        },
+        {
+          "type": "equal",
+          "selector": "[data-card]",
+          "metric": "y",
+          "tolerance": 0.5
+        }
       ],
       "screenshot": { "fullPage": false }
     }
@@ -42,116 +54,138 @@ node <skill目录>/scripts/ui-evidence.mjs <plan.json> <session名称> <输出�
 }
 ```
 
-- `defaults` 放共享 `ready/resourceRoot/measurements/checks/screenshot`，目标只写差异。标量与 `checks` 数组整体覆盖；`measurements/screenshot` 按字段合并，不隐式拼接断言。`expected/timeoutMs` 仍位于计划顶层。
-- `targets` 顺序执行，可将最有诊断价值的混排状态放在前面；仍需覆盖全部契约目标。`id` 唯一，只含字母、数字、`_`、`-`。
-- 每项必须指定可见 `ready` 和 `resourceRoot` CSS 选择器。`url` 缺省时刷新当前页；需要点击、输入或额外 ready 条件时使用下述函数入口，不增加通用业务动作 DSL。
-- `expected` 检查 DPR、zoom 和触摸能力。触摸点、UA 和屏宽都只是实测信号，**不单独证明移动模式**；context 创建参数由操作者记录在捕获契约中。
-- `resourceRoot` 限定图片检查范围（含根节点、后代及伪元素 CSS 背景图）。等待字体、`img` 和背景图片解码，记录失败资源；有界超时，不依赖全页 networkidle。SVG `<image>`、canvas、视频、JS 动画和特殊组件状态由页面适配检查，不伪称全覆盖。
-- `measurements` 返回每个选择器的全部元素边界。断言失败也保留诊断截图；资源／设备未就绪则不产生可比较图。字段 `ok` 只表示已配置的机械检查通过，不是视觉验收。
-- `checks`：`equal` 检查至少两个匹配元素的某一边界值一致；`size` 检查全部匹配元素的值等于指定 `value`；`inside` 检查全部匹配元素在唯一 `container` 内。`metric` 为 `x/y/right/bottom/width/height`。无匹配不能通过。`tolerance` 单位为 CSS px，默认 0.5，仅吸收布局取整，不是视觉相似度阈值。
-- `screenshot.fullPage` 只覆盖 document，不会自动展开嵌套滚动区；可用 `screenshot.selector` 指定元素图；该元素须先完整进入视口，否则工具报错，避免截图自动滚动使已记录几何失效。关系／滚动验证优先使用视口图并显式指定滚动位置。CLI 自动填写截图路径；函数入口必须填写绝对 `path`。
+- Put shared `ready/resourceRoot/measurements/checks/screenshot` in `defaults`; targets specify differences. Scalars and `checks` arrays replace whole values. Merge `measurements/screenshot` by field without implicit assertion concatenation. `expected/timeoutMs` remain at plan level.
+- Execute `targets` in order. Put diagnostic mixed states first where useful while covering every contract target. Each `id` is unique and contains only letters, digits, `_`, and `-`.
+- Each target requires visible `ready` and `resourceRoot` CSS selectors. Without `url`, reload the current page. Use the function entry below for clicks, input, or extra readiness conditions instead of adding a generic business-action DSL.
+- `expected` checks DPR, zoom, and touch capability. Touch points, user agent, and screen width are measured signals, **not independent proof of mobile mode**. Record context creation parameters in the capture contract. If selected artboards require different device contexts, use the corresponding `playwright-cli` sessions/plans while referencing one shared page checkpoint and budget. A viewport change alone does not switch device mode.
+- `resourceRoot` limits image checks to matching roots, descendants, and pseudo-element CSS backgrounds. Wait for fonts, `img`, and background image decoding; record failed resources with a bounded timeout, not whole-page network idle. Decoding checks current resources only; page adaptation must verify that intended assets survive the actual rendering path, treating unintended fallbacks as failures. Adapt SVG `<image>`, canvas, video, JS animations, and special component states at page level without claiming full coverage.
+- `measurements` returns all element bounds for each selector. Preserve diagnostic screenshots when assertions fail; unready resources/devices produce no comparable screenshot. `ok` means configured mechanical checks passed, not visual acceptance.
+- `checks`: `equal` requires at least two matching elements with equal boundary values; `size` checks every matching value against `value`; `inside` checks every match against a unique `container`. `metric` is `x/y/right/bottom/width/height`. Zero matches cannot pass. `tolerance` is CSS px, default 0.5, for layout rounding only, not visual similarity.
+- `screenshot.fullPage` covers the document, not expanded nested scrollers. `screenshot.selector` captures an element only after it fully enters the viewport; otherwise the tool fails to avoid automatic scrolling invalidating recorded geometry. Prefer viewport captures and explicit scroll positions for relationship/scroll checks. The CLI fills screenshot paths automatically; function calls require an absolute `path`.
 
-### 配置适配预检
+### Configuration preflight
 
-改写共享字段、覆盖规则或steps时，先静态查看最终生效配置，再运行少量能区分继承/覆盖行为的代表目标：
+When adapting shared fields, overrides, or `steps`, inspect the effective configuration first, then run a few representative targets that distinguish inheritance from replacement:
 
 ```bash
-node <skill目录>/scripts/ui-evidence.mjs --inspect <plan.json>
+node <skill-dir>/scripts/ui-evidence.mjs --inspect <plan.json>
 ```
 
-预检不连接浏览器、不导航、不执行prepare、不创建输出目录，也不要求尚未分配的`screenshot.path`。函数入口为同模块具名导出的`await inspectPlan(plan)`。输出按最终捕获点展开，标明`reuse`；共享标量/checks整体覆盖、measurements/screenshot按字段合并，结合原始配置核对来源。它不验证DOM匹配、资源或视觉效果。
+Preflight does not connect to a browser, navigate, run `prepare`, create output directories, or require an unassigned `screenshot.path`. The function entry is named export `await inspectPlan(plan)` from the same module. Output expands final capture points and marks `reuse`. Shared scalars and `checks` replace whole values; `measurements/screenshot` merge by field. Compare with original configuration to establish provenance. This does not validate DOM matches, resources, or visual appearance.
 
-任务可在计划顶层提供独立确认的`coverage`，以**最终捕获点ID**索引预期字段：
+A task may provide independently established top-level `coverage`, indexed by **final capture-point ID**:
 
 ```json
 {
   "coverage": {
-    "single-start": { "boundaryProbe": false, "measurements": { "footer": "footer" } },
+    "single-start": {
+      "boundaryProbe": false,
+      "measurements": { "footer": "footer" }
+    },
     "single-end": { "boundaryProbe": false }
   }
 }
 ```
 
-启用时目标ID必须完全匹配；每个已声明字段作完整值核对，嵌套对象忽略键序，数组保留顺序。不声明的字段不作业务推断；例如measurements中多出一个键也会失败。预期从任务契约或可信旧输入独立提供，不能从待验计划直接生成后自证正确。`boundaryProbe`只是任务适配字段示例，工具不理解其业务含义。旧计划不必迁移。
+When enabled, IDs must match exactly. Each declared field is compared as a complete value, ignoring nested object key order but preserving array order. Undeclared fields imply no business rules; an extra key inside a declared `measurements` value still fails. Derive expectations independently from the task contract or trusted prior inputs, not from the plan being tested. `boundaryProbe` is only a task-adaptation example with no built-in business meaning. Existing plans need no migration.
 
-普通CLI和`captureUI`也会在首次浏览器访问前核对coverage；错误直接失败，不等待整批捕获。静态通过后的小检用于确认真实页面适配，不能代替完整目标覆盖；有效且输入未变的小检证据可复用。
+The ordinary CLI and `captureUI` also check coverage before the first browser access; invalid configuration fails without waiting for batch captures. A small live check after static preflight confirms page adaptation but does not replace full target coverage. Valid small-check evidence may be reused when inputs remain unchanged.
 
-### 同一场景连续取证
+### Consecutive evidence in one scene
 
-同一 URL、设备和数据准备下的首屏、横滚末尾或操作后状态，可用 `steps` 复用一次导航。每个捕获点仍独立重验资源、测量、断言并截图；结果 ID 为 `场景id-捕获点id`。普通 targets 仍保持逐项导航行为，旧配置无需迁移。
+Use `steps` to reuse navigation for the first viewport, horizontal-scroll end, or post-action state sharing one URL, device, and data preparation. Every capture point independently checks resources, measurements, assertions, and screenshots. Result IDs are `scene-id-step-id`. Ordinary targets retain per-target navigation, with no migration required.
 
 ```json
 {
   "defaults": { "ready": "main", "resourceRoot": "main, footer" },
-  "targets": [{
-    "id": "mixed-small",
-    "url": "https://example.test/preview?state=mixed",
-    "viewport": { "width": 360, "height": 760 },
-    "steps": [
-      { "id": "start" },
-      { "id": "end", "scroll": { "selector": ".scroller", "axis": "x", "to": "end", "requireOverflow": true } }
-    ]
-  }]
-}
-```
-
-CLI 为每个 step 自动生成截图路径；函数入口自行填写各 step 的 `screenshot.path`。同场景后续 step 禁止重设 URL/viewport，需要改变时另建场景。后续捕获点继承前一个实际页面状态（包括滚动），**不会自动归零或恢复选中**；任务用已有 prepare 回调明确完成恢复／点击，不增加动作 DSL。前一捕获点失败则阻断其后复用点，其他独立场景可继续。共享配置不等于共享通过结论，资源与设备信号每点重新检查，不跨导航缓存。
-
-### 滚动场景
-
-在目标上声明：
-
-```json
-{
-  "scroll": { "selector": ".scroller", "axis": "x", "to": "end", "requireOverflow": true },
-  "checks": [
-    { "type": "inside", "selector": ".item:last-child", "container": ".scroller" }
+  "targets": [
+    {
+      "id": "mixed-small",
+      "url": "https://example.test/preview?state=mixed",
+      "viewport": { "width": 360, "height": 760 },
+      "steps": [
+        { "id": "start" },
+        {
+          "id": "end",
+          "scroll": {
+            "selector": ".scroller",
+            "axis": "x",
+            "to": "end",
+            "requireOverflow": true
+          }
+        }
+      ]
+    }
   ]
 }
 ```
 
-滚动发生在资源检查前。每项只测试一个明确位置；首尾、不同轴分别作为场景。无溢出返回 `not_applicable`，只有 `requireOverflow: true` 才失败。需要短视口压力场景时由契约明确提供；工具不会为了通过测试自动缩小视口。
+The CLI creates each step's screenshot path; function callers fill each `screenshot.path`. Later steps cannot reset URL/viewport; use another scene for those changes. Later capture points inherit actual preceding page state, including scroll, and **do not automatically reset scroll or selection**. Use the existing `prepare` callback for restoration/clicks without adding an action DSL. A failed point blocks following reuse points; independent scenes may continue. Shared configuration is not shared acceptance: resources and device signals are checked per point, not cached across navigation.
 
-**程序设置滚动位置仅证明可达性，不证明真实触摸／滚轮手势与纵横滚动互不干扰。** RTL、scroll-snap、虚拟列表、无限加载等特殊滚动应先验证工具适用性，必要时用页面适配。工具不模拟安全区、不点击重试、不推导默认选中业务。
+### Scrolling
 
-## 函数入口与适配边界
+Declare on the target:
 
-`captureUI` 是自包含异步函数，接受现有 Playwright `page`，可直接供项目 E2E 和截图共用：
+```json
+{
+  "scroll": {
+    "selector": ".scroller",
+    "axis": "x",
+    "to": "end",
+    "requireOverflow": true
+  },
+  "checks": [
+    {
+      "type": "inside",
+      "selector": ".item:last-child",
+      "container": ".scroller"
+    }
+  ]
+}
+```
+
+Scrolling happens before resource checks. Each target tests one explicit position; use separate scenes for start/end or different axes. No overflow returns `not_applicable`, failing only with `requireOverflow: true`. Short-viewport pressure scenarios come from the contract; the tool does not shrink the viewport to make tests pass.
+
+**Programmatic scroll positioning proves reachability, not real touch/wheel gestures or absence of horizontal/vertical interference.** Verify applicability for RTL, scroll-snap, virtual lists, infinite loading, and other special scrolling, adapting at page level when needed. The tool neither simulates safe areas, clicks retry, nor infers default business selection.
+
+## Function entry and adaptation boundary
+
+`captureUI` is a self-contained async function accepting an existing Playwright `page`, shared by `playwright-cli run-code` captures and existing project tests. This workflow still uses `playwright-cli` for browser verification:
 
 ```js
-import { captureUI } from '<skill目录>/scripts/capture-ui.mjs';
+import { captureUI } from "<skill-dir>/scripts/capture-ui.mjs";
 
 const result = await captureUI(page, plan);
-// 或传一个可选 prepare(page, target) 回调，在每个目标导航后准备业务状态。
-// 回调复用已有 fixture／用户操作；通用工具不理解业务动作。
-// result.ok 必须检查；视觉结论始终是 pending，仍需模型看图。
+// Optionally pass prepare(page, target) to prepare state after each navigation.
+// Reuse existing fixtures/user actions; the generic tool does not interpret business actions.
+// Check result.ok. The visual verdict remains pending until model image review.
 ```
 
-任务需要导航后的点击／重试时，使用函数入口的 `prepare` 回调：在导航完成后、就绪与捕获前执行已授权业务操作或额外等待。CLI 仅接受 JSON，不执行配置里的代码；需要业务适配时用项目已有 Playwright 测试入口导入同一函数。普通页面优先固定 URL／fixture，布局测量及断言仍共用函数，不复制整段脚本。
+For post-navigation clicks/retries, use `prepare` after navigation and before readiness/capture to perform authorized actions or extra waits. JSON plans execute no code. For preparation actions, call the same self-contained function with a callback inside `playwright-cli run-code`. Prefer fixed URLs/fixtures for ordinary pages. Keep shared measurements/assertions in the existing function instead of copying the runner.
 
-## 证据和交付
+## Evidence and delivery
 
-CLI 生成 `manifest.json`、截图及原始 stdout/stderr。每个 record 的 `timingsMs` 分列导航、准备、就绪、滚动、资源、几何、截图和清理耗时；prepare 中的业务操作记在准备阶段。CLI stdout 自动汇总失败与阶段耗时，不必再人工拼验证摘要。
+The CLI generates `manifest.json`, screenshots, and raw stdout/stderr. Local source fields are `source`, `sourceAfter`, and `sourceUnchanged`; service status is separate in `servedRevision`. Associate actual fields with existing service evidence instead of inventing another source structure. Each record's `timingsMs` separates navigation, preparation, readiness, scrolling, resources, geometry, capture, and cleanup. Business actions in `prepare` count as preparation. CLI stdout already summarizes failures and phase timings; do not manually reconstruct that summary.
 
-已有清单使用稳定摘要／比较入口：
+Use the stable summary/comparison entry for existing manifests:
 
 ```bash
-node <skill目录>/scripts/evidence-summary.mjs <manifest.json>
-node <skill目录>/scripts/evidence-summary.mjs <before.json> <after.json>
+node <skill-dir>/scripts/evidence-summary.mjs <manifest.json>
+node <skill-dir>/scripts/evidence-summary.mjs <before.json> <after.json>
 ```
 
-比较要求两份标准清单的目标 ID／测量选择器一致，机械输出覆盖缺口及几何差异；不同场景命名需由任务适配统一身份后再比较。不用工具替代图片查看、业务行为或协议特有比较；常规任务不再另写通用结果摘要／几何比较器。
+Comparison requires matching target IDs and measurement selectors in standard manifests, reporting coverage gaps and geometry differences mechanically. Adapt differing scenario names to a common task identity before comparing. This does not replace image review, business checks, or protocol-specific comparisons. Ordinary tasks need no new generic result summarizer or geometry comparator.
 
-清单包含实际浏览器／视口、字体／资源状态、几何和断言、滚动方式、源码身份、PNG 尺寸及 SHA-256；以原子写入保存。任一目标失败或源码变化，进程非零退出，已成功目标的证据仍保留。配置错误可阻止整批开始，不用外层 shell 成功替代内部 `ok`。
+The manifest records actual browser/viewport, fonts/resources, geometry/assertions, scroll method, source identity, PNG dimensions, and SHA-256, and is written atomically. Any failed target or changed source causes a nonzero exit while retaining successful target evidence. Configuration errors may prevent the entire batch from starting; an outer shell's success cannot replace internal `ok`.
 
-通用工具不判断设计一致、裁剪映射是否正确、业务行为是否满足，亦不设置 `visualVerdict: passed`。模型读取有效图片完成视觉判断；共享检查点记录契约、预算、观察和限制，引用清单，不重复抄录全部测量数据。收尾格式以主 skill 的 Handoff 为唯一规则。
+The tool does not judge design equivalence, crop mapping, or business correctness, and never sets `visualVerdict: passed`. Model review of valid images establishes visual conclusions. The shared checkpoint records contracts, budget, observations, and limitations while referencing manifests instead of duplicating measurements. Delivery format is defined only by the main skill's Handoff.
 
-## 自测
+## Self-tests
 
-在已经安装 `@playwright/test` 的项目目录运行，不安装额外依赖：
+Run in a project with `@playwright/test` already installed, without installing extra dependencies:
 
 ```bash
-node --test <skill目录>/scripts/*.test.mjs
+node --test <skill-dir>/scripts/*.test.mjs
 ```
 
-测试使用独立本地合成页面和隔离浏览器 context，不访问业务服务。默认调用已有 Chrome channel；自测要求该浏览器已安装。覆盖混排不等高失败、资源失败、滚动不适用、横纵可达性、零匹配、捕获超时和设备信号错误；并不代表真机或旧浏览器验证。
+Tests use independent local synthetic pages and isolated browser contexts, not business services. They use the existing Chrome channel, which must already be installed. Coverage includes unequal mixed-layout failure, resource failure, inapplicable scrolling, horizontal/vertical reachability, zero matches, capture timeout, and device-signal errors. This is not real-device or old-browser validation.

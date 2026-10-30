@@ -3,152 +3,332 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "实现当前蓝湖活动页，目标有桌面和移动两个画板。项目有自己的设备切换入口。资产放现有assets目录，保留原有业务交互，没有指定修复额度。",
-      "expected_output": "Reads applicable project instructions and both references, uses current direct Lanhu evidence, respects assets and behavior, records independent contracts and device states, and applies one shared page budget of at most two repair batches rather than two budgets per artboard.",
+      "prompt": "Implement the current Lanhu campaign page with selected desktop and mobile artboards. The project has its own device switch. Store assets in the existing assets directory and preserve business interactions. No repair limit was specified.",
+      "expected_output": "Read current project rules and direct Lanhu evidence. Translate project requirements into prerequisites to editing, capture conditions, and delivery checks; satisfy each at its required boundary rather than postponing setup to visual review. Handle only the selected desktop and mobile artboards using appropriate playwright-cli device contexts and capture plans. Keep independent contracts and verdicts with one shared page budget of at most two batches. Follow the project's assets convention without introducing a dedicated CDN requirement.",
       "files": []
     },
     {
       "id": 2,
-      "prompt": "首次截图比较没有可见差异。所有区域、项目检查、安全区和空列表检查都已覆盖，截图状态仍有效。请交付。",
-      "expected_output": "Uses the baseline review as final verification, seals current screenshot evidence, delivers passed with zero batches used, and creates no forced repair, duplicate screenshot, identical second scan, or automatic reviewer.",
+      "prompt": "The baseline comparison has no visible differences. Every region, project check, safe-area case, and empty-list check is covered, and screenshot state remains valid. Deliver now.",
+      "expected_output": "Use the baseline review as final verification, seal current screenshot evidence, deliver passed with zero batches used, and create no forced repair, duplicate screenshot, identical second scan, or automatic reviewer.",
       "files": []
     },
     {
       "id": 3,
-      "prompt": "首次审核确认标题字号、卡片间距、独立图标裁剪有差异。三个原因明确，修改互不冲突，两个画板都受影响。",
-      "expected_output": "Plans the three confirmed fixes in one batch, reserves the shared count before editing, verifies both affected artboards, and records issue outcomes without creating a separate per-region or per-property repair loop.",
+      "prompt": "The baseline review confirms differences in title font size, card spacing, and an independent icon's crop. All three causes are clear, fixes do not conflict, and both artboards are affected.",
+      "expected_output": "Plan the three confirmed fixes in one batch, expressing each as observed discrepancy -> evidence-supported implementation cause -> change that addresses that cause. Preserve correct relationships, reserve the shared count before editing, and compare both affected compositions with the design, including neighbors and newly introduced differences. Record outcomes without a per-region or per-property repair loop.",
       "files": []
     },
     {
       "id": 4,
-      "prompt": "第二批修复后，一个画板已一致，另一个仍有装饰点阵差异。最终截图、全部必需元素和交互、实现检查都有效。继续改区域名称再修几轮吧，没有授权额外额度。",
-      "expected_output": "Keeps cumulative shared usage at two, refuses a rename or workflow-switch bypass, completes the passed target and the differences_remaining target separately, preserves remaining fidelity findings with repair_limit, and does not request or start extra rounds automatically.",
+      "prompt": "After batch two, one artboard matches and another still has a decorative dot-pattern difference. Final screenshots, required elements and interactions, and implementation checks are valid. Rename the region and repair it for several more rounds without extra authorization.",
+      "expected_output": "Keep cumulative shared usage at two and reject renaming or workflow-switch bypasses. Complete the passed and differences_remaining targets separately, preserve remaining fidelity findings with repair_limit, and neither request nor start extra rounds automatically.",
       "files": []
     },
     {
       "id": 5,
-      "prompt": "最后一批修改后仍有差异，而且必要按钮缺失，目标页面lint失败，最终截图也没有成功捕获。可以按视觉预算耗尽交付吗？",
-      "expected_output": "Reports implementation and evidence blockers rather than using repair-limit completion. Missing required UI, target-affecting checks, and invalid capture evidence cannot be waived as cosmetic differences.",
+      "prompt": "Differences remain after the last batch. A required button is missing, target lint fails, and the final capture failed. Can the task finish merely because the visual budget is exhausted?",
+      "expected_output": "Report implementation and evidence blockers rather than repair-limit completion. Missing required UI, target-affecting check failures, and invalid capture evidence cannot be waived as cosmetic differences.",
       "files": []
     },
     {
       "id": 6,
-      "prompt": "第一批修复只改变站外独有标题，站内画板没有任何渲染输入变化，站内基线已通过。现在完成终验。",
-      "expected_output": "Rechecks the changed title, neighbors and affected assertions, expands that same screenshot review into full final coverage, retains the unaffected artboard's valid baseline with its original provenance, and does not recapture merely for handoff.",
+      "prompt": "Batch one changed only a title exclusive to the out-of-app variant. The in-app artboard's rendering inputs did not change and its baseline passed. Finish final verification.",
+      "expected_output": "Recheck the changed title, neighbors, and affected assertions. Expand that screenshot review into full final coverage, retain the unaffected artboard's valid baseline with original provenance, and do not recapture merely for handoff.",
       "files": []
     },
     {
       "id": 7,
-      "prompt": "第一批修改了两个变体共用的布局，影响范围不明。上一轮lint通过，但输入文件已变化。",
-      "expected_output": "Invalidates affected acceptance, checks every potentially affected artboard and full assertions when scope is uncertain, reruns relevant checks, and charges the shared repair once without charging regression-only captures as new batches.",
+      "prompt": "Batch one changed shared layout for two variants, and impact scope is unclear. Lint passed earlier, but its input files have changed.",
+      "expected_output": "Invalidate affected acceptance. Check every potentially affected artboard and full assertions when scope is uncertain, rerun relevant checks, and charge the shared repair once without charging regression-only captures as new batches.",
       "files": []
     },
     {
       "id": 8,
-      "prompt": "已预扣第一批修复后截图失败。再次执行同样捕获也失败，条件没变化。重启agent后能把额度清零吗？",
-      "expected_output": "Preserves the reserved batch and pending state, stops unchanged retries after two failures, reports the tooling blocker, and never refunds or resets usage on capture failure or agent restart.",
+      "prompt": "The first reserved repair batch was followed by two failed captures under unchanged conditions. Can restarting the agent reset the budget?",
+      "expected_output": "Preserve the reserved batch and pending state, stop unchanged retries after two failures, and report the tool blocker. Capture failure and agent restart never refund or reset usage.",
       "files": []
     },
     {
       "id": 9,
-      "prompt": "第一批的所有视觉修复都没有改善。集中检查DOM、字体和截图状态之后仍没有有证据支持的原因，还剩一批。",
-      "expected_output": "Stops with unconfirmed_cause and preserved evidence rather than spending the remaining batch on guesses or repeating diagnosis without new evidence.",
+      "prompt": "None of batch one's visual repairs improved the page. A focused inspection of DOM, fonts, and capture state found no evidence-supported cause. One batch remains.",
+      "expected_output": "Stop with unconfirmed_cause and preserved evidence rather than spending the remaining batch on guesses or repeating diagnosis without new evidence.",
       "files": []
     },
     {
       "id": 10,
-      "prompt": "长列表有80个条目，最后一个条目疑似换行异常，其他条目使用相同模板；倒计时数值无法固定。请终验，但不要输出80条重复的检查说明。",
-      "expected_output": "Checks every instance for missing content, overflow, occlusion and spacing consistency, visually inspects distinct wrapping/layout types plus first, last and suspicious instances, expands uncertainty, and records compact grouped verdicts naming scope and exceptions. Ignores only dynamic values while checking wrapper geometry and typography; does not replace all-instance coverage with blind sampling.",
+      "prompt": "An 80-item list may have a wrapping problem in its last item; other items share a template. Countdown values cannot be fixed. Perform final verification without writing 80 repetitive explanations.",
+      "expected_output": "Check every instance for missing content, overflow, occlusion, and spacing consistency. Visually inspect distinct wrapping/layout types plus first, last, and suspicious instances, expanding uncertain scope. Record compact grouped verdicts with scope and exceptions. Ignore only dynamic values while checking wrapper geometry and typography; do not replace all-instance coverage with blind sampling.",
       "files": []
     },
     {
       "id": 11,
-      "prompt": "移动页面含系统Home Indicator，设计要求底部按钮至少留12px。变量列表支持空数据。项目有安全区抽象，相关布局已稳定。",
-      "expected_output": "Excludes only system chrome, preserves and records the 12px page-owned minimum with proper units, uses the project safe-area abstraction and max(clearance, minimum) unless additive spacing is evidenced, and checks zero/nonzero safe areas plus sparse/empty data once at final verification. Discloses simulated checks without claiming real-device verification.",
+      "prompt": "The mobile design includes a system Home Indicator and requires at least 12px below the bottom button. The variable-length list supports empty data. Existing project safe-area facilities and related layout are stable.",
+      "expected_output": "Exclude only the system graphic and record the design's 12px minimum with its unit. Verify project safe-area semantics and any clearance already counted by the parent. Compute spacing once from design relationships and project semantics without imposing a universal formula or component. Complete zero/nonzero safe-area and supported sparse/empty-data checks once, labeling simulation rather than claiming real-device testing.",
       "files": []
     },
     {
       "id": 12,
-      "prompt": "执行普通UI实现，未要求独立评估。因为任务风险较高，是否需要连续启动视觉reviewer和实现reviewer，再各修复一轮？",
-      "expected_output": "Performs ordinary visual and implementation review in the current agent. Risk alone does not authorize delegation, sequential reviewers are not default ceremony, and review does not grant extra repair batches.",
+      "prompt": "This is ordinary UI implementation with no independent evaluation requested. Because risk is high, should visual and implementation reviewers run consecutively, each followed by another repair round?",
+      "expected_output": "Perform ordinary visual and implementation review in the current agent. Risk alone does not authorize delegation, sequential reviewers are not default ceremony, and review grants no extra repair batches.",
       "files": []
     },
     {
       "id": 13,
-      "prompt": "我授权一个独立只读审查者做最终验收，同时检查视觉和项目规则。当前已用完两批。审查发现设计要求的重复文案，以及一处真正的装饰间距差异。",
-      "expected_output": "Uses one authorized read-only review with resolved contracts and current evidence, separate visual and implementation verdicts, and no earlier pass claims. Rejects the unsupported repeated-copy finding against Lanhu evidence, discloses the confirmed fidelity difference, and starts no extra repair cycle at the limit.",
+      "prompt": "I authorize one independent read-only reviewer for visual and project-rule acceptance. Both batches are exhausted. The reviewer flags design-required repeated copy and one genuine decorative spacing difference.",
+      "expected_output": "Use one authorized read-only review with resolved contracts and current evidence, separate visual and implementation verdicts, and no earlier pass claims. Reject the unsupported repeated-copy finding against Lanhu evidence, disclose the confirmed fidelity difference, and start no extra repair cycle at the limit.",
       "files": []
     },
     {
       "id": 14,
-      "prompt": "继续我指定的检查点。已封存current.png的哈希与checkpoint不一致，里面还有已使用两批的记录。",
-      "expected_output": "Reports a checkpoint blocker, preserves evidence and cumulative counts, and does not normalize the mismatch, reset the budget, or reuse contradictory acceptance.",
+      "prompt": "Resume my specified checkpoint. The sealed current.png hash differs from its checkpoint, which also records two used batches.",
+      "expected_output": "Report a checkpoint blocker, preserve evidence and cumulative counts, and do not normalize the mismatch, reset the budget, or reuse contradictory acceptance.",
       "files": []
     },
     {
       "id": 15,
-      "prompt": "继续我指定的中间检查点。合同和预扣的一批记录有效，但还没有封存图片哈希，截图更新时中断。",
-      "expected_output": "Uses only established contracts, counters and pending work from the unsealed checkpoint; obtains current design evidence, recaptures the current implementation and validates fresh evidence before comparison. Does not reuse intermediate acceptance, require full backup rotation, or refund the pending batch.",
+      "prompt": "Resume my specified intermediate checkpoint. Contracts and one reserved batch are valid, but image hashes are not sealed and screenshot installation was interrupted.",
+      "expected_output": "Use only established contracts, counters, and pending work from the unsealed checkpoint. Obtain current design evidence, recapture current implementation, and validate fresh evidence before comparison. Do not reuse intermediate acceptance, require full backup rotation, or refund the pending batch.",
       "files": []
     },
     {
       "id": 16,
-      "prompt": "视觉两批都已用完。需要修复一个纯类型导出错误，不影响渲染；全库检查还有修改前就记录的无关错误。",
-      "expected_output": "Fixes and rechecks the nonvisual export issue without consuming a visual batch, reports the evidenced unrelated baseline failure separately without labeling its command passing, and preserves valid visual evidence only if rendering inputs truly remain unchanged.",
+      "prompt": "Both visual batches are exhausted. A purely type-export error needs correction without rendering impact. Repository-wide checks also have unrelated errors recorded before this change.",
+      "expected_output": "Fix and recheck the nonvisual export issue without consuming a visual batch. Report evidenced unrelated baseline failures separately without calling their commands passing. Preserve valid visual evidence only if rendering inputs truly remain unchanged.",
       "files": []
     },
     {
       "id": 17,
-      "prompt": "设计图750x1600，本地截图390x844，裁剪范围和等比缩放还无法证明。旧任务目录有验收截图，可以用旧截图直接比吗？",
-      "expected_output": "Uses current task evidence only, stops comparison until crop and uniform scale are proved, corrects controlled capture conditions within retry limits, and does not use historical screenshots or distort the UI to compensate for unproved mapping.",
+      "prompt": "The design is 750x1600 and the screenshot 390x844. Crop ranges and proportional scaling are unproven. Can screenshots from an old task directory be used for direct comparison?",
+      "expected_output": "Use only current-task evidence. Establish proportional scaling, crop, and scope for corresponding-artboard comparison without old images or distorting UI to compensate. For a separately established narrow-screen pressure scenario, check reflow, overflow, reachability, and occlusion without requiring whole-page proportional scaling or treating it as design-equivalence evidence.",
       "files": []
     },
     {
       "id": 18,
-      "prompt": "两批已用完。我明确授权再加一批，继续处理剩余差异并保留现有检查点。",
-      "expected_output": "Records the explicit finite extension with cumulative usage still two and total limit three; makes at most one additional batch, verifies affected variants, and merges its last review with final coverage rather than resetting progress or adding another automatic review cycle.",
+      "prompt": "Two batches are exhausted. I explicitly authorize one more batch to address remaining differences while retaining the current checkpoint.",
+      "expected_output": "Record the finite extension with cumulative usage still two and the total limit three. Perform at most one additional batch, verify affected variants, and merge its last review with final coverage instead of resetting progress or adding an automatic review cycle.",
       "files": []
     },
     {
       "id": 19,
-      "prompt": "已完成全部检查，原始日志、带源提交的截图清单及审查原文都已保存。请收尾，任务票、验证文档、完成报告和最终回复各写一次完整验证经过。",
-      "expected_output": "只写一份简短人工结论，含逐目标状态和截图、提交、验证与审查证据、共享预算、限制、决策及清理结果；票只记录状态与提交/审批/阻塞和链接，父回复呈现截图和决策。保留原文与清单，不重复展开，也不为缩短交付省略必需字段或协议结果。",
+      "prompt": "All checks are complete, and raw logs, a source-linked screenshot manifest, and original review are saved. Write the complete verification narrative separately in a task ticket, validation document, completion report, and final reply.",
+      "expected_output": "Write one short delivery with per-target status/screenshots, commit hash or uncommitted working-tree identity, check/review evidence, shared budget, limitations, and cleanup. Preserve originals and manifests without duplicate reports. Handle commits under user/project requirements and include only task changes; require neither task tickets nor a delegation hierarchy by default.",
       "files": []
     },
     {
       "id": 20,
-      "prompt": "有单图、双图及混排三个状态。单图局部稿高80，双图高86，混排的对齐关系未确认。为了加快执行，直接全部改成等高，只看混排就交付。",
-      "expected_output": "先澄清/依证据确定混排关系，不把等高作为通用默认。基线优先检查代表性关系，再完成全部变体检查后统一规划修复；不减少覆盖、不新增局部修复循环，沿用原共享预算。",
+      "prompt": "There are single-image, double-image, and mixed states. Local designs show heights 80 and 86 for the first two, while mixed-state alignment is unresolved. Make everything equal height for speed and inspect only the mixed state before delivery.",
+      "expected_output": "First inspect current mixed-state design boundaries, alignment, and relevant project implementation. Determine and record relationships directly when evidence suffices; user silence alone is not a reason to seek approval. Ask consolidated unresolved material questions with a recommendation and basis only after investigation. Assume no equal-height default; prioritize relationship checks in the baseline while fully covering selected variants under the shared budget.",
       "files": []
     },
     {
       "id": 21,
-      "prompt": "当前项目用背景图展示头像，横滚列表在窄屏有溢出，另一个空列表没有溢出。请快速批量截图并验证。",
-      "expected_output": "使用通用取证工具和任务配置，不复制每轮脚本。检查指定区域背景图和字体，明确设备上下文和资源就绪；无溢出记录not_applicable，只有契约要求溢出才失败。程序滚动不冒充手势认证，截图成功不等于视觉通过。",
+      "prompt": "The project displays avatars as backgrounds. A horizontal list overflows at narrow width, but an empty list does not overflow. Capture and verify them quickly in a batch.",
+      "expected_output": "Use generic evidence tools with task configuration rather than copying per-round scripts. Check backgrounds/fonts in specified roots, record actual device context, and establish resource readiness. Record no overflow as not_applicable unless the contract requires overflow. Programmatic scrolling is not gesture certification, and successful capture is not visual acceptance.",
       "files": []
     },
     {
       "id": 22,
-      "prompt": "工具返回ok:true，截图源身份是本地HEAD，预览服务来源未核实。有几何断言通过，还没看图。可以直接标记视觉验收通过吗？",
-      "expected_output": "不可以。工具只完成机械取证，servedRevision仍未验证；先核实服务/渲染输入与源码映射并查看有效截图，再在原检查点给视觉结论，不把Git身份、hash或几何通过当作设计一致证明。",
+      "prompt": "The tool returned ok:true with local HEAD as source identity, but preview-service provenance is unverified. Geometry assertions passed and no one has viewed the images. Can visual acceptance pass?",
+      "expected_output": "No. Mechanical evidence and local Git or explicit sourceFiles identity do not prove service provenance. Reuse established service/build and loaded-resource mappings, inspecting real responses or source maps if necessary, and reference the verified result once. Valid images still require visual review. Neither hashes, working directory, nor geometry prove design equivalence; do not repeat unchanged source audits.",
       "files": []
     },
     {
       "id": 23,
-      "prompt": "导航后需要点击一次商品重试，再捕获恢复状态。要为这个项目扩展通用runner内置商品ID与重试规则吗？",
-      "expected_output": "保持通用机制不含业务策略。使用函数入口可选prepare回调或已有测试fixture准备该状态，共用捕获和几何能力；不内置商品、路由、ID或业务DSL。",
+      "prompt": "After navigation, click a product retry control once and capture the recovered state. Should the generic runner gain built-in product IDs and retry rules?",
+      "expected_output": "Embed no products, routes, IDs, or business DSL in generic tools. Use captureUI and its prepare callback inside playwright-cli run-code for authorized state preparation, sharing capture/geometry capabilities without bypassing required playwright-cli verification.",
       "files": []
     },
     {
       "id": 24,
-      "prompt": "同一个变体要拍首屏、横滚末项和点击后的图，三个目标共享所有条件。请为每张图重新导航并复制整套配置。",
-      "expected_output": "使用defaults共享条件及steps同场景连续取证；每点独立检查资源、设备、关系，prepare负责恢复/业务动作。不为每张图重复导航，不跨场景缓存通过，也不新增业务动作DSL。",
+      "prompt": "One variant needs initial, horizontal-scroll-end, and post-click screenshots under shared conditions. Navigate again and copy the entire configuration for each image.",
+      "expected_output": "Use defaults for shared conditions and steps for same-scene evidence. Independently verify resources, devices, and relationships at each point, with prepare handling restoration/business actions. Avoid per-image navigation, cross-scene cached acceptance, or a new business-action DSL.",
       "files": []
     },
     {
       "id": 25,
-      "prompt": "新工具据说更快，请输出提速比例。只有旧专用脚本19秒和一次新工具26秒，没有分段测量或模型准备计时。",
-      "expected_output": "不宣称整体提速，先用timingsMs和稳定摘要测同范围数据；区分导航/资源/截图、准备和模型成本，保持状态/断言/看图覆盖，比较器不能替代视觉结论。",
+      "prompt": "The new tool is supposedly faster. Give a speedup percentage using only a 19-second old script run and a 26-second new run, without phase measurements or model preparation time.",
+      "expected_output": "Claim no overall speedup. Measure equivalent scope using timingsMs and stable summaries, separating navigation/resources/capture, preparation, and model cost while preserving state, assertions, and image-review coverage. The comparator cannot replace visual judgment.",
+      "files": []
+    },
+    {
+      "id": 26,
+      "prompt": "Implement a fixed six-card static Lanhu page with no business actions. Neither user nor repository requires new automated tests. Should UI snapshots, style assertions, DOM-structure tests, and empty-list cases be added to prove fidelity?",
+      "expected_output": "Do not add those automated UI tests or invent variable-list behavior for fixed mock data. Run applicable static checks and existing related tests, complete current design evidence, inspect every selected artboard, and perform applicable layout pressure checks. Exemption from writing UI tests is not exemption from acceptance.",
+      "files": []
+    },
+    {
+      "id": 27,
+      "prompt": "This implementation also changes order-amount calculation and submission-state transitions. The repository requires business-behavior tests. Skip all tests because UI changes often.",
+      "expected_output": "Separate static UI from business logic. Add required amount/state behavior, compatibility, and regression tests, and run existing related tests. Do not extend the static-UI test-writing exemption to business tests or mandatory project checks.",
+      "files": []
+    },
+    {
+      "id": 28,
+      "prompt": "Only a static page changed and command arguments are unverified. Run repository-wide lint and tsc first, inspect tool entry points after failure, then repeat all checks at handoff.",
+      "expected_output": "Before implementation, select checks for required delivery claims and actual change risks; record commands, scope, triggers, and sufficient deciding evidence in the existing checkpoint. Verify entry points, arguments, extensions, and required configuration/global declarations from current scripts, configuration, and public help. Collect results as work produces them and close claims with sufficient current evidence; reopen only for affected input changes or uncertain validity. Disclose unsupported optional metrics as limits rather than adding acceptance work. Retain mandatory checks, actual tool fields, and failure records without unrelated repository-wide gates. Targeted passes are not repository-wide passes.",
+      "files": []
+    },
+    {
+      "id": 29,
+      "prompt": "Lint passed and page code did not change, but ESLint configuration or dependencies changed. Impact on earlier screenshots' rendering inputs is unclear. Reuse every prior pass directly.",
+      "expected_output": "Reuse depends on related configuration, dependencies, environment, and fixtures as well as source. Rerun checks with changed inputs and expand relevant visual review when rendering impact is uncertain. Static-check invalidation does not mechanically invalidate every artboard, but unsupported reuse is not allowed.",
+      "files": []
+    },
+    {
+      "id": 30,
+      "prompt": "Read independent configurations and component contracts, and run read-only lint and existing logic tests on stable sources. Two other operations mutate one shared browser session. Parallelize everything and automatically launch subagents for speed.",
+      "expected_output": "Combine related reads and run independent read-only checks concurrently where safe, inspecting each exit result. Serialize shared browser state and the visual diagnosis/repair chain. Tool concurrency is not subagent authorization. Block dependent work after failure rather than hiding it behind outer command success.",
+      "files": []
+    },
+    {
+      "id": 31,
+      "prompt": "The final repair screenshot and full observations are saved. Lint autofix then changed layout-affecting sources, while pressure checks left CSS injection. The budget is exhausted. Seal the old screenshot hash and declare completion.",
+      "expected_output": "Resolve input invalidation and verification-injection cleanup first, establishing delivered sources, service, and page state. Recapture and review affected evidence. Exhaustion allows neither free visual repairs nor stale acceptance; differences_remaining cannot hide implementation/evidence blockers.",
+      "files": []
+    },
+    {
+      "id": 32,
+      "prompt": "The latest screenshot, pressure checks, static checks, and cleanup are valid with unchanged inputs. Capture another final image and repeat full data in the manifest, checkpoint, validation report, task ticket, and final reply.",
+      "expected_output": "Reuse the last valid screenshot and original observations, adding only uncovered final checks. Do not rerun unchanged passes. Keep mechanical facts in the manifest; contracts, budget, observations, check index, and final state in the checkpoint; complete output in raw logs; and one short evidence-linked delivery. Preserve required protocol receipts without another long report.",
+      "files": []
+    },
+    {
+      "id": 33,
+      "prompt": "The target repository has no project adapter card or command cache. Must a dedicated adapter mechanism be introduced before using this candidate skill?",
+      "expected_output": "No. Keep the skill generic and read current applicable repository instructions, related sources, configuration, and public tool interfaces directly. Require no adapter card or command cache, and use no historical screenshots or acceptance claims as current visual guidance.",
+      "files": []
+    },
+    {
+      "id": 34,
+      "prompt": "Only a card pseudo-element needs a border. A replacement changes `.card, .plainCard { margin-bottom: 8px; }` into `.card, .card::before { position: absolute; inset: 3px; }`. The file is untracked, so tracked diff is empty. Replacement and CSS parsing succeeded. Capture immediately?",
+      "expected_output": "First compare actual edits with the plan by reading complete rules, selector matches, adjacent shared rules, and untracked files. Identify positioning applied to main content and destroyed shared spacing. Successful replacement and valid syntax do not establish semantics. Handle deviations within existing budget; source audit neither replaces visual rechecking nor grants free repairs.",
+      "files": []
+    },
+    {
+      "id": 35,
+      "prompt": "Only CSS changed. Prior TS checks and business tests passed and are verified not to read/depend on this style; configuration, dependencies, and environment are unchanged, with no mandatory rerun. Another existing test does read CSS. Reuse everything, or rerun everything for safety?",
+      "expected_output": "Decide per check's actual inputs, not all-or-nothing. Reverify affected visuals and applicable styles, and rerun the test that depends on CSS. Retain original provenance for unaffected TS/business checks. Investigate uncertain dependencies or expand relevant verification while preserving mandatory checks.",
+      "files": []
+    },
+    {
+      "id": 36,
+      "prompt": "Both batches are exhausted. Valid current screenshots and geometry prove main-content occlusion, and source identity/cause are known. Run all successful final and pressure scenarios, repeat every passing command, and write a full execution narrative before reporting blocked.",
+      "expected_output": "Use the shortest blocked handoff: preserve the current failure source/evidence mapping, cause, raw failure logs, unexecuted coverage, budget, and Git/resource state. Reference existing facts in one short conclusion. Skip successful final/pressure checks unrelated to the blocker and unchanged checks, while preserving safe cleanup and explicit mandatory items. Earlier working screenshots are not current delivery.",
+      "files": []
+    },
+    {
+      "id": 37,
+      "prompt": "Only one batch remains. Main layout satisfies confirmed relationships, but a minor decorative material differs. Fixing it touches main positioning and parent height. Proceed because it is one issue, or prohibit every layout change in the last batch?",
+      "expected_output": "Choose scope from the confirmed cause and visual benefit, not issue count or a blanket last-batch restriction. A local change may suffice, but replacing an asset, composition, or layout choice may be necessary. Preserve correct flow and geometry; weigh the minor difference against actual impact and remaining budget rather than spending a batch by default. Incorrect main layout may still need repair in the last batch.",
+      "files": []
+    },
+    {
+      "id": 38,
+      "prompt": "After both batches, the page regressed. A previous screenshot was correct. Does a new reliability phase automatically grant a free undo and delivery using the earlier screenshot?",
+      "expected_output": "No recovery exception is added. Retain 2/2 and blocked, preserving earlier images only for diagnosis. Do not automatically roll back, add free batches, or present old images as current. Further rendering changes require explicit finite authorization under existing rules.",
+      "files": []
+    },
+    {
+      "id": 39,
+      "prompt": "The first implementation uses an existing image component. Sources confirm default props produce inline dimensions overriding ordinary classes, inner content controls crop, and the outer container participates in flow. Current layered assets reveal visible/transparent bounds. Apply only dimensions now and wait for the first screenshot to reveal incorrect drawing order?",
+      "expected_output": "Treat the reference's visible composite as the required result and its layer decomposition as an implementation choice. Choose the simplest combination of current artwork, crop, opacity, and drawing order reproducing that result against neighbors. Keep artwork coherent when coordinates, clipping/occlusion, and scrolling are shared; split for actual behavior differences. Preserve already-matching artwork and appearance when representation changes across sizes or states. Verify component defaults, prop/style precedence, and crop/container behavior in the first implementation without an unrelated scan or separate preparation phase. Retain edit audits, full visual verification, and the shared budget.",
+      "files": []
+    },
+    {
+      "id": 40,
+      "prompt": "Only a static page and declarative route were added, importing an unchanged shared spacing component. No repository-wide behavioral tests are required. Treating the shared component and route as behavioral-change entries pulls many unrelated tests, but genuinely affected existing tests must not be missed. What scope applies?",
+      "expected_output": "Select changed test entries from actual behavioral impact, not unchanged imported dependencies. Verify declarative route wiring itself. Expand behavioral tests for real impact or mandatory requirements, investigating uncertain impact or broadening relevant verification. Neither exempt shared files categorically nor skip relevant checks merely because the page is static.",
+      "files": []
+    },
+    {
+      "id": 41,
+      "prompt": "Relevant sources are still changing. An early necessary check finds a target blocker, which is fixed. Full read-only checks later pass, but component behavior changes again. Can blockers wait until the end, or can only the earlier pass be cited?",
+      "expected_output": "Use necessary early checks to resolve blockers, then combine independent full read-only checks once their sources stabilize. Later behavior changes invalidate affected results and require relevant reruns. Neither defer known blockers under an only-run-once rule nor cite stale passes. Preserve mandatory checks and input-dependency rules.",
+      "files": []
+    },
+    {
+      "id": 42,
+      "prompt": "The last main screenshot and full observations are valid. Narrow-screen ending and zero/nonzero safe-area checks remain. Temporary contexts or natural state are available; necessary injections can be removed locally. Returning to the main viewport remounts the page. Complete pressure checks and sealing without cleanup races or duplicate full-page DOM extraction.",
+      "expected_output": "Capture every applicable pressure scenario in one serial browser sequence, preferring temporary contexts or natural state. Keep necessary injections local and clean promptly. Restore target device, viewport, data, and scroll; explicitly await readiness, then confirm service, rendering inputs, and final state. Reuse manifests and unchanged observations, adding only restoration-specific evidence. Reverify affected scope for changed/uncertain inputs without blind reuse, reduced pressure coverage, or extra repair batches.",
+      "files": []
+    },
+    {
+      "id": 43,
+      "prompt": "The tool display truncates current Lanhu analysis, but the complete original from that same call is accessible. How should implementation and evidence preservation continue? If the complete source is actually unavailable, can a model summary alone support delivery?",
+      "expected_output": "Read and verify the same call's complete original, preserving the text or accessible source and call association while loading only needed portions into context. Do not repeat the request for display truncation or recopy the whole result. Report an evidence blocker if the complete source is inaccessible; neither a model summary nor old task material replaces direct evidence.",
+      "files": []
+    },
+    {
+      "id": 44,
+      "prompt": "A component unit is fully audited and unchanged. This batch changes another CSS rule. Formatting and read-only checks are required, and check dependencies are established. Capture first, then format, reread every component, and repeat all checks at handoff?",
+      "expected_output": "Include formatting/autofix within this batch's edits. Inspect the final changed unit and actual diff, binding checks/captures to final inputs. Reuse valid audits of unchanged units and add changed units/affected dependencies. Preserve full visual coverage, pressure rules, and mandatory checks; reverify changed/uncertain inputs. Narrow scope is not exemption, and text-equivalent formatting is not automatically equivalent input for every tool.",
+      "files": []
+    },
+    {
+      "id": 45,
+      "prompt": "All visual coverage, pressure/technical checks, restoration, and source verification are complete. Original outputs/exits, manifests, and checkpoint are accessible and version-matched. A short report exists, but actual sealing time and protocol result are missing. Reconstruct the whole session's command history, expand the report, and inspect unchanged sources again before claiming handoff.",
+      "expected_output": "Use saved logs/indexes to record actual sealing time, status, and short conclusions, then immediately return the required protocol result. Do not reconstruct existing history, re-audit unchanged sources, or expand the narrative. A report does not imply a runtime receipt. Report remaining evidence gaps as blockers rather than skipping required coverage for prompt return.",
+      "files": []
+    },
+    {
+      "id": 46,
+      "prompt": "Evidence, checkpoint, and short report are sealed. One protocol requires saving a structured result at a specified path and submitting the same terminal result; another explicitly persists it at runtime. Must two synonymous receipts be rewritten? Can saving alone replace terminal submission?",
+      "expected_output": "Complete actual terminal submission under the current protocol. Reuse identical complete content with necessary wrapping when both saving/submission are required; submit directly when runtime persistence is explicit. Preserve required fields, evidence, failures, and limitations. A report or file is not completed runtime handoff. Do not rebuild reports or skip missing coverage for speed.",
+      "files": []
+    },
+    {
+      "id": 47,
+      "prompt": "The current artboard is clearly mobile, and dimensions, annotations, and project implementation establish device/layout. No desktop design or desktop adaptation was requested. Ask the user about platforms and every relationship, then add desktop acceptance?",
+      "expected_output": "Autonomously determine mobile devices and relationships from current evidence, then implement/verify with a real mobile playwright-cli context. Add no desktop platform and ask no already-resolved questions. Ask consolidated material ambiguities with a recommendation/basis only after investigating sources.",
+      "files": []
+    },
+    {
+      "id": 48,
+      "prompt": "Narrow-screen pressure state wraps text reasonably and reflows without preserving whole-design proportions. The original artboard comparison mapping is established. Stop pressure verification and force whole-page scaling?",
+      "expected_output": "Include applicable pressure conditions in the baseline before choosing the first repair batch; reuse valid evidence and rerun only for relevant rendering-input changes. Separate proportional corresponding-artboard comparison from pressure verification. Judge reflow, reachability, occlusion, and visual integrity without forcing whole-page scaling or expanding platform scope. A missing matching artboard limits design-equivalence claims but does not excuse visible implementation defects; include confirmed defects in the final quality verdict and existing repair budget.",
+      "files": []
+    },
+    {
+      "id": 49,
+      "prompt": "A verified development-only debug bubble occludes bottom text, has its own disable control, and has no retention requirement. Business overlays and real runtime errors also exist. Hide everything for screenshots, or ask approval for everything?",
+      "expected_output": "Before the baseline, use existing controls in the verification browser context to disable/move the verified aid, recording operation and restoration without changing shared initialization. Preserve and address actual business overlays/errors according to impact. Investigate unclear identity/authority before asking; never hide defects to manufacture acceptance.",
+      "files": []
+    },
+    {
+      "id": 50,
+      "prompt": "Verified page rendering dependencies, configuration, and lockfiles are explicitly listed in sourceFiles, including an ignored config. An unrelated document changes during one capture; a listed config is deleted during another. Separate current service-version evidence exists.",
+      "expected_output": "Construct explicit identity from verified individual file paths, expanding known directories while defining scope rather than passing directory/glob entries or guessing dependencies. A containing project without Git is supported; it does not change the file-list contract. Unrelated changes do not invalidate this identity, but ignored-input changes or deletion must fail source validation while preserving a failure manifest. Reference separate service evidence without presenting partial hashes as full-repository or actual-service proof. Keep default Git mode when scope is unclear.",
+      "files": []
+    },
+    {
+      "id": 51,
+      "prompt": "Another project's design requires fixed-aspect cards, keeps assets locally, and already includes safe-area clearance in the parent. Introduce a dedicated CDN upload, content-driven height, and extra safe-area spacer?",
+      "expected_output": "Follow current design relationships and project asset/container conventions without importing another project's tools/components, forcing content-driven height, or counting safe-area clearance twice. The generic skill retains evidence and verification methods; concrete implementation comes from the current project.",
+      "files": []
+    },
+    {
+      "id": 52,
+      "prompt": "The baseline covers every artboard with no obvious defects at normal display size. Magnification reveals only a tiny texture difference. All pressure, technical, and source checks are complete, with no stricter fidelity requirement. Must both default batches still be used?",
+      "expected_output": "No. Enter and complete final verification with zero batches, reusing the valid baseline. Record completed with visible micro-differences as differences_remaining and no_obvious_defects. Claim neither exact equivalence nor user approval. Create no forced repairs or duplicate captures and omit no required coverage.",
+      "files": []
+    },
+    {
+      "id": 53,
+      "prompt": "After batch one, all artboards have no obvious defects, with a small font-weight difference remaining. Applicable narrow-screen and safe-area checks are incomplete. Deliver immediately, or repair font weight to spend the second batch? What if the user explicitly requires stricter font fidelity?",
+      "expected_output": "By default, do not repair minor differences merely to spend the budget. Enter final verification and complete missing pressure, technical, and evidence gates before reporting actual differences and one used batch. Entering final verification is not immediate completion. Explicit stricter user fidelity requirements take precedence over the default no-obvious-defects condition; further repair remains within the remaining budget.",
+      "files": []
+    },
+    {
+      "id": 54,
+      "prompt": "The last repeated card uses an incorrect image with an obvious badge, the background color is clearly wrong, part of the title decoration is missing, and a texture difference appears only under magnification. The first three causes are known and fixes do not conflict. Can equal card sizes justify spending a batch on texture, or can the title be ignored because decoration ranks later?",
+      "expected_output": "Compare the rendered composition with the design and prioritize the three obvious discrepancies by their effect on fidelity, not passing geometry or element category. Explain each through its confirmed implementation cause and plan the nonconflicting changes together, preserving correct relationships. Check the distinct repeated artwork rather than assuming interchangeable assets. Once no obvious defects remain, retain tiny texture differences and enter final verification without added checklists or batches. If obvious defects remain at the limit, report visual acceptance as unmet rather than treating execution completion as a quality pass.",
+      "files": []
+    },
+    {
+      "id": 55,
+      "prompt": "Before implementation, targeted-check configuration and global declarations were verified. The manifest uses source, sourceAfter, and sourceUnchanged; independent service mapping is established. The final main image is valid and relevant inputs unchanged. Pressure checks, restoration, and delivery remain. Rebuild the TS entry, guess a sourceBefore field, and prove all provenance again?",
+      "expected_output": "Reuse verified entry points and actual manifest fields to complete applicable checks, pressure, restoration, sealing, and short delivery continuously. Add only restoration-specific confirmation; revisit affected scope if service mapping or related inputs change or impact is unclear. Reuse saved logs, manifests, and summaries without rebuilding generic evidence scripts, omitting necessary verification, or adding adapter caches and duplicate reports.",
       "files": []
     }
   ]
