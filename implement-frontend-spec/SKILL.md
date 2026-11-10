@@ -45,7 +45,7 @@ After initial UI approval, specified business states and accepted differences do
 
 7. Record the approved commit and evidence links; resolve UI tickets or record acceptance if closure waits for the PR. Dispatch ready Logic tickets to **`implementer` subagents** using the same branch/worktree isolation and completion requirements, returning validation evidence. Integrate serially through the merger subagent and advance the frontier without reimplementing completed UI.
 
-8. Once all tickets are implemented, run `code-review` on the integration branch against the recorded baseline and full spec. Dispatch logic fixes to `implementer` and UI fixes to `ui-implementer`, with exclusive ownership and serialized integration. Recheck affected pages/variants after logic or shared-code changes and obtain independent review of fix commits. Report visual conclusions separately from project checks.
+8. Once all tickets are implemented, run `code-review` on the integration branch against the recorded baseline and full spec, focusing on logic and integration correctness. Dispatch logic fixes to `implementer` and UI fixes to `ui-implementer`, with exclusive ownership and serialized integration. Recheck affected pages/variants after logic or shared-code changes. Report visual conclusions separately from project checks.
 
 9. Complete development acceptance using the integrated source and matching evidence. Resolve remaining implementation or development-check failures, and consolidate real-backend integration and physical-device verification points for the next phase. Resolve development tickets as the tracker requires, or record development acceptance when closure waits for a PR. Mark an existing draft PR ready for review.
 

@@ -5,7 +5,7 @@ description: Implement a Lanhu browser page and related variants with current de
 
 # Lanhu UI Implement
 
-`page contract -> current design evidence -> implement -> bounded visual review -> deliver`
+`page contract -> current design evidence -> implement -> independent UI review -> bounded visual review -> deliver`
 
 One invocation covers one page, route, or component and its selected artboard variants. Keep direct Lanhu evidence, implementation, and visual judgment in the same agent context. Each artboard has its own capture contract and verdict; all share the budget in [visual-diff.md](references/visual-diff.md).
 
@@ -45,7 +45,7 @@ Within each implementation/repair batch, read complete changed units and relevan
 
 ### Check selection and reuse
 
-Before implementation, choose checks for required delivery claims and real change risk; index commands, scope, triggers, sufficient evidence, inputs, results, and raw outputs/exits in the existing checkpoint. Verify entry points, arguments, extensions, configuration, and global declarations from project scripts/public help. Resolve blockers as found; run independent checks on stable inputs. Follow project dependency/tool authorization; unsupported optional metrics are limits, not extra gates.
+Before implementation, record the source baseline for independent review and choose checks for required delivery claims and real change risk; index commands, scope, triggers, sufficient evidence, inputs, results, and raw outputs/exits in the existing checkpoint. Verify entry points, arguments, extensions, configuration, and global declarations from project scripts/public help. Resolve blockers as found; run independent checks on stable inputs. Follow project dependency/tool authorization; unsupported optional metrics are limits, not extra gates.
 
 **Validity:** evidence is reusable only while its relevant sources, configuration, dependencies, environment, fixtures, and runtime state remain established and unchanged. Recheck affected/uncertain claims; retain unaffected results with original provenance. Decide per dependency, not per task: CSS edits do not invalidate unrelated TS/business checks; TS/TSX edits require affected static checks and related tests. Delivery text alone does not invalidate rendering. Close sufficiently evidenced claims instead of repeating them at handoff.
 
@@ -53,17 +53,23 @@ Before implementation, choose checks for required delivery claims and real chang
 - Static fidelity uses screenshots/model review/pressure checks, not new snapshots, pixel/style/DOM assertions, or invented data variants for fixed mocks. Changed logic still requires business-behavior, compatibility, and regression tests; explicit test requirements prevail.
 - Preserve raw commands/outputs/exits and inputs, loading conclusions/relevant failures only. Targeted success is not a full-repository pass. Report a baseline failure as unrelated only with current-checkout proof it predates the change and cannot affect the target. Introduced, target-affecting, or unresolved failures block; neither relabel failing commands nor modify unrelated code.
 
-**Complete when:** all variants implement required content/state and preserved behavior with stable assets, and applicable checks pass except separately evidenced unrelated baseline failures. Visual acceptance follows Step 4.
+**Complete when:** all variants implement required content/state and preserved behavior with stable assets, and applicable checks pass except separately evidenced unrelated baseline failures.
 
-## 4. Review within the shared budget
+## 4. Obtain independent UI review
+
+Invoke `ui-review` against the recorded baseline and current source, supplying the resolved UI contracts, project requirements, and evidence pointers. Resolve actionable findings, rerun affected checks, and obtain independent review of fixes. Record the review scope, source identity, and result in the existing checkpoint; apply the evidence-validity and shared visual-budget rules to subsequent changes.
+
+**Complete when:** independent review is complete and actionable findings are resolved or explicitly waived. Visual acceptance follows Step 5.
+
+## 5. Review within the shared budget
 
 Use a real target-device context through `playwright-cli`. Read [visual-diff.md](references/visual-diff.md) before the first capture and follow its baseline (including applicable pressure conditions), repair, final-coverage, and blocked/completion rules. It owns batch counting, checkpointing, restoration, and sealing.
 
 For batch capture, readiness, scrolling, geometry, or source binding, read and reuse [capture-tool.md](references/capture-tool.md). Use shared defaults and same-scene steps where appropriate. Tasks supply business selectors/state; the tools do not decide visual acceptance. If unsuitable, record the specific gap and add only missing adaptation, not another generic runner/comparator.
 
-Review in this agent by default. Only authorized independent evaluation/user-designated verification may use one fresh read-only reviewer. Supply resolved contracts/ignores, current design/page evidence, project assertions, and scope, not past verdicts or repair rankings. Separate visual/implementation verdicts, disclose unavailable independence, and validate findings against design-required content. Findings consume the existing budget.
+Review visuals in this agent by default. User/project-requested independent visual evaluation may use a fresh read-only reviewer. Supply resolved contracts/ignores, current design/page evidence, project assertions, and scope, not past verdicts or repair rankings. Separate visual/implementation verdicts, disclose unavailable independence, and validate findings against design-required content. Findings consume the existing budget.
 
-**Complete when:** every target has the visual reference's final coverage, valid evidence, and truthful verdict; implementation gates and requested independent review are accounted for.
+**Complete when:** every target has the visual reference's final coverage, valid evidence, and truthful verdict; implementation gates and independent UI review cover the delivered source, with requested independent visual review accounted for.
 
 ## Handoff
 
