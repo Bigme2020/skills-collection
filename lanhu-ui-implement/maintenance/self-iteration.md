@@ -25,7 +25,7 @@ Quality comes first. A faster run that misses the quality requirement is not a s
 
 Keep two loops distinct:
 
-- **Page loop:** implementation, visual review, and the finite repair budget defined by the frozen skill or explicit task authorization.
+- **Page loop:** implementation, visual acceptance, and cause-supported repair under the frozen skill, including any explicitly configured execution limit.
 - **Skill loop:** diagnose a previous run, change the candidate, then evaluate it through another implementation.
 
 A skill iteration does not reset a sealed page's repair count. Use a separate implementation entry and evidence directory for a new evaluation, preserving previous work.
@@ -74,6 +74,8 @@ Before starting, establish the design and selected variants, model and reasoning
 
 Implement from current design evidence and the current project. Keep prior implementation sources, screenshots, repair rankings, and acceptance conclusions out of the implementation context. A fresh session can provide context separation; disclose retained knowledge if execution stays in the same session. Use a subagent or independent reviewer only with operator authorization.
 
+Follow [the evaluation protocol](../evals/README.md) for image-backed design interpretation, difference detection, and repair cases; keep their results separate from text-only workflow checks.
+
 Use the same design to compare behavior and effort, and a new design to test transfer. Both need not run in every iteration, but successful reuse of a familiar page alone does not establish general improvement. Before treating an improvement as stable, evaluate it on a design not used to develop the change.
 
 Follow the frozen skill's normal implementation and verification workflow, including required playwright-cli verification and applicable project checks. Preserve actual failures and budget usage. The experiment does not create a different repair policy.
@@ -115,7 +117,7 @@ A retained candidate is not yet a proven improvement. Subsequent user findings a
 
 Run only the finite number of skill iterations authorized by the operator. Stop when evidence cannot distinguish causes, repeated changes fail to produce the intended behavior, environment prevents comparison, a quality/cost trade-off needs a user decision, or the objective has been reached with little supported benefit from further changes.
 
-Reconsider the page repair limit only when runs show that significant discrepancies were identified, causes were supported, and repairs were effective, yet the limit repeatedly prevented completion. Missed discrepancies and speculative edits point to judgment or repair selection first. The current runtime policy remains authoritative until an explicitly scoped change is made; maintenance work never grants old pages additional batches.
+Where a page has an explicit execution limit, evaluate its effect separately from missed discrepancies or speculative repairs. The frozen runtime policy remains authoritative for each evaluation; preserve historical counts and outcomes.
 
 ## Iteration record
 

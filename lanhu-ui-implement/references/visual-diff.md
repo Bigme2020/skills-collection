@@ -1,30 +1,28 @@
-# Bounded visual review
+# Visual acceptance
 
 Read before the first capture. Use the finalized [page contract](./page-contract.md), the main skill's evidence-validity rule, and one shared checkpoint throughout.
 
-## Shared page budget
+## Repair and stopping rules
 
-Default: **at most two visual repair batches for the page and all selected variants**, unless the user specifies another finite limit. Each batch plans one to three confirmed, nonconflicting fixes, then verifies them by screenshot.
+Repair confirmed implementation differences until required coverage is complete, fixes are verified, and remaining differences are evidenced rendering-environment effects or explicitly accepted deviations. Consider cumulative effects across typography, spacing, and alignment as well as individual discrepancies. Normal-size views establish perceived impact; magnification helps diagnose causes.
 
-Charge any post-baseline rendering correction, including check-discovered fixes/rollback; exclude initial implementation, baseline, read-only diagnosis, regression-only capture, and nonvisual corrections. Reserve before editing, once per shared batch rather than per artboard. Further rendering edits after verification require another batch. Failures, restart, rename, added variants, and resume never refund usage.
+Group fixes by supported cause and compatible scope, preserving correct relationships. There is no default batch limit. Track batches across the page and selected variants; when user/project/runtime instructions set a finite limit, record and honor it cumulatively. Count each post-baseline rendering correction, including rollback, once per batch; initial implementation, read-only diagnosis, regression captures, and nonvisual corrections do not consume it. Reserve before editing and retain usage through interruptions or resume.
 
-Rank fixes by visual harm, not element category or passing geometry. The budget is a ceiling: with no obvious defects at normal display size, enter final verification, retaining minor differences rather than spending batches on magnified details. Obvious defects include missing/wrong content/assets, bad crop/layout, occlusion, and noticeable typography/color/background/decoration differences. Stricter user/project fidelity requirements prevail.
-
-Only explicit finite authorization extends the budget. If the user authorizes more repairs without a number, add at most one batch and record the new total with cumulative usage intact. Exhaustion neither grants repairs nor establishes quality.
+Stop as incomplete when missing evidence/resources, environment failure, unresolved causes, or lack of progress prevents reliable repair. An explicit resource limit bounds execution, not the quality standard; extending it requires authorization under the instructions that set it.
 
 ## Capture valid evidence
 
-Use one task-specific OS temporary directory containing `visual-loop-state.json` and per-artboard `design.png`, `current.png`, and optional `previous.png`. Keep each artboard's images, contract, and verdict separate under the shared budget.
+Use one task-specific OS temporary directory containing `visual-loop-state.json` and per-artboard `design.png`, `current.png`, and optional `previous.png`. Keep each artboard's images, contract, and verdict separate under the shared repair history.
 
 Before every capture, verify the page contract's actual conditions and readiness, applying its distinct artboard-mapping and pressure-scenario rules.
 
-Judge images with model vision, not geometry assertions or numeric pixel-difference thresholds/heatmaps. DOM/bounds/styles explain uncertainty; return compact readiness/failure evidence rather than full dumps. Load new images and only needed previous images; reuse unchanged design evidence. Deletion does not remove images from model context.
+Judge design fidelity with whole-page and regional image comparison. Aligned overlays, difference images, and DOM/bounds/styles may locate or explain discrepancies; numeric pixel thresholds and geometry alone do not establish acceptance. Interpret antialiasing and dynamic-content noise against the contract. Load new images and only needed previous images; reuse unchanged design evidence.
 
 ## Review sequence
 
 ### 1. Baseline
 
-Capture and review every selected artboard **and applicable pressure conditions before choosing the first repair batch**. Use the coverage below to identify significant composition/relationship differences and evidence needed for uncertain causes. Plan repairs across the page, not separate local loops. A baseline with no obvious defects can proceed directly to final verification with zero batches.
+Capture and review every selected artboard **and applicable pressure conditions before choosing the first repair batch**. Use whole-page and regional coverage below to identify differences and evidence needed for uncertain causes. Plan repairs across the page, not separate local loops. A baseline satisfying the acceptance criteria can proceed directly to final verification with zero batches.
 
 ### 2. Repair and compare
 
@@ -32,7 +30,7 @@ Record **observed discrepancy -> evidence-supported cause -> corrective change**
 
 Reserve, edit/audit, capture affected variants, and compare changed regions plus neighbors with the design. Record `improved`, `unchanged`, or `regressed`, including new differences: improvement is not acceptance. Apply the main validity rule to affected/shared changes; uncertain impact requires all potentially affected variants, not blind reuse.
 
-If the whole batch is unchanged or regressed, perform one focused diagnosis before another batch. Without a supported cause, stop with `unconfirmed_cause`, even with budget left. At the limit, diagnosis grants no further repair or undo; follow the appropriate completion/blocked path.
+Record each discrepancy as confirmed/pending, diagnosing, verified fixed, evidenced environment effect, or accepted deviation, retaining its evidence and outcome. If a batch is unchanged or regressed, perform one focused diagnosis before further edits. Continue only with new evidence supporting a corrective change; otherwise stop with `unconfirmed_cause` or `no_progress`. At an explicitly configured limit, preserve the unresolved findings and report incomplete.
 
 ### 3. Finalize using the last review
 
@@ -41,24 +39,29 @@ Extend the last valid review only for missing coverage; unaffected artboards may
 1. Stabilize edits/autofixes; finish affected checks/captures through verified entry points under the main validity rule, including build/cleanup effects.
 2. Complete missing coverage below, reusing valid pressure baselines. Run needed pressure captures serially with natural state/temporary contexts where possible; keep injections local and remove promptly.
 3. Restore target device, viewport, data, and scroll, removing verification-only changes; await readiness. Confirm delivery state against established service/source evidence and actual manifest fields. Add restoration-specific evidence only; reverify changed/uncertain mappings or inputs.
-4. With gates complete, seal final image hashes/scan bindings, delivered sources, actual time, and truthful checkpoint status; immediately follow the main Handoff without rebuilding history.
+4. After the main workflow's independent implementation and visual review is complete, seal final image hashes/scan bindings, delivered sources, actual time, and truthful checkpoint status; immediately follow the main Handoff without rebuilding history.
 
-New findings use remaining budget; blockers below cannot become cosmetic differences at exhaustion.
+New findings enter the same repair loop; apply any configured limit without lowering acceptance criteria.
 
 ## Coverage
 
-Inspect every artboard in page order for content, geometry, typography, assets, and relationships, including visible contours, clipping, and occlusion at region boundaries; give explicit conclusions, not presence-only `accepted`. Check required/forbidden/excluded regions against page/viewport/parent edges, preceding visible content, and reserved space.
+Inspect every artboard at two levels:
+
+- **Whole page:** composition, proportions, hierarchy, whitespace rhythm, overall color, and relationships between regions.
+- **Regional:** compare corresponding design/render crops at equal scale, retaining neighboring context. Cover every visually distinct region for font family/weight/size, line height/wrapping/baselines, spacing, icons, borders/radii/shadows, artwork crop, and layering. Reuse original captures for crops; inspect at normal size for appearance and enlarge when needed for diagnosis. After local repairs, check their neighbors and the affected whole-page composition.
+
+Give explicit conclusions for the quality contract's dimensions and covered regions. Check required/forbidden/excluded regions against page/viewport/parent edges, preceding visible content, and reserved space, including contours, clipping, and occlusion.
 
 - **Repeated content:** check all instances for missing content, wrapping, overflow/occlusion, spacing/edges. Visually inspect every distinct layout/wrapping type, first/last/suspicious items and every unique/uncertain/inconsistent instance. Group consistent verdicts with scope/exceptions; include multiline and ignored-value wrappers.
 - **Boundaries:** inspect last-item gaps; diagnose height/min-height, stretch, and reserved space while preserving justified whitespace. Test supported sparse/empty variable lists, not invented fixed-data variants.
-- **Pressure:** apply the page contract's zero/nonzero safe-area and pressure criteria; defects affect final quality and the existing budget. Label simulation/gesture limits.
-- **Implementation:** consolidate applicable checks and constraint audits. An authorized independent review supplies this coverage instead of a duplicate review loop, with separate visual/implementation verdicts.
+- **Pressure:** apply the page contract's zero/nonzero safe-area and pressure criteria; defects affect final quality and enter the same repair loop. Label simulation/gesture limits.
+- **Implementation:** consolidate applicable checks and constraint audits for the main workflow's combined independent review; retain separate implementation and visual conclusions.
 
 ## Checkpoint and resume
 
 Keep `visual-loop-state.json` as the index with per-artboard records under `targets`, referencing original evidence instead of copying full outputs:
 
-- Shared entry, selected targets, batch count/limit/extensions, pending batch and affected targets.
+- Shared entry, selected targets, batch count, optional explicit limit and its authority/extensions, pending batch and affected targets.
 - Per-target contract/conditions or resolved references, sources, exclusions/dynamic ignores, images/dimensions, observations, differences, and covered regions.
 - Batch issues/outcomes and provenance; check command/scope/trigger, related input identity, result/exit, and raw log path.
 - Per-target `targetStatus` (`active`, `completed`, `blocked`), `visualVerdict` (`pending`, `passed`, `differences_remaining`), stop reason and next action.
@@ -72,13 +75,13 @@ Validate user-specified resume contracts, counters, dimensions, and recorded has
 
 With valid evidence, required UI/behavior/assets, project assertions, checks, coverage, and restoration:
 
-| Visual finding                         | Target result                                              |
-| -------------------------------------- | ---------------------------------------------------------- |
-| No visible, fixable difference         | `completed`, `passed`                                      |
-| Only minor differences, budget remains | `completed`, `differences_remaining`, `no_obvious_defects` |
-| Differences remain at the shared limit | `completed`, `differences_remaining`, `repair_limit`       |
+| Visual finding | Target result |
+| --- | --- |
+| Required coverage passes; implementation differences resolved; remaining environment effects explained | `completed`, `passed` |
+| Only explicitly accepted deviations remain | `completed`, `differences_remaining`, `accepted_deviations` |
+| Unresolved differences or incomplete coverage at a configured limit or other blocker | `blocked`, `differences_remaining` or `pending`, with the actual stop reason |
 
-At exhaustion, report whether artboard/pressure defects remain obvious; obvious means visual acceptance failed. Missing required UI, broken behavior, unstable assets, project-rule or evidence/tool failures use `blocked`, not cosmetic completion. Bind each independent target verdict to final hashes/sources; one target's failure does not downgrade another. Completion/minor differences imply neither exact equivalence nor user approval.
+Report unresolved differences with their impact, including cumulative effects. Missing required UI, broken behavior, unstable assets, project-rule or evidence/tool failures remain blockers. Bind each target's verdict to final hashes/sources; one target's failure does not downgrade another. Record who accepted deviations; technical completion does not establish user approval.
 
 **Blocked path:** preserve current source/failure association, cause/questions, raw failures, unexecuted coverage, budget, and Git/resource state; give the main skill's short handoff. Diagnose only as needed, without exhausted-budget edits. Skip unrelated successful checks/pressure scenarios and unchanged passes; retain safe cleanup and mandatory work. Rendering cleanup invalidates affected evidence; earlier images are diagnostic, not delivery.
 

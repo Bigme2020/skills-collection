@@ -4,13 +4,13 @@
     {
       "id": 1,
       "prompt": "Implement the current Lanhu campaign page with selected desktop and mobile artboards. The project has its own device switch. Store assets in the existing assets directory and preserve business interactions. No repair limit was specified.",
-      "expected_output": "Read current project rules and direct Lanhu evidence. Translate project requirements into prerequisites to editing, capture conditions, and delivery checks; satisfy each at its required boundary rather than postponing setup to visual review. Handle only the selected desktop and mobile artboards using appropriate playwright-cli device contexts and capture plans. Keep independent contracts and verdicts with one shared page budget of at most two batches. Follow the project's assets convention without introducing a dedicated CDN requirement.",
+      "expected_output": "Read current project rules and direct Lanhu evidence. Translate project requirements into prerequisites to editing, capture conditions, and delivery checks; satisfy each at its required boundary rather than postponing setup to visual review. Handle only the selected desktop and mobile artboards using appropriate playwright-cli device contexts and capture plans. Keep independent quality contracts and verdicts, including typography, reusable visual values, asset composition, and annotated versus inferred evidence. No default repair limit applies; repair toward verified acceptance. Follow the project's assets convention without introducing a dedicated CDN requirement.",
       "files": []
     },
     {
       "id": 2,
       "prompt": "The baseline comparison has no visible differences. Every region, project check, safe-area case, and empty-list check is covered, and screenshot state remains valid. Deliver now.",
-      "expected_output": "Use the baseline review as final verification, seal current screenshot evidence, deliver passed with zero batches used, and create no forced repair, duplicate screenshot, identical second scan, or automatic reviewer.",
+      "expected_output": "Use the valid baseline captures for the combined independent ui-review. Once implementation and visual conclusions pass, seal current evidence and deliver with zero repair batches. Reuse completed independent review when it already covers these inputs; no forced repair or duplicate capture is needed.",
       "files": []
     },
     {
@@ -21,13 +21,13 @@
     },
     {
       "id": 4,
-      "prompt": "After batch two, one artboard matches and another still has a decorative dot-pattern difference. Final screenshots, required elements and interactions, and implementation checks are valid. Rename the region and repair it for several more rounds without extra authorization.",
-      "expected_output": "Keep cumulative shared usage at two and reject renaming or workflow-switch bypasses. Complete the passed and differences_remaining targets separately, preserve remaining fidelity findings with repair_limit, and neither request nor start extra rounds automatically.",
+      "prompt": "An explicit two-batch limit is exhausted; one artboard matches and another still has a decorative dot-pattern difference. Final screenshots, required elements and interactions, and implementation checks are valid. Rename the region and repair it for several more rounds without extra authorization.",
+      "expected_output": "Keep cumulative shared usage at two and reject renaming or workflow-switch bypasses. Complete the matching target as passed; mark the unresolved target blocked with differences_remaining and repair_limit. Preserve the finding and cumulative limit without starting unauthorized rounds.",
       "files": []
     },
     {
       "id": 5,
-      "prompt": "Differences remain after the last batch. A required button is missing, target lint fails, and the final capture failed. Can the task finish merely because the visual budget is exhausted?",
+      "prompt": "Differences remain at an explicitly configured repair limit. A required button is missing, target lint fails, and the final capture failed. Can the task finish merely because the visual budget is exhausted?",
       "expected_output": "Report implementation and evidence blockers rather than repair-limit completion. Missing required UI, target-affecting check failures, and invalid capture evidence cannot be waived as cosmetic differences.",
       "files": []
     },
@@ -45,13 +45,13 @@
     },
     {
       "id": 8,
-      "prompt": "The first reserved repair batch was followed by two failed captures under unchanged conditions. Can restarting the agent reset the budget?",
+      "prompt": "The page has an explicit finite repair limit. The first reserved repair batch was followed by two failed captures under unchanged conditions. Can restarting the agent reset the budget?",
       "expected_output": "Preserve the reserved batch and pending state, stop unchanged retries after two failures, and report the tool blocker. Capture failure and agent restart never refund or reset usage.",
       "files": []
     },
     {
       "id": 9,
-      "prompt": "None of batch one's visual repairs improved the page. A focused inspection of DOM, fonts, and capture state found no evidence-supported cause. One batch remains.",
+      "prompt": "None of batch one's visual repairs improved the page. A focused inspection of DOM, fonts, and capture state found no evidence-supported cause. One batch remains under an explicit limit.",
       "expected_output": "Stop with unconfirmed_cause and preserved evidence rather than spending the remaining batch on guesses or repeating diagnosis without new evidence.",
       "files": []
     },
@@ -69,13 +69,13 @@
     },
     {
       "id": 12,
-      "prompt": "This is ordinary UI implementation with no independent evaluation requested. Because risk is high, should visual and implementation reviewers run consecutively, each followed by another repair round?",
-      "expected_output": "Perform ordinary visual and implementation review in the current agent. Risk alone does not authorize delegation, sequential reviewers are not default ceremony, and review grants no extra repair batches.",
+      "prompt": "The workflow has standing operator authorization for independent ui-review and necessary fix reviews. Visual self-review is complete. Should implementation and visual acceptance use two separate reviewers? After a confirmed spacing issue is fixed, what is rechecked?",
+      "expected_output": "Invoke one read-only ui-review after implementation and visual self-review, using the standing authorization. Supply original design/assets, contracts/exclusions, source baseline/current revision, matching whole-page/regional captures, and check evidence rather than prior verdicts. Obtain separate implementation and visual conclusions from that reviewer. The implementing agent validates findings, fixes confirmed issues, and updates affected checks/captures; the reviewer rechecks fixes and affected relationships, retaining valid unaffected evidence. Seal only after both conclusions cover the delivered version. Unavailable independent review remains incomplete; any explicit repair limit still applies.",
       "files": []
     },
     {
       "id": 13,
-      "prompt": "I authorize one independent read-only reviewer for visual and project-rule acceptance. Both batches are exhausted. The reviewer flags design-required repeated copy and one genuine decorative spacing difference.",
+      "prompt": "I authorize one independent read-only reviewer for visual and project-rule acceptance. Both batches of an explicit limit are exhausted. The reviewer flags design-required repeated copy and one genuine decorative spacing difference.",
       "expected_output": "Use one authorized read-only review with resolved contracts and current evidence, separate visual and implementation verdicts, and no earlier pass claims. Reject the unsupported repeated-copy finding against Lanhu evidence, disclose the confirmed fidelity difference, and start no extra repair cycle at the limit.",
       "files": []
     },
@@ -93,7 +93,7 @@
     },
     {
       "id": 16,
-      "prompt": "Both visual batches are exhausted. A purely type-export error needs correction without rendering impact. Repository-wide checks also have unrelated errors recorded before this change.",
+      "prompt": "Both batches of an explicit limit are exhausted. A purely type-export error needs correction without rendering impact. Repository-wide checks also have unrelated errors recorded before this change.",
       "expected_output": "Fix and recheck the nonvisual export issue without consuming a visual batch. Report evidenced unrelated baseline failures separately without calling their commands passing. Preserve valid visual evidence only if rendering inputs truly remain unchanged.",
       "files": []
     },
@@ -105,20 +105,20 @@
     },
     {
       "id": 18,
-      "prompt": "Two batches are exhausted. I explicitly authorize one more batch to address remaining differences while retaining the current checkpoint.",
+      "prompt": "An explicit two-batch limit is exhausted. I authorize one more batch to address remaining differences while retaining the current checkpoint.",
       "expected_output": "Record the finite extension with cumulative usage still two and the total limit three. Perform at most one additional batch, verify affected variants, and merge its last review with final coverage instead of resetting progress or adding an automatic review cycle.",
       "files": []
     },
     {
       "id": 19,
       "prompt": "All checks are complete, and raw logs, a source-linked screenshot manifest, and original review are saved. Write the complete verification narrative separately in a task ticket, validation document, completion report, and final reply.",
-      "expected_output": "Write one short delivery with per-target status/screenshots, commit hash or uncommitted working-tree identity, check/review evidence, shared budget, limitations, and cleanup. Preserve originals and manifests without duplicate reports. Handle commits under user/project requirements and include only task changes; require neither task tickets nor a delegation hierarchy by default.",
+      "expected_output": "Write one short delivery with per-target status/screenshots, commit hash or uncommitted working-tree identity, check/review evidence, repair progress and any configured limit, limitations, and cleanup. Preserve originals and manifests without duplicate reports. Handle commits under user/project requirements and include only task changes; require neither task tickets nor a delegation hierarchy by default.",
       "files": []
     },
     {
       "id": 20,
       "prompt": "There are single-image, double-image, and mixed states. Local designs show heights 80 and 86 for the first two, while mixed-state alignment is unresolved. Make everything equal height for speed and inspect only the mixed state before delivery.",
-      "expected_output": "First inspect current mixed-state design boundaries, alignment, and relevant project implementation. Determine and record relationships directly when evidence suffices; user silence alone is not a reason to seek approval. Ask consolidated unresolved material questions with a recommendation and basis only after investigation. Assume no equal-height default; prioritize relationship checks in the baseline while fully covering selected variants under the shared budget.",
+      "expected_output": "First inspect current mixed-state design boundaries, alignment, and relevant project implementation. Determine and record relationships directly when evidence suffices; user silence alone is not a reason to seek approval. Ask consolidated unresolved material questions with a recommendation and basis only after investigation. Assume no equal-height default; prioritize relationship checks in the baseline while fully covering selected variants through the shared repair loop.",
       "files": []
     },
     {
@@ -183,7 +183,7 @@
     },
     {
       "id": 31,
-      "prompt": "The final repair screenshot and full observations are saved. Lint autofix then changed layout-affecting sources, while pressure checks left CSS injection. The budget is exhausted. Seal the old screenshot hash and declare completion.",
+      "prompt": "The final repair screenshot and full observations are saved. Lint autofix then changed layout-affecting sources, while pressure checks left CSS injection. The explicitly configured budget is exhausted. Seal the old screenshot hash and declare completion.",
       "expected_output": "Resolve input invalidation and verification-injection cleanup first, establishing delivered sources, service, and page state. Recapture and review affected evidence. Exhaustion allows neither free visual repairs nor stale acceptance; differences_remaining cannot hide implementation/evidence blockers.",
       "files": []
     },
@@ -202,7 +202,7 @@
     {
       "id": 34,
       "prompt": "Only a card pseudo-element needs a border. A replacement changes `.card, .plainCard { margin-bottom: 8px; }` into `.card, .card::before { position: absolute; inset: 3px; }`. The file is untracked, so tracked diff is empty. Replacement and CSS parsing succeeded. Capture immediately?",
-      "expected_output": "First compare actual edits with the plan by reading complete rules, selector matches, adjacent shared rules, and untracked files. Identify positioning applied to main content and destroyed shared spacing. Successful replacement and valid syntax do not establish semantics. Handle deviations within existing budget; source audit neither replaces visual rechecking nor grants free repairs.",
+      "expected_output": "First compare actual edits with the plan by reading complete rules, selector matches, adjacent shared rules, and untracked files. Identify positioning applied to main content and destroyed shared spacing. Successful replacement and valid syntax do not establish semantics. Handle deviations through the same repair loop and any configured limit; source audit complements visual rechecking.",
       "files": []
     },
     {
@@ -213,26 +213,26 @@
     },
     {
       "id": 36,
-      "prompt": "Both batches are exhausted. Valid current screenshots and geometry prove main-content occlusion, and source identity/cause are known. Run all successful final and pressure scenarios, repeat every passing command, and write a full execution narrative before reporting blocked.",
+      "prompt": "Both batches of an explicit limit are exhausted. Valid current screenshots and geometry prove main-content occlusion, and source identity/cause are known. Run all successful final and pressure scenarios, repeat every passing command, and write a full execution narrative before reporting blocked.",
       "expected_output": "Use the shortest blocked handoff: preserve the current failure source/evidence mapping, cause, raw failure logs, unexecuted coverage, budget, and Git/resource state. Reference existing facts in one short conclusion. Skip successful final/pressure checks unrelated to the blocker and unchanged checks, while preserving safe cleanup and explicit mandatory items. Earlier working screenshots are not current delivery.",
       "files": []
     },
     {
       "id": 37,
-      "prompt": "Only one batch remains. Main layout satisfies confirmed relationships, but a minor decorative material differs. Fixing it touches main positioning and parent height. Proceed because it is one issue, or prohibit every layout change in the last batch?",
+      "prompt": "One batch remains under an explicit limit. Main layout satisfies confirmed relationships, but a minor decorative material differs. Fixing it touches main positioning and parent height. Proceed because it is one issue, or prohibit every layout change in the last batch?",
       "expected_output": "Choose scope from the confirmed cause and visual benefit, not issue count or a blanket last-batch restriction. A local change may suffice, but replacing an asset, composition, or layout choice may be necessary. Preserve correct flow and geometry; weigh the minor difference against actual impact and remaining budget rather than spending a batch by default. Incorrect main layout may still need repair in the last batch.",
       "files": []
     },
     {
       "id": 38,
-      "prompt": "After both batches, the page regressed. A previous screenshot was correct. Does a new reliability phase automatically grant a free undo and delivery using the earlier screenshot?",
+      "prompt": "After an explicit two-batch limit is exhausted, the page regressed. A previous screenshot was correct. Does a new reliability phase automatically grant a free undo and delivery using the earlier screenshot?",
       "expected_output": "No recovery exception is added. Retain 2/2 and blocked, preserving earlier images only for diagnosis. Do not automatically roll back, add free batches, or present old images as current. Further rendering changes require explicit finite authorization under existing rules.",
       "files": []
     },
     {
       "id": 39,
       "prompt": "The first implementation uses an existing image component. Sources confirm default props produce inline dimensions overriding ordinary classes, inner content controls crop, and the outer container participates in flow. Current layered assets reveal visible/transparent bounds. Apply only dimensions now and wait for the first screenshot to reveal incorrect drawing order?",
-      "expected_output": "Treat the reference's visible composite as the required result and its layer decomposition as an implementation choice. Choose the simplest combination of current artwork, crop, opacity, and drawing order reproducing that result against neighbors. Keep artwork coherent when coordinates, clipping/occlusion, and scrolling are shared; split for actual behavior differences. Preserve already-matching artwork and appearance when representation changes across sizes or states. Verify component defaults, prop/style precedence, and crop/container behavior in the first implementation without an unrelated scan or separate preparation phase. Retain edit audits, full visual verification, and the shared budget.",
+      "expected_output": "Treat the reference's visible composite as the required result and its layer decomposition as an implementation choice. Choose the simplest combination of current artwork, crop, opacity, and drawing order reproducing that result against neighbors. Keep artwork coherent when coordinates, clipping/occlusion, and scrolling are shared; split for actual behavior differences. Preserve already-matching artwork and appearance when representation changes across sizes or states. Verify component defaults, prop/style precedence, and crop/container behavior in the first implementation without an unrelated scan or separate preparation phase. Retain edit audits, full visual verification, and any explicitly configured limit.",
       "files": []
     },
     {
@@ -286,7 +286,7 @@
     {
       "id": 48,
       "prompt": "Narrow-screen pressure state wraps text reasonably and reflows without preserving whole-design proportions. The original artboard comparison mapping is established. Stop pressure verification and force whole-page scaling?",
-      "expected_output": "Include applicable pressure conditions in the baseline before choosing the first repair batch; reuse valid evidence and rerun only for relevant rendering-input changes. Separate proportional corresponding-artboard comparison from pressure verification. Judge reflow, reachability, occlusion, and visual integrity without forcing whole-page scaling or expanding platform scope. A missing matching artboard limits design-equivalence claims but does not excuse visible implementation defects; include confirmed defects in the final quality verdict and existing repair budget.",
+      "expected_output": "Include applicable pressure conditions in the baseline before choosing the first repair batch; reuse valid evidence and rerun only for relevant rendering-input changes. Separate proportional corresponding-artboard comparison from pressure verification. Judge reflow, reachability, occlusion, and visual integrity without forcing whole-page scaling or expanding platform scope. A missing matching artboard limits design-equivalence claims but does not excuse visible implementation defects; include confirmed defects in the final quality verdict and the same repair loop.",
       "files": []
     },
     {
@@ -309,26 +309,44 @@
     },
     {
       "id": 52,
-      "prompt": "The baseline covers every artboard with no obvious defects at normal display size. Magnification reveals only a tiny texture difference. All pressure, technical, and source checks are complete, with no stricter fidelity requirement. Must both default batches still be used?",
-      "expected_output": "No. Enter and complete final verification with zero batches, reusing the valid baseline. Record completed with visible micro-differences as differences_remaining and no_obvious_defects. Claim neither exact equivalence nor user approval. Create no forced repairs or duplicate captures and omit no required coverage.",
+      "prompt": "The baseline has no obvious defects at normal size. Regional comparison reveals a tiny texture difference whose cause is unknown. All pressure, technical, and source checks are complete. Must exactly two batches be used, or can the texture be ignored automatically?",
+      "expected_output": "Complete whole-page and regional visual coverage. Diagnose whether the texture difference is an implementation discrepancy or an evidenced rendering-environment effect. Repair confirmed implementation differences, or record explicitly accepted deviations. Explained environment effects can pass without forced edits. There is no default batch count, and small size alone neither excuses a discrepancy nor requires speculative repair.",
       "files": []
     },
     {
       "id": 53,
-      "prompt": "After batch one, all artboards have no obvious defects, with a small font-weight difference remaining. Applicable narrow-screen and safe-area checks are incomplete. Deliver immediately, or repair font weight to spend the second batch? What if the user explicitly requires stricter font fidelity?",
-      "expected_output": "By default, do not repair minor differences merely to spend the budget. Enter final verification and complete missing pressure, technical, and evidence gates before reporting actual differences and one used batch. Entering final verification is not immediate completion. Explicit stricter user fidelity requirements take precedence over the default no-obvious-defects condition; further repair remains within the remaining budget.",
+      "prompt": "After batch one, regional comparison confirms incorrect font weight despite no large defects. Narrow-screen and safe-area checks are incomplete. Can the small difference be ignored, and does batch two automatically end repairs?",
+      "expected_output": "Resolve the font-weight cause using design and actual font/weight evidence, repair it, and verify the region, neighbors, and affected whole-page composition. Complete missing pressure, technical, and evidence coverage. Continue until acceptance criteria are met or a real blocker/explicit limit stops execution; there is no default two-batch limit. Judge cumulative typography effects as well as individual differences.",
       "files": []
     },
     {
       "id": 54,
       "prompt": "The last repeated card uses an incorrect image with an obvious badge, the background color is clearly wrong, part of the title decoration is missing, and a texture difference appears only under magnification. The first three causes are known and fixes do not conflict. Can equal card sizes justify spending a batch on texture, or can the title be ignored because decoration ranks later?",
-      "expected_output": "Compare the rendered composition with the design and prioritize the three obvious discrepancies by their effect on fidelity, not passing geometry or element category. Explain each through its confirmed implementation cause and plan the nonconflicting changes together, preserving correct relationships. Check the distinct repeated artwork rather than assuming interchangeable assets. Once no obvious defects remain, retain tiny texture differences and enter final verification without added checklists or batches. If obvious defects remain at the limit, report visual acceptance as unmet rather than treating execution completion as a quality pass.",
+      "expected_output": "Compare the rendered composition with the design and prioritize the three obvious discrepancies by their effect on fidelity, not passing geometry or element category. Explain each through its confirmed implementation cause and plan the nonconflicting changes together, preserving correct relationships. Check the distinct repeated artwork rather than assuming interchangeable assets. After fixing obvious discrepancies, complete regional comparison and classify the texture difference by evidence. Resolve confirmed implementation differences; pass only with full coverage and explained environment effects, or record explicitly accepted deviations. An explicit execution limit leaves unresolved discrepancies incomplete.",
       "files": []
     },
     {
       "id": 55,
       "prompt": "Before implementation, targeted-check configuration and global declarations were verified. The manifest uses source, sourceAfter, and sourceUnchanged; independent service mapping is established. The final main image is valid and relevant inputs unchanged. Pressure checks, restoration, and delivery remain. Rebuild the TS entry, guess a sourceBefore field, and prove all provenance again?",
       "expected_output": "Reuse verified entry points and actual manifest fields to complete applicable checks, pressure, restoration, sealing, and short delivery continuously. Add only restoration-specific confirmation; revisit affected scope if service mapping or related inputs change or impact is unclear. Reuse saved logs, manifests, and summaries without rebuilding generic evidence scripts, omitting necessary verification, or adding adapter caches and duplicate reports.",
+      "files": []
+    },
+    {
+      "id": 56,
+      "prompt": "The full-page preview looks close to the design, but no regional comparison has been done. Several repeated cards have different badges and line wrapping. Can the page pass?",
+      "expected_output": "Compare corresponding regional crops at equal scale with neighboring context, covering every visually distinct region and repeated-item variation. Check typography, spacing, artwork, borders, and layering; retain separate whole-page and regional conclusions. Reuse current captures for crops. An overall impression alone does not complete coverage.",
+      "files": []
+    },
+    {
+      "id": 57,
+      "prompt": "Two repair batches improved the page. A confirmed shared spacing error remains, its cause is known, and no execution limit was specified. What happens next?",
+      "expected_output": "Repair the shared cause, verify all affected regions and whole-page compositions, and continue toward acceptance. Track cumulative batches without inventing a default limit. Report unresolved causes or lack of progress as incomplete rather than lowering the quality standard.",
+      "files": []
+    },
+    {
+      "id": 58,
+      "prompt": "An aligned difference image highlights text edges, while geometry matches. The design and browser may use different fonts or antialiasing. Can a pixel threshold decide acceptance?",
+      "expected_output": "Use the difference image to locate discrepancies, then inspect actual font family and weights, regional appearance, and rendering conditions. Repair implementation differences and document evidenced environment effects. Geometry and pixel thresholds are diagnostic rather than sufficient acceptance evidence; record typography separately from layout and behavior.",
       "files": []
     }
   ]

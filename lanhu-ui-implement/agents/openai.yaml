@@ -1,11 +1,12 @@
 ---
 interface:
   display_name: "Lanhu UI Implement"
-  short_description: "Full coverage with a shared two-batch repair budget"
+  short_description: "Design fidelity with whole-page and regional acceptance"
   icon_small: "./assets/playwright-small.svg"
   icon_large: "./assets/playwright.png"
   default_prompt: >-
     Use $lanhu-ui-implement to implement a browser page and selected
-    artboard variants from current Lanhu evidence within a shared visual
-    repair budget. Select checks by change scope, combine independent tool
-    operations, and reuse valid evidence for handoff.
+    artboard variants from current Lanhu evidence. Resolve design choices,
+    compare whole-page and regional views, and repair confirmed differences
+    through verified acceptance. Select checks by change scope and reuse
+    valid evidence for handoff.

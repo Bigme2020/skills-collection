@@ -17,6 +17,10 @@ Use the appropriate real device context through `playwright-cli`, apply any proj
 
 For corresponding-artboard comparison, prove range/crop mapping and equal horizontal/vertical scale. Correct controllable conditions before comparing, under the main retry bound; ask only for uncertainty current sources cannot resolve. Pressure scenarios within selected device scope instead test reflow, reachability, occlusion, and visual integrity, without requiring whole-artboard scaling or adding platforms/artboards. A missing matching design limits equivalence claims, not judgment of visible defects.
 
+## Quality contract
+
+Judge each target separately for content/assets, layout relationships, typography/styles, adaptation/behavior, and project compatibility. Corresponding artboard conditions establish design fidelity; other supported sizes/states establish usable reflow, reachability, and visual integrity. Record conclusions for each dimension rather than averaging them into one pass.
+
 ## Artboard contract
 
 Keep one region-level record per artboard:
@@ -24,6 +28,10 @@ Keep one region-level record per artboard:
 - `required`, `forbidden`, and `excluded` regions, with the exclusion basis below.
 - `layout relationships`: each critical region's attachment, neighboring reserved space, visible-boundary/container evidence, and sourced judgment or user decision.
 - Its capture conditions or resolved shared reference.
+- Design values that drive implementation: font family and available weights, size/line-height hierarchy, reusable spacing, colors, radii, borders, and shadows.
+- Asset-to-element mapping, visible/transparent bounds, crop and layer relationships, and intentional differences among repeated items.
+
+Mark these choices as annotated, inferred from the current composition, or unresolved, with source references. Resolve material uncertainty before dependent implementation; keep the record focused on decisions rather than copying design nodes or generated CSS.
 
 Distinguish page shell, scroller, and inner cards; specify content-driven, fill, or fixed height from their own relationships, not total artboard height. For mixed content/states, identify intentional differences and matching edges, baselines, inner images, gaps, and badge anchors rather than assuming equal height. Name diagnostic representatives for baseline-first inspection without reducing variant coverage. Absolute positioning alone does not establish overlap.
 

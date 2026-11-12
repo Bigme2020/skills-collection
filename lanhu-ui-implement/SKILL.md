@@ -1,13 +1,13 @@
 ---
 name: lanhu-ui-implement
-description: Implement a Lanhu browser page and related variants with current design evidence and a shared two-batch visual repair budget. Use for bounded design-to-code or visual matching; exclude PRD analysis, generic browser checks, and native UI without a browser preview.
+description: Implement a Lanhu browser page and related variants from current design evidence, with whole-page and regional visual acceptance. Use for design-to-code or visual matching; exclude PRD analysis, generic browser checks, and native UI without a browser preview.
 ---
 
 # Lanhu UI Implement
 
-`page contract -> current design evidence -> implement -> independent UI review -> bounded visual review -> deliver`
+`page contract -> current design evidence -> implement -> visual self-review and repair -> independent UI review -> deliver`
 
-One invocation covers one page, route, or component and its selected artboard variants. Keep direct Lanhu evidence, implementation, and visual judgment in the same agent context. Each artboard has its own capture contract and verdict; all share the budget in [visual-diff.md](references/visual-diff.md).
+One invocation covers one page, route, or component and its selected artboard variants. Keep direct Lanhu evidence, implementation, and visual self-review in the implementing agent's context. The operator authorizes one independent `ui-review` covering implementation and visual acceptance, including necessary fix reviews, for this workflow. Each artboard has its own capture contract and verdict; all follow the repair and acceptance rules in [visual-diff.md](references/visual-diff.md).
 
 ## Operating rules
 
@@ -33,7 +33,7 @@ User/project rules define scope and constraints; screenshots establish compositi
 
 Resolve conflicts against artboard, units, crop, viewport, fonts/assets, data/scroll, device, and chrome. Apply the page reference's relationship, exclusion, and safe-area rules. Adopt supported judgments directly: a mobile design needs mobile verification, not unrequested desktop scope. Only unresolved material ambiguity warrants one consolidated question with recommendation and basis; user silence alone does not. Record the evidence or decision.
 
-**Complete when:** every artboard's contract is resolved and sourced; needed assets are available, authorized as excluded, or reported blocked.
+**Complete when:** every artboard's quality contract and implementation-driving design choices are resolved and sourced, including typography, reusable visual values, and asset composition; needed assets are available, authorized as excluded, or reported blocked.
 
 ## 3. Implement and verify
 
@@ -45,7 +45,7 @@ Within each implementation/repair batch, read complete changed units and relevan
 
 ### Check selection and reuse
 
-Before implementation, record the source baseline for independent review and choose checks for required delivery claims and real change risk; index commands, scope, triggers, sufficient evidence, inputs, results, and raw outputs/exits in the existing checkpoint. Verify entry points, arguments, extensions, configuration, and global declarations from project scripts/public help. Resolve blockers as found; run independent checks on stable inputs. Follow project dependency/tool authorization; unsupported optional metrics are limits, not extra gates.
+Before implementation, record the source baseline for implementation review and choose checks for required delivery claims and real change risk; index commands, scope, triggers, sufficient evidence, inputs, results, and raw outputs/exits in the existing checkpoint. Verify entry points, arguments, extensions, configuration, and global declarations from project scripts/public help. Resolve blockers as found; run independent checks on stable inputs. Follow project dependency/tool authorization; unsupported optional metrics are limits, not extra gates.
 
 **Validity:** evidence is reusable only while its relevant sources, configuration, dependencies, environment, fixtures, and runtime state remain established and unchanged. Recheck affected/uncertain claims; retain unaffected results with original provenance. Decide per dependency, not per task: CSS edits do not invalidate unrelated TS/business checks; TS/TSX edits require affected static checks and related tests. Delivery text alone does not invalidate rendering. Close sufficiently evidenced claims instead of repeating them at handoff.
 
@@ -55,26 +55,30 @@ Before implementation, record the source baseline for independent review and cho
 
 **Complete when:** all variants implement required content/state and preserved behavior with stable assets, and applicable checks pass except separately evidenced unrelated baseline failures.
 
-## 4. Obtain independent UI review
-
-Invoke `ui-review` against the recorded baseline and current source, supplying the resolved UI contracts, project requirements, and evidence pointers. Resolve actionable findings, rerun affected checks, and obtain independent review of fixes. Record the review scope, source identity, and result in the existing checkpoint; apply the evidence-validity and shared visual-budget rules to subsequent changes.
-
-**Complete when:** independent review is complete and actionable findings are resolved or explicitly waived. Visual acceptance follows Step 5.
-
-## 5. Review within the shared budget
+## 4. Self-review and repair visuals
 
 Use a real target-device context through `playwright-cli`. Read [visual-diff.md](references/visual-diff.md) before the first capture and follow its baseline (including applicable pressure conditions), repair, final-coverage, and blocked/completion rules. It owns batch counting, checkpointing, restoration, and sealing.
 
 For batch capture, readiness, scrolling, geometry, or source binding, read and reuse [capture-tool.md](references/capture-tool.md). Use shared defaults and same-scene steps where appropriate. Tasks supply business selectors/state; the tools do not decide visual acceptance. If unsuitable, record the specific gap and add only missing adaptation, not another generic runner/comparator.
 
-Review visuals in this agent by default. User/project-requested independent visual evaluation may use a fresh read-only reviewer. Supply resolved contracts/ignores, current design/page evidence, project assertions, and scope, not past verdicts or repair rankings. Separate visual/implementation verdicts, disclose unavailable independence, and validate findings against design-required content. Findings consume the existing budget.
+Complete whole-page and regional comparison, diagnose and repair differences, and prepare version-matched evidence for independent review. Keep final sealing for Step 5.
 
-**Complete when:** every target has the visual reference's final coverage, valid evidence, and truthful verdict; implementation gates and independent UI review cover the delivered source, with requested independent visual review accounted for.
+**Complete when:** every target has the visual reference's required coverage and valid evidence, and self-review meets its acceptance criteria.
+
+## 5. Obtain independent UI acceptance
+
+Invoke `ui-review` once for both implementation and visual acceptance. Supply the baseline and current source, original design/assets, resolved contracts/exclusions, project requirements, matching whole-page/regional captures, and check evidence. Give the reviewer evidence and scope rather than prior verdicts or repair rankings.
+
+The reviewer returns separate implementation and visual conclusions. Validate findings against design and project evidence; fix confirmed issues in the implementing agent, rerun affected checks/captures, and have the reviewer recheck fixes and affected relationships. Reuse unaffected evidence under the same repair rules and any configured limit.
+
+Record reviewed source, scope, both conclusions, and limitations in the existing checkpoint. Confirm the delivered version matches the reviewed evidence, then seal through the visual reference's finalization steps.
+
+**Complete when:** independent implementation and visual review cover the delivered source and actionable findings are resolved or explicitly accepted. Unavailable independent review remains incomplete.
 
 ## Handoff
 
 Reference saved, accessible, version-matched originals, manifests, and checkpoint indexes; add missing facts to their owning record, not parallel reports.
 
-Write one short delivery with a compact per-target entry/state/verdict/screenshot/differences table; working-tree or commit identity/scope; check/review evidence; shared budget, limits, pending decisions, and cleanup/retention. Retain commit delivery under user/project requirements, including only task changes.
+Write one short delivery with a compact per-target entry/state/verdict/screenshot/differences table; working-tree or commit identity/scope; check/review evidence; repair progress, any configured limits, pending decisions, and cleanup/retention. Retain commit delivery under user/project requirements, including only task changes.
 
 After sealing and this conclusion, immediately submit the complete protocol-required terminal result, including failures/evidence/limits. Reuse content when both saving and submission are required; submit directly when runtime persists it. A saved file is not terminal submission. Execution completion, visual correctness, and user approval are separate.
