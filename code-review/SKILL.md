@@ -3,6 +3,6 @@ name: code-review
 description: Review changes since a fixed point (commit, branch, tag, or merge-base) against repository standards and the originating spec. Use when the user wants to review a branch, PR, work-in-progress changes, or asks to "review since X".
 ---
 
-## 执行入口
+## Entry point
 
-主代理读取并执行 [REVIEW.md](REVIEW.md)：确认基线、查找 spec 和规范，使用当前 harness 可用的 subagent/agent-dispatch 能力创建两个独立 reviewer，最后汇总报告。两个 reviewer 应尽可能并行、使用独立上下文；优先使用已定义的 `reviewer`，否则按本次评审选择模型与推理强度。
+The primary agent reads and follows [REVIEW.md](REVIEW.md): confirm the baseline, locate the spec and standards, create two independent reviewers using the subagent/agent-dispatch capabilities available in the current harness, and aggregate their reports. Run the two reviewers in parallel whenever possible, with independent contexts. Prefer the predefined `reviewer`; otherwise, select a model and reasoning effort appropriate for this review.

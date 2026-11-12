@@ -1,13 +1,13 @@
 # Code-review execution
 
-本流程由主代理执行：准备证据，直接创建 Standards 和 Spec 两个独立 reviewer，再汇总它们的报告。需要用户补充的信息由主代理直接询问。
+The primary agent runs this process: prepare the evidence, directly create two independent reviewers for Standards and Spec, and aggregate their reports. The primary agent asks the user directly for any missing information.
 
 Two-axis review of the diff between `HEAD` and a fixed point the user supplies:
 
 - **Standards**: does the code conform to this repo's documented coding standards?
 - **Spec**: does the code faithfully implement the originating issue / spec?
 
-两个轴在独立上下文中并行评审，避免彼此影响；主代理负责派发和汇总。
+Review the two axes in parallel in independent contexts so they do not influence each other; the primary agent handles dispatch and aggregation.
 
 The issue tracker should have been provided to you. If `docs/agents/issue-tracker.md` is missing, tell the user to run `/setup-matt-pocock-skills`.
 
@@ -54,15 +54,15 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 - **Middle Man**: a class or function that mostly just delegates onward. → cut it, call the real target direct.
 - **Refused Bequest**: a subclass or implementer that ignores or overrides most of what it inherits. → drop the inheritance, use composition.
 
-### 4. 并行创建两个独立 reviewer
+### 4. Create two independent reviewers in parallel
 
-主代理使用当前 harness 实际提供的 subagent/agent-dispatch 能力，创建 Standards 和 Spec 两个独立 reviewer。尽可能并行派发，分别提供独立上下文、工作目录和对应轴的自包含评审包，让 reviewer 自行检查工作区证据。
+The primary agent uses the subagent/agent-dispatch capabilities actually available in the current harness to create two independent reviewers for Standards and Spec. Dispatch them in parallel whenever possible, giving each an independent context, a working directory, and a self-contained review packet for its axis so it can inspect the workspace evidence itself.
 
-优先使用已定义的 `reviewer`；若未找到，按本次评审选择合适的模型与推理强度。
+Prefer the predefined `reviewer`; if none is available, select a model and reasoning effort appropriate for this review.
 
-每个评审包须明确 reviewer 只执行指定轴，独立读取工作区证据并返回报告，不调用 `code-review`、不执行本文件的派发与汇总步骤、不创建下级代理。
+Each review packet must explicitly tell the reviewer to review only its assigned axis, independently read the workspace evidence, and return a report. It must not invoke `code-review`, perform the dispatch and aggregation steps in this file, or create further agents.
 
-工具判断以当前环境实际声明和调用结果为准。若没有可用的 subagent/agent-dispatch 能力，或派发失败，报告具体缺失能力或原始错误及未完成阶段；不要把主代理的内联分析伪装成独立 reviewer。并发容量不足时先等待已有 reviewer 完成，再派发剩余 reviewer，保留独立上下文。
+Determine tool availability from the declarations and actual call results in the current environment. If no subagent/agent-dispatch capability is available, or dispatch fails, report the specific missing capability or original error and the incomplete stage; do not present the primary agent's inline analysis as an independent reviewer. If concurrency capacity is insufficient, wait for an existing reviewer to finish before dispatching the remaining reviewer, preserving independent contexts.
 
 **Standards review packet** should include:
 
@@ -76,11 +76,11 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 - The path or fetched contents of the spec.
 - The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong. Quote the spec line for each finding. Under 400 words."
 
-仅当用户已确认没有 spec 时，省略 Spec 评审包并记录跳过原因；尚未找到 spec 时仍按第 2 步向用户请求来源。
+Omit the Spec review packet and record the reason for skipping it only when the user has confirmed that no spec exists. If the spec has merely not been found, still ask the user for its source as described in step 2.
 
 ### 5. Aggregate
 
-主代理等待所有必需 reviewer 完成或明确失败，收齐报告或失败原因后汇总。缺失或失败的轴标记为未完成；经用户确认省略的 Spec 轴标记为跳过。不能将派发成功或某一个轴完成当作整个评审通过。
+The primary agent waits for every required reviewer to finish or explicitly fail, then aggregates all reports or failure reasons. Mark missing or failed axes as incomplete; mark the Spec axis as skipped when its omission was confirmed by the user. Successful dispatch or completion of one axis does not mean the entire review has passed.
 
 Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. Do **not** merge or rerank findings, because the two axes are deliberately separate (see _Why two axes_).
 
