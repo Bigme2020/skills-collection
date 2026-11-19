@@ -25,9 +25,9 @@ The issue tracker and triage label vocabulary should have been provided. Otherwi
 
 5. Publish one ticket per approved task in dependency order:
    - **Local files**: `.scratch/<feature-slug>/issues/<NN>-<slug>.md`, numbered from `01`; blockers reference ticket numbers and titles.
-   - **Issue tracker**: one issue per ticket, linked to the spec; use native blocking relationships where available, otherwise list them in the body. Apply the configured `ready-for-agent` label and existing type labels when available. The body always records the type.
+   - **Issue tracker**. Publish one issue per ticket. When the source is an existing issue, attach each ticket as its sub-issue using the configured tracker's native operation where available. Use native blocking relationships where available. Apply the configured `ready-for-agent` label and existing type labels when available.
 
-Use this body for each ticket, adding the tracker's normal parent reference or local status as appropriate:
+Use this body for each ticket. Keep `Parent` for a spec file or when the parent issue cannot be linked natively. Include `Blocked by` for local files and when the tracker cannot represent the ticket's blockers natively. In those cases list all blockers or write `None`. Add local status as appropriate:
 
 ```markdown
 # <Title>
@@ -53,4 +53,4 @@ Use this body for each ticket, adding the tracker's normal parent reference or l
 - <observable behavior and agreed seam>
 ```
 
-任务应在各自阶段内可独立演示或验证。有蓝湖参照的 UI 任务遵循 `lanhu-ui-implement` 的视觉检查及预算耗尽交付规则；无蓝湖的 UI 任务按文字要求、现有 UI 和项目规范验收，提供本地浏览器验证结果与截图，不要求蓝湖画板比对。两种路径的 UI 确认均由用户决定。避免推测性的实现路径和代码片段，除非用于记录已确认的设计决策。不要关闭或修改父 issue。
+任务应在各自阶段内可独立演示或验证。有蓝湖参照的 UI 任务遵循 `lanhu-ui-implement` 的视觉检查及预算耗尽交付规则；无蓝湖的 UI 任务按文字要求、现有 UI 和项目规范验收，提供本地浏览器验证结果与截图，不要求蓝湖画板比对。两种路径的 UI 确认均由用户决定。避免推测性的实现路径和代码片段，除非用于记录已确认的设计决策。保留父工单的标题、正文和状态。

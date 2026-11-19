@@ -29,7 +29,7 @@ Run implementers in the background with one writer per isolated worktree. Use a 
 
 ## Steps
 
-1. Read the spec and tickets; identify dependencies, scope, and acceptance criteria. Resolve ambiguities and cycles before affected implementation. Optionally use an exploration subagent to save shared notes outside the repo, accessible to subsequent implementers.
+1. Read the spec and tickets. Identify dependencies, scope, and acceptance criteria. Read native blocking relationships using the configured tracker instructions. Use `Blocked by` for local files, trackers without native blocking, or older tickets with text-only blockers. If a native lookup fails, resolve the affected dependency before scheduling that ticket. Resolve ambiguities and cycles before affected implementation. Optionally use an exploration subagent to save shared notes outside the repo, accessible to subsequent implementers.
 
 2. Record the original working directory, current branch as the delivery branch, pre-implementation review baseline, and existing user changes. Create the temporary integration branch from that baseline. Confirm the `implementer` agent type is available. If the tracker closes work through PRs, or the user requests one, open a draft PR after the first integration merge, linked to the spec and tickets.
 
