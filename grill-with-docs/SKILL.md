@@ -4,6 +4,8 @@ description: A relentless interview to sharpen a plan or design, which also crea
 disable-model-invocation: true
 ---
 
-Call the Skill tool twice, for "grilling" and "domain-modeling".
+# Grill with Docs
 
-When the interview reaches shared understanding and the user confirms, call `/to-aligned-requirements` to freeze the agreed requirements into the durable hand-off file before the session ends.
+Use `/grilling` and `/domain-modeling` together.
+
+After the user confirms the business decisions, point them to `/grill-technical-design-with-docs` if technical design still needs alignment. Otherwise run `/to-spec` in the current conversation.

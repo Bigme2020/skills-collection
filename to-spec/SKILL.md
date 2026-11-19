@@ -1,10 +1,9 @@
 ---
 name: to-spec
-description: "Turn the current conversation into a spec and publish it to the project issue tracker: no interview, just synthesis of what you've already discussed."
-disable-model-invocation: true
+description: "Write and publish a spec from confirmed decisions when grilling finishes or the user asks to turn an agreed plan into a spec."
 ---
 
-This skill takes the current conversation context and codebase understanding and produces a spec. Do NOT interview the user; just synthesize what you already know.
+Synthesize the decisions already agreed in the conversation and grounded in the codebase. If resuming from a draft spec, update it in place and carry forward the decisions that still apply.
 
 The issue tracker and triage label vocabulary should have been provided to you. If not, tell the user to run `/setup-matt-pocock-skills`.
 
@@ -12,11 +11,9 @@ The issue tracker and triage label vocabulary should have been provided to you. 
 
 1. Explore the repo to understand the current state of the codebase, if you haven't already. Use the project's domain glossary vocabulary throughout the spec, and respect any ADRs in the area you're touching.
 
-2. Sketch out the seams at which you're going to test the feature. Existing seams should be preferred to new ones. Use the highest seam possible. If new seams are needed, propose them at the highest point you can. The fewer seams across the codebase, the better - the ideal number is one.
+2. Carry over agreed testing seams. For any seam still to be chosen, propose the fewest seams at the highest practical boundary, preferring existing ones, and confirm the proposal with the user.
 
-Check with the user that these seams match their expectations.
-
-3. Write the spec using the template below, then publish it to the project issue tracker. Apply the `ready-for-agent` triage label - no need for additional triage.
+3. Write the spec using the template below. If work needs to continue in another session before alignment is complete, save the agreed decisions and open questions in the spec as a draft and return its reference. When all decisions needed for implementation are agreed, publish the spec to the project issue tracker with the `ready-for-agent` triage label and return its path or issue reference.
 
 <spec-template>
 

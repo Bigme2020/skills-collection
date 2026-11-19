@@ -14,7 +14,7 @@ The completion criterion is **architecture-ready**: the spec can name the intend
 
 ## 1. Recover the change path
 
-Read the agreed requirements, relevant `GLOSSARY.md`, ADRs, code, tests, and recent changes in the affected area. Trace the current path from caller to observable result. Find facts in the repository rather than asking the user to recall them.
+Read the agreed requirements from the conversation or draft spec, then read the relevant `GLOSSARY.md`, ADRs, code, tests, and recent changes in the affected area. Trace the current path from caller to observable result. Find facts in the repository rather than asking the user to recall them.
 
 Write a short working diagnosis before the first round:
 
@@ -75,9 +75,7 @@ Use `/domain-modeling` only when the design resolves domain vocabulary or produc
 
 - update `GLOSSARY.md` for domain terms, never implementation structure;
 - create an ADR only for a hard-to-reverse, surprising choice made through a real trade-off;
-- keep ordinary module and interface decisions in the conversation that `/to-spec` will consume.
-
-The conversation remains the primary source for `/to-spec`; do not create a competing specification.
+- carry ordinary module and interface decisions into the spec.
 
 ## 6. Apply the architecture-ready gate
 
@@ -123,4 +121,4 @@ Before asking for confirmation, report:
 - Ready for `/to-spec` | Not ready: ...
 ```
 
-Ask the user to confirm the proposed encapsulation. After confirmation, call `/to-aligned-requirements` to freeze the agreed architecture into the durable hand-off file. `/ship-frontend` then drives `/to-spec`, `/to-frontend-tickets`, and `/implement-frontend-spec` from that file. Private mechanics chosen downstream must preserve the agreed modules, interfaces, seams, and test surfaces.
+Ask the user to confirm the proposed encapsulation. Once the gate is ready and the user confirms, run `/to-spec` in the current conversation. Include the agreed modules, interfaces, seams, test surfaces, and implementer latitude.
