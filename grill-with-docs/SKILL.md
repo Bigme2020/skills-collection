@@ -8,4 +8,4 @@ disable-model-invocation: true
 
 Use `/grilling` and `/domain-modeling` together.
 
-After the user confirms the business decisions, point them to `/grill-technical-design-with-docs` if technical design still needs alignment. Otherwise run `/to-spec` in the current conversation.
+Once the user confirms the business decisions and any technical design decisions that need alignment, run `/to-spec` in the current conversation.
